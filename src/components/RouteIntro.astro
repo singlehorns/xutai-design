@@ -1,0 +1,60 @@
+---
+import SectionHeader from "./SectionHeader.astro";
+import { withBase } from "@/utils/paths";
+
+interface Props {
+  title: string;
+  eyebrow: string;
+  introduction: string;
+  sectionTitle: string;
+  sectionBody: string;
+}
+
+const { title, eyebrow, introduction, sectionTitle, sectionBody } = Astro.props;
+---
+
+<div class="route-intro">
+  <header class="route-intro__hero">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    <p>{introduction}</p>
+  </header>
+  <section class="route-intro__section">
+    <SectionHeader eyebrow="DESIGN SUPPORT" title={sectionTitle} body={sectionBody} />
+    <p class="route-intro__note">完整介紹整理中，歡迎先分享需求，一起確認適合的服務範圍。</p>
+    <a class="home-works-cta" href={withBase("/contact/")}>
+      <span>討論合作需求</span><span aria-hidden="true">→</span>
+    </a>
+  </section>
+</div>
+
+<style>
+  .route-intro {
+    width: min(calc(100% - var(--home-safe) * 2), 1180px);
+    margin-inline: auto;
+    padding-block: clamp(64px, 9vw, 112px);
+  }
+  .route-intro__hero { max-width: 780px; }
+  .route-intro__hero h1 {
+    margin: 12px 0 24px;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    line-height: 1.2;
+  }
+  .route-intro__hero > p:last-child { max-width: 640px; font-size: 1.1rem; }
+  .route-intro__section {
+    margin-top: clamp(48px, 7vw, 88px);
+    padding-top: clamp(32px, 5vw, 64px);
+    border-top: 1px solid var(--line);
+  }
+  .route-intro__section :global(.section-header) {
+    grid-template-columns: 1fr;
+    max-width: 760px;
+    gap: 12px;
+  }
+  .route-intro__section :global(.section-header h2) {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.4;
+  }
+  .route-intro__note { color: var(--muted); }
+  .route-intro__section .home-works-cta { margin-left: 0; }
+</style>

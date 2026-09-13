@@ -1,0 +1,193 @@
+---
+import Layout from "@/components/Layout.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import { getSolutions, getSolutionServices } from "@/data/solutions";
+import { getServices } from "@/data/services";
+import { site } from "@/data/site";
+import { withBase } from "@/utils/paths";
+
+const solutions = getSolutions();
+const serviceIds = new Set(solutions.flatMap((solution) => solution.serviceIds));
+const relatedServices = getServices().filter((service) => serviceIds.has(service.id));
+---
+
+<Layout title={`整合服務 | ${site.siteName}`} description={`從品牌建立、活動宣傳、商品上市到長期品牌支援，由 ${site.ownerDisplayName} 依企業情境整合視覺、印刷、網站、社群與影音，按需求選擇製作項目。`} mainClass="solutions-shell">
+  <div class="solutions-page">
+    <header class="solutions-hero" aria-labelledby="solutions-title">
+      <p class="home-label reveal-line">SOLUTIONS</p>
+      <h1 id="solutions-title" class="reveal-line">整合服務</h1>
+      <p class="solutions-hero__lead reveal-line">從你想完成的事出發，<br />把不同媒介的製作，整理成可以一起推進的專案。</p>
+      <p class="solutions-hero__description">品牌起步、活動宣傳、商品上市，或持續性的日常需求，都可以依目前階段選擇適合的視覺、印刷、網站、社群與影音支援。</p>
+      <nav class="solutions-index" aria-label="跳至整合服務情境">
+        {solutions.map((solution, index) => (
+          <a href={`#${solution.slug}`}><span>{String(index + 1).padStart(2, "0")}</span>{solution.title}<span aria-hidden="true">↓</span></a>
+        ))}
+      </nav>
+    </header>
+
+    <section class="solutions-intro" aria-label="整合服務介紹">
+      <SectionHeader
+        eyebrow="從企業情境開始"
+        title="先釐清需求，再決定如何組合。"
+        body="服務項目說明可以製作哪些內容；整合服務則從你目前的商業需求出發，整理相關素材與執行順序。由我直接與你討論，依已有資料、使用情境及時程，確認這一次真正需要的製作範圍。"
+      />
+      <p class="solutions-note">以下皆為可依需求調整的組合示意，項目可以單獨選擇、分階段製作，不是固定綁售套餐。</p>
+    </section>
+
+    <div class="solutions-details" aria-label="四大企業情境">
+      {solutions.map((solution, index) => (
+        <article id={solution.slug} class="solution-detail" aria-labelledby={`${solution.slug}-title`} data-solution-id={solution.id}>
+          <header class="solution-detail__heading reveal">
+            <p class="home-label">{String(index + 1).padStart(2, "0")} / {solution.shortTitle}</p>
+            <h2 id={`${solution.slug}-title`}>{solution.title}</h2>
+            <p class="solution-detail__summary">{solution.summary}</p>
+          </header>
+          <div class="solution-detail__body">
+            <p class="solution-detail__description">{solution.description}</p>
+            <section class="solution-part" aria-labelledby={`${solution.slug}-suitable`}>
+              <h3 id={`${solution.slug}-suitable`}>適合什麼情況</h3>
+              <ul class="solution-list">{solution.suitableFor.map((item) => <li>{item}</li>)}</ul>
+            </section>
+            <section class="solution-part" aria-labelledby={`${solution.slug}-scenario`}>
+              <h3 id={`${solution.slug}-scenario`}>常見需求情境</h3>
+              <ul class="solution-list">{solution.scenario.map((item) => <li>{item}</li>)}</ul>
+            </section>
+            <section class="solution-part" aria-labelledby={`${solution.slug}-deliverables`}>
+              <h3 id={`${solution.slug}-deliverables`}>可以協助的內容</h3>
+              <ul class="solution-deliverables">{solution.deliverables.map((item) => <li>{item}</li>)}</ul>
+            </section>
+            <nav class="solution-related" aria-label={`${solution.title}可組合的服務`}>
+              <p>關聯服務</p>
+              <ul>{getSolutionServices(solution.id).map((service) => (
+                <li><a href={withBase(`/services/#${service.slug}`)}>{service.title}<span aria-hidden="true">↗</span></a></li>
+              ))}</ul>
+            </nav>
+          </div>
+          <section class="solution-extension" aria-labelledby={`${solution.slug}-process`}>
+            <h3 id={`${solution.slug}-process`}>需求延伸示意</h3>
+            <ol>{solution.process.map((step, stepIndex) => (
+              <li><span class="solution-extension__number">{String(stepIndex + 1).padStart(2, "0")}</span><span>{step}</span>{stepIndex < solution.process.length - 1 && <span class="solution-extension__arrow" aria-hidden="true">→</span>}</li>
+            ))}</ol>
+            <p class="solutions-note">依實際需求選擇項目與執行順序，不需要一次製作全部內容。</p>
+          </section>
+        </article>
+      ))}
+    </div>
+
+    <section class="solutions-services" aria-label="整合服務與服務項目的關聯">
+      <SectionHeader
+        eyebrow="可以組合哪些服務"
+        title="同一個需求，找到適合的製作支援。"
+        body="四種情境會依需要搭配不同服務。你可以從下方查看各服務的詳細範圍，再一起決定要優先處理的內容。"
+      />
+      <dl class="solutions-services__list">
+        {relatedServices.map((service) => (
+          <div>
+            <dt><a href={withBase(`/services/#${service.slug}`)}>{service.title}<span aria-hidden="true">↗</span></a></dt>
+            <dd>
+              <p>{service.summary}</p>
+              <span class="solutions-services__label">可延伸的情境</span>
+              <ul>{solutions.filter((solution) => solution.serviceIds.includes(service.id)).map((solution) => (
+                <li><a href={`#${solution.slug}`}>{solution.title}</a></li>
+              ))}</ul>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <section class="solutions-value" aria-label="整合服務的價值">
+      <SectionHeader
+        eyebrow="整合服務的價值"
+        title="讓不同製作項目，有共同的方向與節奏。"
+      />
+      <dl class="solutions-value__list">
+        <div><dt>訊息與視覺一起整理</dt><dd>先確認要傳達的內容，再延伸紙本、網站、社群與影片，讓各媒介沿用一致的品牌方向。</dd></div>
+        <div><dt>依時程安排製作順序</dt><dd>把需要先確認的資料、需要先完成的視覺與後續延伸項目排清楚，方便逐步回饋與交付。</dd></div>
+        <div><dt>累積可持續使用的素材</dt><dd>從已確認的品牌內容與既有檔案出發，依後續活動、商品及網站需求安排更新，延續品牌理解與製作脈絡。</dd></div>
+      </dl>
+    </section>
+
+    <section class="solutions-contact" aria-labelledby="solutions-contact-title">
+      <p class="home-label">CONTACT</p>
+      <h2 id="solutions-contact-title">先說說你想完成的事。</h2>
+      <p>無論是品牌、活動、商品上市，或持續性的設計與網站工作，都可以一起整理需求，討論適合的服務組合與合作方式。</p>
+      <a class="home-works-cta" href={withBase("/contact/")}><span>討論合作需求</span><span aria-hidden="true">→</span></a>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .solutions-page { width: min(calc(100% - var(--home-safe) * 2), 1240px); margin-inline: auto; padding-block: clamp(64px, 8vw, 112px) clamp(64px, 7vw, 96px); }
+  .solutions-hero h1 { margin: 18px 0 28px; font-size: clamp(2.6rem, 5.8vw, 5.2rem); line-height: 1.2; }
+  .solutions-hero__lead { max-width: 850px; margin: 0; font-size: clamp(1.12rem, 2.15vw, 1.75rem); line-height: 1.8; }
+  .solutions-hero__description { max-width: 730px; margin: 24px 0 0; color: #5e5e5e; line-height: 1.9; }
+  .solutions-index { display: flex; flex-wrap: wrap; gap: 0 28px; margin-top: 36px; }
+  .solutions-index a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding-block: 10px; border-bottom: 1px solid var(--line); font-weight: 700; }
+  .solutions-index a > span:first-child { color: var(--muted); font-size: 0.75rem; font-family: "Manrope", sans-serif; }
+  .solutions-index a > span:last-child { margin-left: 8px; }
+  .solutions-intro { padding-block: clamp(54px, 6vw, 80px); }
+  .solutions-page :global(.section-header) { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 16px 64px; margin-bottom: 0; }
+  .solutions-page :global(.section-header .eyebrow) { grid-column: 1; margin: 0; color: var(--home-ink); font-size: 0.84rem; }
+  .solutions-page :global(.section-header h2) { grid-column: 1; font-size: clamp(1.6rem, 2.3vw, 2.4rem); line-height: 1.5; }
+  .solutions-page :global(.section-header > p:last-child:not(.eyebrow)) { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 1rem; line-height: 2; }
+  .solutions-note { margin: 24px 0 0; color: #686868; font-size: 0.9rem; line-height: 1.9; }
+  .solution-detail { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 44px 64px; padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); scroll-margin-top: 112px; }
+  .solution-detail__heading, .solution-detail__body { min-width: 0; }
+  .solution-detail h2 { margin: 18px 0 24px; font-size: clamp(1.7rem, 2.7vw, 2.7rem); line-height: 1.45; }
+  .solution-detail__summary { margin: 0; max-width: 400px; color: #5e5e5e; font-size: 1rem; line-height: 1.9; }
+  .solution-detail__description { margin: 0; line-height: 2; }
+  .solution-part { margin-top: 36px; }
+  .solution-detail h3 { margin: 0 0 16px; font-size: 1.1rem; line-height: 1.6; }
+  .solution-list { display: grid; gap: 12px; margin: 0; padding-left: 1.2em; color: #5e5e5e; line-height: 1.9; }
+  .solution-list li::marker { color: var(--home-ink); }
+  .solution-deliverables { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; list-style: none; margin: 0; padding: 0; }
+  .solution-deliverables li { min-width: 0; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 0.95rem; overflow-wrap: anywhere; }
+  .solution-related { margin-top: 30px; }
+  .solution-related > p { margin: 0 0 12px; color: var(--muted); font-size: 0.82rem; font-weight: 700; }
+  .solution-related ul, .solutions-services__list ul { display: flex; flex-wrap: wrap; gap: 10px 24px; list-style: none; padding: 0; margin: 0; }
+  .solution-related a, .solutions-services__list a { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; border-bottom: 1px solid currentColor; font-size: 0.92rem; }
+  .solutions-page a:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 5px; }
+  .solutions-index a:hover, .solution-related a:hover, .solutions-services__list a:hover { background: var(--home-yellow); }
+  .solution-extension { grid-column: 1 / -1; padding: 28px 0 0; border-top: 1px solid var(--line); }
+  .solution-extension ol { display: flex; flex-wrap: wrap; gap: 16px 24px; list-style: none; padding: 0; margin: 0; }
+  .solution-extension li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; font-size: 0.92rem; }
+  .solution-extension__number { color: var(--muted); font-size: 0.75rem; font-family: "Manrope", sans-serif; }
+  .solution-extension__arrow { padding-left: 12px; color: var(--muted); }
+  .solutions-services, .solutions-value { padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); }
+  .solutions-services__list, .solutions-value__list { margin: 40px 0 0; }
+  .solutions-services__list > div, .solutions-value__list > div { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 64px; padding-block: 24px; border-top: 1px solid var(--line); }
+  .solutions-services__list dt, .solutions-services__list dd, .solutions-value__list dt, .solutions-value__list dd { margin: 0; min-width: 0; }
+  .solutions-services__list dt a { font-size: 1.08rem; font-weight: 700; border: 0; }
+  .solutions-services__list dd > p { margin: 0 0 16px; color: #5e5e5e; line-height: 1.9; }
+  .solutions-services__label { display: block; margin-bottom: 4px; color: var(--muted); font-size: 0.78rem; }
+  .solutions-value__list dt { font-size: 1.1rem; font-weight: 700; }
+  .solutions-value__list dd { color: #5e5e5e; line-height: 1.9; }
+  .solutions-contact { margin-top: 24px; padding: clamp(32px, 6vw, 72px); background: var(--home-yellow); }
+  .solutions-contact h2 { margin: 20px 0 24px; max-width: 700px; font-size: clamp(1.8rem, 3.3vw, 3rem); line-height: 1.5; }
+  .solutions-contact > p:not(.home-label) { max-width: 650px; margin: 0; line-height: 1.9; }
+  .solutions-contact .home-works-cta { margin-left: 0; }
+  :global(.solutions-shell) { background: var(--home-white); }
+  .solutions-page :global(.reveal) { animation: none; }
+  @media (max-width: 900px) {
+    .solutions-page :global(.section-header), .solution-detail, .solutions-services__list > div, .solutions-value__list > div { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .solutions-page :global(.section-header h2), .solutions-page :global(.section-header .eyebrow), .solutions-page :global(.section-header > p:last-child:not(.eyebrow)) { grid-column: auto; grid-row: auto; }
+    .solution-detail__summary { max-width: 680px; }
+    .solution-detail { scroll-margin-top: 96px; }
+    .solution-extension { grid-column: auto; }
+  }
+  @media (max-width: 520px) {
+    .solutions-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+    .solutions-index a { gap: 8px; font-size: 0.85rem; }
+    .solutions-index a > span:last-child { margin-left: auto; }
+    .solution-deliverables { grid-template-columns: minmax(0, 1fr); }
+    .solution-extension ol { display: grid; gap: 0; }
+    .solution-extension li { display: grid; grid-template-columns: 24px minmax(0, 1fr); padding-bottom: 10px; }
+    .solution-extension__arrow { grid-column: 2; justify-self: start; padding: 0; transform: rotate(90deg); }
+    .solutions-contact { padding: 30px 24px; }
+    .solutions-contact .home-works-cta { width: 100%; letter-spacing: 0.06em; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .solutions-page :global(.reveal) { opacity: 1; transform: none; transition: none; }
+  }
+</style>

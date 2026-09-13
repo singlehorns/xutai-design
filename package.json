@@ -1,0 +1,19 @@
+{
+  "name": "xutai-integrated-design-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "set ASTRO_TELEMETRY_DISABLED=1&& astro dev",
+    "start": "set ASTRO_TELEMETRY_DISABLED=1&& astro dev",
+    "check": "set ASTRO_TELEMETRY_DISABLED=1&& astro check",
+    "build": "set ASTRO_TELEMETRY_DISABLED=1&& astro check && set ASTRO_TELEMETRY_DISABLED=1&& astro build",
+    "preview": "set ASTRO_TELEMETRY_DISABLED=1&& astro preview"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "astro": "^4.16.18",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {}
+}

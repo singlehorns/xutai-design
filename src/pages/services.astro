@@ -1,0 +1,152 @@
+---
+import Layout from "@/components/Layout.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import { getServices, getRelatedServices } from "@/data/services";
+import { site } from "@/data/site";
+import { withBase } from "@/utils/paths";
+
+const services = getServices();
+---
+
+<Layout title={`服務項目 | ${site.siteName}`} description={`品牌與視覺設計、印刷與實體輸出、WordPress 網站、社群與數位行銷支援、影片與動態內容，由 ${site.ownerDisplayName} 提供可單獨或整合的製作支援。`} mainClass="services-shell">
+  <div class="services-page">
+    <header class="services-hero" aria-labelledby="services-title">
+      <p class="home-label reveal-line">SERVICES</p>
+      <h1 id="services-title" class="reveal-line">服務項目</h1>
+      <p class="services-hero__lead reveal-line">從品牌視覺到網站與實體輸出，<br />依企業需求提供可單獨或整合的製作支援。</p>
+      <nav class="services-index" aria-label="跳至服務項目">
+        {services.map((service, index) => (
+          <a href={`#${service.slug}`}><span>{String(index + 1).padStart(2, "0")}</span>{service.shortTitle}<span aria-hidden="true">↓</span></a>
+        ))}
+      </nav>
+    </header>
+
+    <section class="services-intro" aria-label="服務介紹">
+      <SectionHeader
+        eyebrow="依需求安排製作"
+        title="先整理你需要完成的事，再確認適合的服務。"
+        body="由我直接參與需求討論、設計與製作。你可以從一項明確的需求開始，也可以依不同媒介的使用情境，搭配相關服務；實際製作範圍與交付內容會在合作前一起確認。"
+      />
+    </section>
+
+    <div class="services-details" aria-label="五大服務內容">
+      {services.map((service, index) => (
+        <article id={service.slug} class="service-detail" aria-labelledby={`${service.slug}-title`} data-service-id={service.id}>
+          <header class="service-detail__heading reveal">
+            <p class="home-label">{String(index + 1).padStart(2, "0")} / {service.shortTitle}</p>
+            <h2 id={`${service.slug}-title`}>{service.title}</h2>
+            <p class="service-detail__summary">{service.summary}</p>
+          </header>
+          <div class="service-detail__body">
+            <p class="service-detail__description">{service.description}</p>
+            <section class="service-detail__part" aria-labelledby={`${service.slug}-suitable`}>
+              <h3 id={`${service.slug}-suitable`}>適合情境</h3>
+              <ul class="service-situations">{service.suitableFor.map((item) => <li>{item}</li>)}</ul>
+            </section>
+            <section class="service-detail__part" aria-labelledby={`${service.slug}-deliverables`}>
+              <h3 id={`${service.slug}-deliverables`}>主要服務項目</h3>
+              <ul class="service-deliverables">{service.deliverables.map((item) => <li>{item}</li>)}</ul>
+            </section>
+            <nav class="service-related" aria-label={`${service.title}的相關服務`}>
+              <p>相關服務</p>
+              <ul>{getRelatedServices(service.id).map((related) => (
+                <li><a href={`#${related.slug}`}>{related.shortTitle}<span aria-hidden="true">↗</span></a></li>
+              ))}</ul>
+            </nav>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <section class="services-connections" aria-label="服務之間的延伸">
+      <SectionHeader
+        eyebrow="服務如何延伸"
+        title="讓同一個訊息，在不同媒介中一致呈現。"
+        body="一份視覺可以延伸到印刷、網站、社群與影音。依需要使用的媒介，從下列關聯找到可搭配的製作項目；每項服務也可以單獨討論。"
+      />
+      <dl class="services-connections__list">
+        {services.map((service) => (
+          <div>
+            <dt><a href={`#${service.slug}`}>{service.title}</a></dt>
+            <dd><span class="services-connections__label">可搭配</span><ul>{getRelatedServices(service.id).map((related) => <li><a href={`#${related.slug}`}>{related.shortTitle}<span aria-hidden="true">↗</span></a></li>)}</ul></dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <section class="services-contact" aria-labelledby="services-contact-title">
+      <p class="home-label">CONTACT</p>
+      <h2 id="services-contact-title">有明確需求，<br />或還在整理方向？</h2>
+      <p>可以先分享品牌、活動、網站或持續性的設計需求，一起確認適合的服務範圍與合作方式。</p>
+      <a class="home-works-cta" href={withBase("/contact/")}><span>討論合作需求</span><span aria-hidden="true">→</span></a>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .services-page {
+    width: min(calc(100% - var(--home-safe) * 2), 1240px);
+    margin-inline: auto;
+    padding-block: clamp(64px, 8vw, 112px) clamp(64px, 7vw, 96px);
+  }
+  .services-hero h1 { margin: 18px 0 28px; font-size: clamp(2.6rem, 5.8vw, 5.2rem); line-height: 1.2; }
+  .services-hero__lead { max-width: 800px; margin: 0; font-size: clamp(1.12rem, 2.15vw, 1.75rem); line-height: 1.8; }
+  .services-index { display: flex; flex-wrap: wrap; gap: 0 28px; margin-top: 40px; }
+  .services-index a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding-block: 10px; border-bottom: 1px solid var(--line); font-weight: 700; }
+  .services-index a > span:first-child { color: var(--muted); font-size: 0.75rem; font-family: "Manrope", sans-serif; }
+  .services-index a > span:last-child { margin-left: 8px; }
+  .services-intro { padding-block: clamp(54px, 6vw, 80px); }
+  .services-page :global(.section-header) { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 16px 64px; margin-bottom: 0; }
+  .services-page :global(.section-header .eyebrow) { grid-column: 1; margin: 0; color: var(--home-ink); font-size: 0.84rem; }
+  .services-page :global(.section-header h2) { grid-column: 1; font-size: clamp(1.6rem, 2.3vw, 2.4rem); line-height: 1.5; }
+  .services-page :global(.section-header > p:last-child:not(.eyebrow)) { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 1rem; line-height: 2; }
+  .service-detail { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 64px; padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); scroll-margin-top: 112px; }
+  .service-detail__heading, .service-detail__body { min-width: 0; }
+  .service-detail h2 { margin: 18px 0 24px; font-size: clamp(1.7rem, 2.7vw, 2.7rem); line-height: 1.45; }
+  .service-detail__summary { margin: 0; max-width: 400px; color: #5e5e5e; font-size: 1rem; line-height: 1.9; }
+  .service-detail__description { margin: 0; line-height: 2; }
+  .service-detail__part { margin-top: 36px; }
+  .service-detail h3 { margin: 0 0 16px; font-size: 1.1rem; line-height: 1.6; }
+  .service-situations { display: grid; gap: 12px; margin: 0; padding-left: 1.2em; color: #5e5e5e; line-height: 1.9; }
+  .service-situations li::marker { color: var(--home-ink); }
+  .service-deliverables { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; list-style: none; margin: 0; padding: 0; }
+  .service-deliverables li { min-width: 0; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 0.95rem; overflow-wrap: anywhere; }
+  .service-related { margin-top: 30px; }
+  .service-related > p { font-size: 0.82rem; font-weight: 700; margin: 0 0 12px; color: var(--muted); }
+  .service-related ul, .services-connections__list ul { display: flex; flex-wrap: wrap; gap: 10px 24px; list-style: none; padding: 0; margin: 0; }
+  .service-related a, .services-connections__list a { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; border-bottom: 1px solid currentColor; font-size: 0.92rem; }
+  .services-page a:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 5px; }
+  .services-index a:hover, .service-related a:hover, .services-connections__list a:hover { background: var(--home-yellow); }
+  .services-connections { padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); }
+  .services-connections__list { margin: 40px 0 0; }
+  .services-connections__list > div { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 64px; padding-block: 20px; border-top: 1px solid var(--line); }
+  .services-connections__list dt, .services-connections__list dd { margin: 0; min-width: 0; }
+  .services-connections__list dt a { font-weight: 700; border: 0; }
+  .services-connections__list dd { display: flex; align-items: baseline; gap: 24px; }
+  .services-connections__label { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
+  .services-contact { margin-top: 24px; padding: clamp(32px, 6vw, 72px); background: var(--home-yellow); }
+  .services-contact h2 { margin: 20px 0 24px; max-width: 700px; font-size: clamp(1.8rem, 3.3vw, 3rem); line-height: 1.5; }
+  .services-contact > p:not(.home-label) { max-width: 620px; margin: 0; line-height: 1.9; }
+  .services-contact .home-works-cta { margin-left: 0; }
+  :global(.services-shell) { background: var(--home-white); }
+  .services-page :global(.reveal) { animation: none; }
+  @media (max-width: 900px) {
+    .services-page :global(.section-header), .service-detail, .services-connections__list > div { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .services-page :global(.section-header h2), .services-page :global(.section-header .eyebrow), .services-page :global(.section-header > p:last-child:not(.eyebrow)) { grid-column: auto; grid-row: auto; }
+    .service-detail__summary { max-width: 680px; }
+    .service-detail { scroll-margin-top: 96px; }
+    .services-connections__list > div { gap: 4px; }
+  }
+  @media (max-width: 520px) {
+    .services-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+    .services-index a { gap: 8px; font-size: 0.85rem; }
+    .services-index a > span:last-child { margin-left: auto; }
+    .service-deliverables { grid-template-columns: minmax(0, 1fr); }
+    .services-connections__list dd { flex-direction: column; gap: 0; }
+    .services-contact { padding: 30px 24px; }
+    .services-contact .home-works-cta { width: 100%; letter-spacing: 0.06em; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .services-page :global(.reveal) { opacity: 1; transform: none; transition: none; }
+  }
+</style>

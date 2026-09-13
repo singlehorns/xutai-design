@@ -1,0 +1,75 @@
+---
+import { navigation } from "@/data/navigation";
+import { site } from "@/data/site";
+import { withBase } from "@/utils/paths";
+---
+
+<footer class="site-footer reveal" aria-label="網站頁尾">
+  <div class="site-footer__inner">
+    <div class="site-footer__main">
+      <section class="footer-brand" aria-label="個人品牌工作室">
+        <p class="footer-kicker">DESIGN & REMOTE SUPPORT</p>
+        <strong class="footer-brand__name">{site.siteName}<small>{site.brandFullName}</small></strong>
+        <p>T2（旭泰整合設計）由 {site.ownerDisplayName} 提供品牌視覺、印刷製作、網站、社群、影音與長期遠端支援。</p>
+        <span>{site.location}</span>
+      </section>
+
+      <nav class="footer-links" aria-label="頁尾導覽">
+        <p class="footer-kicker">SITEMAP</p>
+        {navigation.map((item) => (
+          <a href={withBase(item.href)}>{item.label}</a>
+        ))}
+      </nav>
+
+      <section class="footer-links" aria-label="合作形式">
+        <p class="footer-kicker">COOPERATION</p>
+        <a href={withBase("/cooperation/")}>單次專案</a>
+        <a href={withBase("/cooperation/")}>固定月度合作</a>
+        <a href={withBase("/cooperation/")}>包時支援</a>
+      </section>
+
+      <section class="footer-contact" aria-label="聯絡合作">
+        <p class="footer-kicker">CONTACT</p>
+        <a class="footer-contact__email" href={withBase("/contact/")}>一起討論新的需求</a>
+        <dl>
+          <div>
+            <dt>WORK</dt>
+            <dd>遠端執行・由我直接溝通</dd>
+          </div>
+          <div>
+            <dt>AREA</dt>
+            <dd>{site.location}</dd>
+          </div>
+        </dl>
+        <p>從單次製作到持續性設計需求，依服務範圍與工作排程安排合作。</p>
+        <a class="footer-outline" href={withBase("/contact/")}>討論合作需求</a>
+      </section>
+    </div>
+
+    <div class="site-footer__bottom">
+      <span>Copyright © 2026 {site.siteName} / {site.brandFullName} / {site.ownerDisplayName}. All Rights Reserved.</span>
+      <span>品牌視覺 × 網站 × 長期遠端支援</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer__main > * { min-width: 0; }
+  .footer-brand__name {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .footer-brand__name small {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    opacity: 0.72;
+  }
+  .footer-contact__email { overflow-wrap: anywhere; }
+  @media (min-width: 769px) and (max-width: 1180px) {
+    .site-footer__main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 768px) {
+    .site-footer__main { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

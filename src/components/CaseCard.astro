@@ -1,0 +1,36 @@
+---
+import type { CaseViewModel } from "@/data/case-model";
+import { withBase } from "@/utils/paths";
+import PendingImage from "./PendingImage.astro";
+
+interface Props { caseStudy: CaseViewModel; compact?: boolean; }
+const { caseStudy, compact = false } = Astro.props;
+---
+
+<article class="work-card case-card" data-case-categories={caseStudy.categories.join(" ")}>
+  <a href={withBase(caseStudy.url)} aria-label={`查看 ${caseStudy.title} 案例`}>
+    <figure>
+      {caseStudy.coverImage ? <img src={withBase(caseStudy.coverImage.src)} alt={caseStudy.coverImage.alt} loading="lazy" /> : <PendingImage />}
+      <figcaption><span>VIEW CASE</span></figcaption>
+    </figure>
+    <div class="work-card__body case-card__body">
+      <p class="case-card__service">{caseStudy.services[0]?.title ?? caseStudy.categoryLabel}</p>
+      <h3>{caseStudy.title}</h3>
+      {!compact && <p class="case-card__meta">{caseStudy.clientName ?? caseStudy.clientType ?? "客戶資料待補"} · {caseStudy.year ?? "年份待補"}</p>}
+      <p class="case-card__summary">{caseStudy.summary}</p>
+      <p class="case-card__cta">查看案例 <span aria-hidden="true">→</span></p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .case-card { min-width: 0; }
+  .case-card .case-card__body { display: grid; grid-template-columns: minmax(0,1fr); gap: 12px; padding-top: 20px; }
+  .case-card .case-card__body h3 { grid-column: auto; margin: 0; font-size: clamp(1.15rem,1.7vw,1.6rem); line-height: 1.45; overflow-wrap: anywhere; }
+  .case-card .case-card__body p { display: block; margin: 0; color: #686868; font-size: 0.9rem; font-weight: 400; letter-spacing: 0; line-height: 1.9; }
+  .case-card .case-card__body p::before, .case-card .case-card__body span::before { content: none; }
+  .case-card .case-card__body .case-card__service { font-size: 0.78rem; font-weight: 700; color: var(--home-ink); }
+  .case-card .case-card__body .case-card__meta { font-size: 0.78rem; }
+  .case-card .case-card__body .case-card__cta { display: flex; align-items: center; gap: 24px; min-height: 44px; color: var(--home-ink); font-weight: 700; }
+  .case-card a:focus-visible { display: block; outline: 2px solid var(--home-ink); outline-offset: 5px; }
+</style>

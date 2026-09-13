@@ -1,0 +1,78 @@
+---
+import Layout from "@/components/Layout.astro";
+import CaseCard from "@/components/CaseCard.astro";
+import { getCases, getAvailableCaseCategories } from "@/data/cases";
+import { site } from "@/data/site";
+import { withBase } from "@/utils/paths";
+
+const cases = await getCases();
+const filters = [{ key: "all", label: "全部" }, ...getAvailableCaseCategories(cases)];
+---
+
+<Layout title={`作品案例 | ${site.siteName}`} description={`查看 ${site.ownerDisplayName} 的網站視覺、平面印刷與影像作品，了解已確認的負責項目與相關服務。`}>
+  <section class="works-archive case-archive" aria-labelledby="works-title" data-case-archive>
+    <header class="works-archive__hero">
+      <div class="works-archive__title-row">
+        <h1 id="works-title">WORKS</h1>
+      </div>
+      <p>作品案例</p>
+    </header>
+
+    <p class="case-archive__intro">從網站視覺、型錄與平面作品，了解實際做過的內容。依需求篩選案例，查看已確認的角色、負責項目與畫面。</p>
+    <div class="works-archive__filters" data-filter-bar aria-label="Work categories">
+        <div class="works-archive__filter-row">
+          {filters.map((category) => (
+            <button type="button" data-filter={category.key} aria-pressed={category.key === "all"} aria-controls="case-grid" class={category.key === "all" ? "is-active" : ""}>
+              {category.label}
+            </button>
+          ))}
+        </div>
+    </div>
+
+    <p class="case-archive__count" role="status" aria-live="polite" data-case-count>顯示 {cases.length} 個案例</p>
+    <div id="case-grid" class="works-grid works-archive__grid" data-work-list>
+      {cases.map((caseStudy) => <CaseCard caseStudy={caseStudy} />)}
+    </div>
+
+    <section class="case-archive__note" aria-labelledby="case-note-title">
+      <h2 id="case-note-title">案例資料持續整理中</h2>
+      <p>部分舊作目前以圖片與已確認的工作內容呈現，專案背景、實際交付與成果會在資料完整後補充。尚未分類的影像紀錄保留在「全部」案例中。</p>
+      <a class="home-works-cta" href={withBase("/contact/")}><span>討論類似需求</span><span aria-hidden="true">→</span></a>
+    </section>
+  </section>
+
+  <script>
+    const root = document.querySelector("[data-case-archive]");
+    const buttons = root?.querySelectorAll<HTMLButtonElement>("[data-filter]") ?? [];
+    const cards = root?.querySelectorAll<HTMLElement>("[data-case-categories]") ?? [];
+    const count = root?.querySelector("[data-case-count]");
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+        buttons.forEach((item) => {
+          item.classList.toggle("is-active", item === button);
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+        let visible = 0;
+        cards.forEach((card) => {
+          const matches = filter === "all" || (card.dataset.caseCategories ?? "").split(" ").includes(String(filter));
+          card.hidden = !matches;
+          card.classList.toggle("is-hidden", !matches);
+          if (matches) visible += 1;
+        });
+        if (count) count.textContent = `顯示 ${visible} 個案例`;
+      });
+    });
+  </script>
+</Layout>
+
+<style>
+  .case-archive__intro { max-width: 740px; margin: 34px auto 0; text-align: center; line-height: 1.9; color: #686868; }
+  .case-archive__count { margin: 28px 0 0; text-align: center; color: #686868; font-size: 0.85rem; }
+  .case-archive .works-archive__grid { margin-top: 48px; }
+  .case-archive__note { margin-top: 72px; padding-top: 36px; border-top: 1px solid var(--line); }
+  .case-archive__note h2 { margin: 0 0 16px; font-size: 1.6rem; line-height: 1.5; }
+  .case-archive__note p { max-width: 760px; color: #686868; line-height: 1.9; }
+  .case-archive__note .home-works-cta { margin-left: 0; }
+  .case-archive button:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 4px; }
+</style>

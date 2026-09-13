@@ -1,0 +1,28 @@
+---
+import { site } from "@/data/site";
+import { withBase } from "@/utils/paths";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = site.title, description = site.description } = Astro.props;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content={description} />
+<meta name="author" content={site.ownerDisplayName} />
+<meta property="og:site_name" content={site.siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta name="generator" content={Astro.generator} />
+<title>{title}</title>
+<link rel="icon" href={withBase("/favicon.svg")} />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>

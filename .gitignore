@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Build output and local Astro cache
+dist/
+.astro/
+.astro-vite/
+
+# Environment and credentials
+.env
+.env.*
+*.pem
+*.key
+*token*
+*secret*
+*password*
+
+# Private source materials and local-only records
+01_履歷資料/
+02_正式作品/
+04_個人形象/
+05_網站需求/
+backups/
+.codex/
+.agents/
+AGENTS.md
+WORKLOG.zh-TW.md
+docs/
+src/content/experience/
+
+# Local logs and temporary files
+*.log
+.codex-*.log
+.codex-*.err.log
+*.tmp
+*.temp
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Root-level loose media should not be published by default.
+/*.jpg
+/*.jpeg
+/*.png
+/*.pdf

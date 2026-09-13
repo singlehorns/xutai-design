@@ -1,0 +1,10 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "exclude": ["backups/**", "dist/**", "node_modules/**", ".astro-vite/**"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}

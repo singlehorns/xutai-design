@@ -1,0 +1,12 @@
+---
+interface Props {
+  label?: string;
+}
+
+const { label = "PROJECT IMAGE PENDING" } = Astro.props;
+---
+
+<div class="pending-image" role="img" aria-label="專案圖片待補">
+  <span>{label}</span>
+  <small>專案圖片待補</small>
+</div>

@@ -1,0 +1,192 @@
+---
+import {
+  handwritingFontStack,
+  handwritingPresets,
+  type HandwritingPresetName,
+} from "@/data/handwriting-presets";
+
+type HandwritingTag = "span" | "p" | "div" | "h1" | "h2" | "h3" | "strong" | "em";
+type TriggerMode = "load" | "view";
+
+interface Props {
+  text: string;
+  as?: HandwritingTag;
+  preset?: HandwritingPresetName;
+  size?: string;
+  duration?: number | string;
+  delay?: number | string;
+  strokeWidth?: number | string;
+  color?: string;
+  replay?: boolean;
+  trigger?: TriggerMode;
+  class?: string;
+}
+
+const {
+  text,
+  as = "span",
+  preset = "standard",
+  size,
+  duration,
+  delay,
+  strokeWidth,
+  color,
+  replay = false,
+  trigger = "view",
+  class: className,
+} = Astro.props as Props;
+
+const Tag = as;
+const selectedPreset = handwritingPresets[preset];
+
+const resolvedDuration = duration ?? selectedPreset.duration;
+const resolvedDelay = delay ?? selectedPreset.delay;
+const resolvedStrokeWidth = strokeWidth ?? selectedPreset.strokeWidth;
+
+const toTime = (value: number | string) =>
+  typeof value === "number" ? `${value}ms` : value;
+
+const toPixels = (value: number | string) =>
+  typeof value === "number" ? `${value}px` : value;
+
+const durationMs =
+  typeof resolvedDuration === "number" ? resolvedDuration : selectedPreset.duration;
+const delayMs = typeof resolvedDelay === "number" ? resolvedDelay : selectedPreset.delay;
+const fillDelay = delayMs + durationMs * 0.72;
+
+const style = [
+  `--handwriting-font:${handwritingFontStack}`,
+  `--handwriting-size:${size ?? selectedPreset.size}`,
+  `--handwriting-duration:${toTime(resolvedDuration)}`,
+  `--handwriting-delay:${toTime(resolvedDelay)}`,
+  `--handwriting-fill-delay:${fillDelay}ms`,
+  `--handwriting-stroke-width:${toPixels(resolvedStrokeWidth)}`,
+  `--handwriting-color:${color ?? selectedPreset.color}`,
+  `--handwriting-fill-opacity:${selectedPreset.fillOpacity}`,
+].join(";");
+---
+
+<Tag
+  class:list={["handwritten-text", className, trigger === "load" && "is-writing"]}
+  style={style}
+  data-handwritten
+  data-trigger={trigger}
+  data-replay={String(replay)}
+>
+  <span class="handwritten-text__layer handwritten-text__fill">{text}</span>
+  <span class="handwritten-text__layer handwritten-text__stroke" aria-hidden="true">
+    {text}
+  </span>
+</Tag>
+
+<style>
+  .handwritten-text {
+    display: inline-grid;
+    position: relative;
+    width: max-content;
+    max-width: 100%;
+    font-family: var(--handwriting-font);
+    font-size: var(--handwriting-size);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0;
+    color: var(--handwriting-color);
+    overflow: visible;
+  }
+
+  .handwritten-text__layer {
+    grid-area: 1 / 1;
+    display: block;
+    white-space: nowrap;
+  }
+
+  .handwritten-text__fill {
+    color: var(--handwriting-color);
+    opacity: 0;
+  }
+
+  .handwritten-text__stroke {
+    color: transparent;
+    -webkit-text-stroke: var(--handwriting-stroke-width) var(--handwriting-color);
+    text-stroke: var(--handwriting-stroke-width) var(--handwriting-color);
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .handwritten-text.is-writing .handwritten-text__stroke {
+    animation: handwriting-text-reveal var(--handwriting-duration) cubic-bezier(0.76, 0, 0.24, 1)
+      var(--handwriting-delay) forwards;
+  }
+
+  .handwritten-text.is-writing .handwritten-text__fill {
+    animation: handwriting-text-fill 420ms ease var(--handwriting-fill-delay) forwards;
+  }
+
+  @keyframes handwriting-text-reveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+      clip-path: inset(0 -2% 0 0);
+    }
+  }
+
+  @keyframes handwriting-text-fill {
+    to {
+      opacity: var(--handwriting-fill-opacity);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .handwritten-text__fill {
+      opacity: var(--handwriting-fill-opacity);
+      animation: none !important;
+    }
+
+    .handwritten-text__stroke {
+      clip-path: inset(0 -2% 0 0);
+      animation: none !important;
+    }
+  }
+</style>
+
+<script>
+  const initHandwrittenText = () => {
+    const items = document.querySelectorAll("[data-handwritten]");
+
+    if (!("IntersectionObserver" in window)) {
+      items.forEach((item) => item.classList.add("is-writing"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target;
+          const replay = target.getAttribute("data-replay") === "true";
+
+          if (entry.isIntersecting) {
+            target.classList.add("is-writing");
+
+            if (!replay) {
+              observer.unobserve(target);
+            }
+          } else if (replay) {
+            target.classList.remove("is-writing");
+          }
+        });
+      },
+      { threshold: 0.35 },
+    );
+
+    items.forEach((item) => {
+      if (item.getAttribute("data-trigger") === "load") {
+        item.classList.add("is-writing");
+      } else {
+        observer.observe(item);
+      }
+    });
+  };
+
+  initHandwrittenText();
+</script>

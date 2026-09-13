@@ -1,0 +1,14 @@
+---
+import type { CaseViewModel } from "@/data/case-model";
+import CaseCard from "./CaseCard.astro";
+
+interface Props {
+  work: CaseViewModel;
+  compact?: boolean;
+}
+
+const { work, compact = false } = Astro.props;
+---
+
+<!-- Transitional component name; callers provide a source-independent view model. -->
+<CaseCard caseStudy={work} compact={compact} />

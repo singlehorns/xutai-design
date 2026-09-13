@@ -1,0 +1,136 @@
+---
+import { navigation } from "@/data/navigation";
+import { site } from "@/data/site";
+import { withBase } from "@/utils/paths";
+
+interface Props {
+  variant?: "default" | "home";
+}
+
+const { variant: _variant = "default" } = Astro.props;
+const currentPath = `${Astro.url.pathname.replace(/\/$/, "")}/`;
+---
+
+<header class="site-header site-header--home site-header--v2">
+  <div class="site-header__main">
+    <a class="brand brand-lockup" href={withBase("/")} aria-label={`${site.siteName} ${site.brandFullName} 首頁`}>
+      <span class="brand-lockup__mark">{site.siteName}</span>
+      <span class="brand-lockup__divider" aria-hidden="true"></span>
+      <span class="brand-lockup__name">{site.brandFullName}</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="開啟導覽" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
+      <span></span>
+      <span></span>
+    </button>
+    <nav id="site-navigation" class="site-nav" aria-label="主要導覽" data-nav>
+      {navigation.map((item) => (
+        <a href={withBase(item.href)} class={item.href === "/contact/" ? "is-contact" : ""} aria-current={currentPath.startsWith(item.href) ? "page" : undefined}>
+          <span>{item.label}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+  const nav = document.querySelector<HTMLElement>("[data-nav]");
+  const mobile = window.matchMedia("(max-width: 980px)");
+
+  if (toggle && nav) {
+    const setNavigation = (open: boolean, returnFocus = false) => {
+      const expanded = mobile.matches && open;
+      nav.classList.toggle("is-open", expanded);
+      nav.inert = mobile.matches && !expanded;
+      toggle.setAttribute("aria-expanded", String(expanded));
+      toggle.setAttribute("aria-label", expanded ? "關閉導覽" : "開啟導覽");
+      if (returnFocus) toggle.focus();
+    };
+
+    setNavigation(false);
+    toggle.addEventListener("click", () => {
+      setNavigation(toggle.getAttribute("aria-expanded") !== "true");
+    });
+    nav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setNavigation(false, mobile.matches));
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setNavigation(false, true);
+      }
+    });
+    document.addEventListener("click", (event) => {
+      if (event.target instanceof Node && !nav.contains(event.target) && !toggle.contains(event.target)) {
+        setNavigation(false);
+      }
+    });
+    mobile.addEventListener("change", () => {
+      const focusIsInNav = nav.contains(document.activeElement);
+      setNavigation(false, mobile.matches && focusIsInNav);
+    });
+  }
+</script>
+
+<style>
+  .site-header.site-header--v2 { width: 100%; min-width: 0; }
+  .site-header--v2 .site-header__main { min-width: 0; gap: 24px; }
+  .site-header--v2 .brand { flex-shrink: 0; }
+  .site-header--v2 .brand-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 34px;
+    font-family: "Manrope", "Noto Sans TC", sans-serif;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  .site-header--v2 .brand-lockup__mark {
+    display: inline-block;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    transform: scaleX(0.94);
+    transform-origin: left center;
+  }
+  .site-header--v2 .brand-lockup__divider {
+    width: 18px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.42;
+  }
+  .site-header--v2 .brand-lockup__name {
+    color: currentColor;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+  .site-header--v2 .site-nav { gap: clamp(14px, 2vw, 30px); }
+  .site-header--v2 .site-nav a span { letter-spacing: 0.06em; white-space: nowrap; font-size: 0.86rem; }
+  .site-header--v2 .site-nav a[aria-current="page"] span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 7px; }
+  .site-header--v2 .site-nav a:focus-visible,
+  .site-header--v2 .brand:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+  @media (max-width: 980px) {
+    .site-header--v2 .site-nav {
+      visibility: hidden;
+      gap: 0;
+      max-height: calc(100dvh - 102px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .site-header--v2 .site-nav.is-open { visibility: visible; }
+    .site-header--v2 .brand-lockup { gap: 7px; }
+    .site-header--v2 .brand-lockup__mark { font-size: 0.98rem; }
+    .site-header--v2 .brand-lockup__divider { width: 12px; }
+    .site-header--v2 .brand-lockup__name { font-size: 0.62rem; letter-spacing: 0.08em; }
+    .site-header--v2 .site-nav a span { font-size: 1rem; letter-spacing: 0.1em; }
+    .site-header--v2 .site-nav.is-open a:nth-child(6) { transition-delay: 190ms; }
+  }
+  @media (min-width: 981px) and (max-width: 1100px) {
+    .site-header--v2 .site-header__main { gap: 20px; }
+    .site-header--v2 .site-nav { gap: 18px; }
+    .site-header--v2 .site-nav a span { font-size: 0.8rem; letter-spacing: 0; }
+    .site-header--v2 .site-nav a.is-contact { min-width: 110px; padding-inline: 14px; }
+  }
+</style>
