@@ -2130,22 +2130,28 @@ dd {
 
   .works-archive {
     width: min(calc(100% - 40px), 1440px);
-    padding-top: 46px;
+    padding-top: 24px;
+  }
+
+  .works-archive__hero {
+    min-height: 0;
+    padding-block: 32px 24px;
   }
 
   .works-archive__hero h1 {
-    font-size: clamp(2.6rem, 9vw, 3.1rem);
+    font-size: clamp(2.8rem, 15vw, 4.4rem);
     letter-spacing: 0.1em;
+    text-indent: 0.1em;
   }
 
   .works-archive__title-row {
     display: grid;
     justify-items: center;
-    min-height: 138px;
+    min-height: 0;
   }
 
   .works-archive__hero p {
-    margin-top: 14px;
+    margin-top: 12px;
     letter-spacing: 0.28em;
   }
 
@@ -2162,6 +2168,11 @@ dd {
     padding: 0 10px;
     font-size: 0.82rem;
     letter-spacing: 0.08em;
+  }
+
+  .works-archive__handwriting {
+    animation: none;
+    transform: none;
   }
 
   .works-archive__handwriting::after {
