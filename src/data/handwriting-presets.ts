@@ -1,4 +1,5 @@
 export const handwritingFontStack = [
+  '"Caveat"',
   '"Snell Roundhand"',
   '"Apple Chancery"',
   '"Segoe Script"',

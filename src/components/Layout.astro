@@ -2,6 +2,8 @@
 import BaseHead from "./BaseHead.astro";
 import Header from "./Header.astro";
 import Footer from "./Footer.astro";
+import { handwritingFontStack } from "@/data/handwriting-presets";
+import "@/styles/handwriting.css";
 import "@/styles/global.css";
 
 interface Props {
@@ -15,7 +17,7 @@ const { title, description, headerVariant = "default", mainClass } = Astro.props
 ---
 
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" style={`--handwriting-font: ${handwritingFontStack}`}>
   <head>
     <BaseHead title={title} description={description} />
   </head>

@@ -1,6 +1,7 @@
 ---
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
+import handwritingFontUrl from "@/assets/fonts/caveat-latin-400-normal.woff2?url";
 
 interface Props {
   title?: string;
@@ -20,6 +21,7 @@ const { title = site.title, description = site.description } = Astro.props;
 <meta name="generator" content={Astro.generator} />
 <title>{title}</title>
 <link rel="icon" href={withBase("/favicon.svg")} />
+<link rel="preload" href={handwritingFontUrl} as="font" type="font/woff2" crossorigin />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link

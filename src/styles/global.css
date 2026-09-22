@@ -727,7 +727,7 @@ dd {
   stroke-linejoin: round;
   stroke-dasharray: 1280;
   stroke-dashoffset: 1280;
-  font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", "Lucida Handwriting", cursive;
+  font-family: var(--handwriting-font);
   font-size: 122px;
   font-weight: 300;
   letter-spacing: 0;
@@ -1770,7 +1770,7 @@ dd {
   left: 50%;
   top: 48%;
   color: var(--home-ink, #111111);
-  font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", "Lucida Handwriting", cursive;
+  font-family: var(--handwriting-font);
   font-size: clamp(1.85rem, 2.6vw, 3rem);
   font-weight: 400;
   letter-spacing: 0;
