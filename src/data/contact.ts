@@ -5,9 +5,9 @@ import { site } from "./site";
 export type ContactFormStatus = "preparing";
 
 export const contactContent = {
-  title: "先從需求開始。",
+  title: "有明確需求，來找 T2 聊聊！",
   intro:
-    "有新的品牌、活動、網站或持續性的設計需求，可以先簡單整理目前想完成的事、預計時程與已有資料。正式聯絡方式確認後，會作為合作詢問入口公開。",
+    "不論是品牌、活動、網站或持續性的設計需求，都可以先分享目前想完成的事、預計時程與已有資料。一起確認適合的服務範圍與合作方式。",
   ctaLabel: "討論合作需求",
   privacyNote: "聯絡資訊僅用於回覆與合作討論；目前不建立資料儲存機制，也不要求敏感私人資訊。",
   formStatus: {

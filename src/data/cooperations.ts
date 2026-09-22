@@ -1,6 +1,6 @@
 import { getSolutions, type SolutionId } from "./solutions";
 
-export type CooperationMode = "project" | "monthly" | "hourly";
+export type CooperationMode = "project" | "monthly";
 
 export interface Cooperation {
   id: CooperationMode;
@@ -24,8 +24,8 @@ export interface Cooperation {
   displayOrder: number;
 }
 
-export const onSiteMeetingNote = "必要時可依專案討論現場會議。";
-const meetingPolicy = "以線上溝通與定期進度確認為主，會議安排依專案需求討論。";
+export const onSiteMeetingNote = "月度／半遠端合作可依需求討論固定現場協作日；實際頻率、地點與工作內容於合作前確認。";
+const meetingPolicy = "以線上溝通與定期進度確認為主，會議或現場協作安排依專案需求討論。";
 const pricingNote = "依實際需求與範圍評估。";
 
 const cooperations: readonly Cooperation[] = [
@@ -53,54 +53,31 @@ const cooperations: readonly Cooperation[] = [
     id: "monthly",
     slug: "monthly",
     mode: "monthly",
-    title: "固定月度合作",
+    title: "月度／半遠端合作",
     shortTitle: "月度合作",
-    summary: "為持續性的設計與網站需求預留合作產能，建立固定的需求整理與製作節奏。",
-    description: "適合每個月都有設計、網站、行銷素材或品牌維護需求的企業。透過固定窗口與預留產能，雙方持續整理工作、確認優先順序並安排製作，累積對品牌的理解，也讓日常需求有穩定的協作脈絡。",
-    suitableFor: ["每個月都有持續的設計或網站需求", "不想每一張圖重新找外包", "希望固定由同一窗口處理", "希望品牌視覺逐漸保持一致", "同時存在設計與網站需求"],
-    exampleNeeds: ["社群素材", "活動視覺", "印刷物", "網站內容更新", "WordPress 維護", "Landing Page", "商品素材", "廣告素材", "短影音", "不定期品牌設計需求"],
-    scope: ["預留合作產能，持續處理約定的設計與網站工作。", "以月度為節奏，整理當期工作與下一期需求。", "當期需求依優先順序安排，新增工作先確認可承接範圍。"],
-    workflow: ["每月需求整理", "確認優先順序", "排定工作", "持續製作", "固定確認", "當期工作整理", "進入下一期"],
-    scheduling: "持續整理當期需求與優先順序，依預留產能安排工作並確認進度。",
-    meetingPolicy,
-    feedbackPolicy: "透過線上回饋與固定進度確認，彙整調整事項並納入後續工作安排。",
-    hoursPolicy: "以預留合作產能與持續工作節奏安排，具體可承接範圍於合作前確認。",
+    summary: "為持續性的設計與網站需求預留合作產能，可搭配固定遠端執行與部分現場協作。",
+    description: "適合每個月都有設計、網站、行銷素材或品牌維護需求，且希望固定窗口更深入理解內部節奏的企業。合作可採月度支援，依需求安排遠端製作、線上會議與部分到貴公司現場協作；每月也可依合作目標整理 KPI／工作指標、完成項目與後續優先順序，讓長期支援有可追蹤的依據。",
+    suitableFor: ["每個月都有持續的設計或網站需求", "希望固定窗口半遠端協作", "需要部分時間到公司現場整理需求", "希望以 KPI／工作指標追蹤月度成果", "同時存在設計、網站與行銷素材需求"],
+    exampleNeeds: ["社群素材", "活動視覺", "印刷物", "網站內容更新", "WordPress 維護", "Landing Page", "商品素材", "廣告素材", "短影音", "月度 KPI／工作指標整理", "半遠端現場協作"],
+    scope: ["預留月度合作產能，持續處理約定的設計、網站與內容支援。", "以月度為節奏，可安排遠端執行、線上會議與部分現場協作。", "每月整理 KPI／工作指標、完成項目與下一階段優先順序。"],
+    workflow: ["月度目標確認", "KPI／工作指標設定", "需求與優先順序整理", "遠端製作與現場協作", "固定進度確認", "月度成果整理", "進入下一期"],
+    scheduling: "依月度目標、工作量與現場協作需求安排排程，遠端製作與到貴公司協作的比例於合作前確認。",
+    meetingPolicy: "以線上溝通與定期進度確認為主，可依月度合作需求安排部分現場協作或到貴公司工作日。",
+    feedbackPolicy: "透過線上回饋、固定進度確認與月度 KPI／工作指標整理，彙整調整事項並納入後續工作安排。",
+    hoursPolicy: "以預留月度產能與半遠端協作節奏安排，現場時段、遠端工作量與可承接範圍於合作前確認。",
     pricingNote,
     featured: true,
     displayOrder: 2
-  },
-  {
-    id: "hourly",
-    slug: "hourly",
-    mode: "hourly",
-    title: "彈性包時支援",
-    shortTitle: "包時支援",
-    summary: "預先安排一組可使用的設計與網站支援產能，依不定期出現的需求彈性使用。",
-    description: "需求不固定，但偶爾需要設計、網站或素材修改時，可以先討論可支援的工作範圍。每次提出需求後，再確認內容、評估工作量、安排優先順序並執行，記錄使用狀況；下次也可依範圍切換成其他需要的工作。",
-    suitableFor: ["需求不固定，但偶爾需要設計或網站協助", "不定期出現素材修改或尺寸延伸工作", "希望依當次需要切換不同類型的支援"],
-    exampleNeeds: ["DM 修改", "網站內容調整", "商品圖", "社群尺寸延伸", "WordPress 更新", "海報修改", "短影音剪輯"],
-    scope: ["預先安排可使用的設計與網站支援產能。", "依實際需求提出工作，使用期限另行確認。", "每次需求先檢查合作範圍與工作量，再安排執行。"],
-    workflow: ["提出需求", "確認是否在合作範圍", "評估工作量", "安排優先順序", "執行", "記錄使用狀況"],
-    scheduling: "依當次需求、工作量與優先順序確認可安排的時段，執行後整理使用狀況。",
-    meetingPolicy,
-    feedbackPolicy: "在線上確認當次需求與修改內容，彙整回饋後評估調整範圍。",
-    hoursPolicy: "使用時數、有效期限、最小使用單位與加購方式，於合作前依實際需求確認。",
-    pricingNote,
-    featured: true,
-    displayOrder: 3
   }
 ];
 
-export const commonWorkingMethods = ["以遠端執行為主", "固定聯絡窗口", "需求與優先順序整理", "工作排程", "定期進度確認", "線上回饋", "完成交付或持續支援"] as const;
+export const commonWorkingMethods = ["遠端執行與半遠端協作", "固定聯絡窗口", "需求與優先順序整理", "工作排程", "定期進度確認", "KPI／工作指標整理", "完成交付或持續支援"] as const;
 
 export const commonWorkflow = [
   { title: "提出需求", description: "分享想完成的事、使用情境與目前已有的資料。" },
-  { title: "整理工作範圍", description: "一起確認製作項目、交付內容與需要準備的資料。" },
-  { title: "確認優先順序與排程", description: "整理先後順序與工作安排，讓進度有共同依據。" },
-  { title: "設計 / 製作", description: "由我依確認的內容與排程進行設計或網站工作。" },
-  { title: "線上確認與回饋", description: "定期確認進度，彙整線上意見與需要調整的內容。" },
-  { title: "完成交付", description: "確認完成項目、交付檔案或網站內容，並整理成果。" },
-  { title: "整理下一階段需求", description: "持續型合作在當期工作完成後，整理下一階段的需求與優先順序。" }
+  { title: "整理範圍與排程", description: "一起確認製作項目、交付內容、優先順序與工作安排。" },
+  { title: "設計製作與確認", description: "依確認的內容進行設計或網站工作，並透過線上回饋確認調整。" },
+  { title: "完成交付或延續支援", description: "整理完成項目與交付內容；若是月度合作，再確認下一階段需求。" }
 ] as const;
 
 export function getCooperations(): Cooperation[] {
@@ -130,7 +107,7 @@ const solutionRelations: readonly {
   note: string;
 }[] = [
   { solutionId: "product-launch", modes: ["project"], followUpModes: ["monthly"], note: "可先以明確專案完成上市素材；上市後若有持續需求，再討論固定的合作節奏。" },
-  { solutionId: "ongoing-brand-support", modes: ["monthly", "hourly"], followUpModes: [], note: "持續需求可討論預留產能；不定期工作可討論彈性安排。實際模式仍依工作內容確認。" }
+  { solutionId: "ongoing-brand-support", modes: ["monthly"], followUpModes: [], note: "持續需求可討論月度／半遠端合作，依需求安排遠端製作、部分現場協作與 KPI／工作指標整理。實際模式仍依工作內容確認。" }
 ];
 
 export function getCooperationSolutionExamples() {

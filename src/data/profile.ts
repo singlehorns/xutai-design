@@ -26,7 +26,7 @@ export const publicProfile = {
   ownerDisplayName: site.ownerDisplayName,
   tagline: "從視覺設計出發，將品牌、印刷、網站與數位內容整合成可以實際執行的服務。",
   shortBio:
-    "T2（旭泰整合設計）由 Tseting Chen 提供品牌視覺、印刷、網站與數位內容相關服務，協助企業把想傳達的資訊整理成可閱讀、可製作、可延伸的設計輸出。",
+    "T2 / Tseting Chen 提供品牌視覺、印刷、網站與數位內容相關服務，協助企業把想傳達的資訊整理成可閱讀、可製作、可延伸的設計輸出。",
   aboutIntro:
     "我以個人工作室品牌的方式承接專案，從需求整理、視覺設計、印刷輸出、網站內容到數位素材，依企業當下需要安排單次或持續性的遠端合作。",
   backgroundSummary:

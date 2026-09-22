@@ -21,6 +21,16 @@ export async function getStaticPaths() {
 interface Props { caseStudy: CaseViewModel; prev: CaseViewModel; next: CaseViewModel; }
 const { caseStudy, prev, next } = Astro.props;
 // Show each existing image once. The first image also serves as the project cover.
+const summaryEnd = caseStudy.summary.search(/[。！？.!?]/);
+const heroSummary = summaryEnd >= 0 ? caseStudy.summary.slice(0, summaryEnd + 1) : caseStudy.summary;
+
+const relatedLink = caseStudy.externalUrl
+  ? { label: "前往網站", href: caseStudy.externalUrl, external: true }
+  : caseStudy.referenceLinks[0]
+    ? { label: "查看相關作品", href: caseStudy.referenceLinks[0], external: true }
+    : caseStudy.services[0]
+      ? { label: caseStudy.services[0].title, href: withBase(`/services/#${caseStudy.services[0].slug}`), external: false }
+      : undefined;
 const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.src === caseStudy.coverImage?.src)
   ? [caseStudy.coverImage, ...caseStudy.gallery]
   : caseStudy.gallery;
@@ -33,44 +43,12 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
 
     <header class="project__header case-hero">
       <a class="case-back" href={withBase("/works/")}>← 所有作品案例</a>
-      <p class="eyebrow">{caseStudy.categoryLabel}</p>
       <h1>{caseStudy.title}</h1>
-      <p class="case-hero__meta">{[caseStudy.clientName, caseStudy.year].filter(Boolean).join(" · ")}</p>
-      <p>{caseStudy.summary}</p>
-      <p class="case-status">{caseStudy.statusLabel}</p>
+      <p class="case-hero__summary">{heroSummary}</p>
+      <p class="case-category-badge">{caseStudy.categoryLabel}</p>
     </header>
 
     <div class="project-viewer case-viewer">
-      <aside class="project-info case-overview" aria-labelledby="case-overview-title">
-        <section class="project-meta">
-          <h2 id="case-overview-title">專案概覽</h2>
-          <dl>
-            <div><dt>專案類型</dt><dd>{caseStudy.categoryLabel}</dd></div>
-            {caseStudy.clientName && <div><dt>客戶／品牌</dt><dd>{caseStudy.clientName}</dd></div>}
-            {caseStudy.clientType && <div><dt>客戶類型</dt><dd>{caseStudy.clientType}</dd></div>}
-            {caseStudy.industry && <div><dt>產業</dt><dd>{caseStudy.industry}</dd></div>}
-            {caseStudy.year && <div><dt>年份</dt><dd>{caseStudy.year}</dd></div>}
-            {caseStudy.projectPeriod && <div><dt>專案期間</dt><dd>{caseStudy.projectPeriod}</dd></div>}
-            {caseStudy.roles.length > 0 && <div><dt>我的角色</dt><dd>{caseStudy.roles.join(" / ")}</dd></div>}
-            {caseStudy.tools.length > 0 && <div><dt>製作工具</dt><dd>{caseStudy.tools.join(" / ")}</dd></div>}
-            {caseStudy.technologies.length > 0 && <div><dt>使用技術</dt><dd>{caseStudy.technologies.join(" / ")}</dd></div>}
-            {caseStudy.externalUrl && <div><dt>專案連結</dt><dd><a href={caseStudy.externalUrl} target="_blank" rel="noopener noreferrer">查看網站 ↗</a></dd></div>}
-          </dl>
-        </section>
-        {caseStudy.responsibilities.length > 0 && (
-          <section class="project-responsibility" aria-labelledby="case-responsibility-title">
-            <h2 id="case-responsibility-title">已確認負責項目</h2>
-            <ul class="plain-list">{caseStudy.responsibilities.map((item) => <li>{item}</li>)}</ul>
-          </section>
-        )}
-        {caseStudy.contentStatus !== "complete" && (
-          <section class="case-pending" aria-labelledby="case-pending-title">
-            <h2 id="case-pending-title">{caseStudy.contentStatus === "legacy" ? "關於這份舊作紀錄" : "待補充的專案資料"}</h2>
-            <p>{caseStudy.contentStatus === "legacy" ? "目前保留既有作品與已確認的工作內容，專案脈絡將在資料完整後補充。" : "目前先呈現可靠的作品資料，未確認內容會在補充後更新。"}</p>
-            {caseStudy.pendingNotes.length > 0 && <ul>{caseStudy.pendingNotes.map((note) => <li>{note}</li>)}</ul>}
-          </section>
-        )}
-      </aside>
 
       <div class="project-main case-main">
         {caseStudy.background && <section class="case-section" aria-labelledby="case-background-title"><h2 id="case-background-title">專案背景</h2><p>{caseStudy.background}</p></section>}
@@ -89,23 +67,12 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
             )) : <PendingImage />}
           </div>
         </section>
-        {caseStudy.referenceLinks.length > 0 && (
+        {relatedLink && (
           <section class="case-section" aria-labelledby="case-links-title">
-            <h2 id="case-links-title">既有網站作品連結</h2>
-            <ul class="case-reference-links">{caseStudy.referenceLinks.map((url) => <li><a href={url} target="_blank" rel="noopener noreferrer">{url} ↗</a></li>)}</ul>
-          </section>
-        )}
-        {caseStudy.services.length > 0 && (
-          <section class="case-section" aria-labelledby="case-services-title">
-            <h2 id="case-services-title">相關服務</h2>
-            <p>此案例與以下服務的部分製作內容相關，實際參與範圍請參考已確認負責項目。</p>
-            <ul class="case-related">{caseStudy.services.map((service) => <li><a href={withBase(`/services/#${service.slug}`)}>{service.title}<span aria-hidden="true">→</span></a></li>)}</ul>
-          </section>
-        )}
-        {caseStudy.solutions.length > 0 && (
-          <section class="case-section" aria-labelledby="case-solutions-title">
-            <h2 id="case-solutions-title">相關整合服務</h2>
-            <ul class="case-related">{caseStudy.solutions.map((solution) => <li><a href={withBase(`/solutions/#${solution.slug}`)}>{solution.title}<span aria-hidden="true">→</span></a></li>)}</ul>
+            <h2 id="case-links-title">相關連結</h2>
+            <a class="case-related-link" href={relatedLink.href} target={relatedLink.external ? "_blank" : undefined} rel={relatedLink.external ? "noopener noreferrer" : undefined}>
+              {relatedLink.label}<span aria-hidden="true">→</span>
+            </a>
           </section>
         )}
         {caseStudy.outcomes.length > 0 && <section class="case-section" aria-labelledby="case-outcomes-title"><h2 id="case-outcomes-title">專案成果</h2><ul>{caseStudy.outcomes.map((item) => <li>{item}</li>)}</ul></section>}
@@ -116,12 +83,6 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
       <a href={withBase(prev.url)}><span>← 上一個案例</span><strong>{prev.title}</strong></a>
       <a href={withBase(next.url)}><span>下一個案例 →</span><strong>{next.title}</strong></a>
     </nav>
-    <section class="case-contact" aria-labelledby="case-contact-title">
-      <p class="eyebrow">LET'S WORK TOGETHER</p>
-      <h2 id="case-contact-title">有類似需求，也可以一起討論。</h2>
-      <p>從想完成的內容出發，一起確認需要的製作項目與合作方式。</p>
-      <a class="home-works-cta" href={withBase("/contact/")}><span>聯絡合作</span><span aria-hidden="true">→</span></a>
-    </section>
   </article>
 </Layout>
 
@@ -129,14 +90,11 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
   .case-study { color: var(--home-ink); }
   .case-hero { padding: 0 clamp(22px,4vw,58px); }
   .case-hero h1 { overflow-wrap: anywhere; }
-  .case-back { width: fit-content; margin-bottom: 12px; font-size: 0.85rem; }
-  .case-hero .case-hero__meta:empty { display: none; }
-  .case-hero .case-status { width: fit-content; margin: 0; padding: 4px 12px; background: var(--home-yellow); color: var(--home-ink); font-size: 0.75rem; }
-  .case-overview { grid-column: 2; grid-row: 1; min-width: 0; }
-  .case-main { grid-column: 1; grid-row: 1; min-width: 0; }
-  .case-overview dd { margin: 0; overflow-wrap: anywhere; }
-  .case-overview p, .case-overview li { color: var(--muted); font-size: 0.88rem; line-height: 1.9; }
-  .case-pending ul { margin: 16px 0 0; padding-left: 1.3em; }
+  .case-back { width: fit-content; margin-bottom: 12px; font-size: 0.85rem; font-weight: 700; }
+  .case-hero .case-hero__summary { max-width: 760px; overflow: hidden; color: var(--muted); white-space: nowrap; text-overflow: ellipsis; }
+  .case-hero .case-category-badge { width: fit-content; margin: 0; padding: 4px 12px; background: var(--home-yellow); color: var(--home-ink); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; }
+  .case-viewer { display: block; }
+  .case-main { min-width: 0; }
   .case-section + .case-section { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--line); }
   .case-section h2 { margin: 0 0 20px; font-size: clamp(1.1rem,1.35vw,1.35rem); line-height: 1.5; }
   .case-section p, .case-section li { font-size: 0.95rem; line-height: 1.95; color: var(--muted); }
@@ -144,27 +102,14 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
   .case-section ul { padding-left: 1.3em; }
   .case-gallery figure { min-width: 0; margin: 0; }
   .case-gallery figcaption { margin-top: 12px; color: var(--muted); font-size: 0.8rem; }
-  .case-section .case-related { padding: 0; list-style: none; }
-  .case-related a { display: flex; gap: 20px; align-items: center; justify-content: space-between; min-height: 56px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--home-ink); font-weight: 700; }
-  .case-reference-links a { overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 4px; }
+  .case-related-link { display: flex; gap: 20px; align-items: center; justify-content: space-between; min-height: 56px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--home-ink); font-weight: 700; overflow-wrap: anywhere; }
   .case-navigation { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px; margin: 48px 0 0; padding: 28px clamp(22px,4vw,58px); border-top: 1px solid var(--line); }
   .case-navigation a { display: grid; gap: 12px; min-width: 0; padding: 12px 0; }
   .case-navigation a:last-child { text-align: right; }
   .case-navigation span { color: var(--muted); font-size: 0.8rem; }
   .case-navigation strong { font-size: 1rem; line-height: 1.6; overflow-wrap: anywhere; }
-  .case-contact { margin-top: 28px; padding: clamp(36px,5vw,64px) clamp(22px,4vw,58px); background: var(--paper); }
-  .case-contact h2 { max-width: 700px; font-size: clamp(1.5rem,2.2vw,2.3rem); line-height: 1.5; }
-  .case-contact p:not(.eyebrow) { max-width: 680px; color: var(--muted); line-height: 1.9; }
-  .case-contact .home-works-cta { margin-left: 0; }
   .case-study a:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 4px; }
-  @media (max-width: 1180px) {
-    .case-overview, .case-main { grid-column: auto; grid-row: auto; }
-    .case-overview { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 28px; }
-    .case-pending { grid-column: 1 / -1; }
-  }
   @media (max-width: 640px) {
-    .case-overview { grid-template-columns: minmax(0,1fr); }
-    .case-overview .project-meta div { grid-template-columns: 80px minmax(0,1fr); gap: 12px; }
     .case-navigation { grid-template-columns: minmax(0,1fr); gap: 16px; }
     .case-navigation a:last-child { text-align: left; border-top: 1px solid var(--line); padding-top: 24px; }
     .case-study .project-arrow { display: none; }

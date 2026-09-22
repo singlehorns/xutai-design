@@ -1,13 +1,12 @@
 ---
 import Layout from "@/components/Layout.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
-import { getCooperations, getCooperationComparison, getCooperationSolutionExamples, commonWorkingMethods, commonWorkflow, onSiteMeetingNote } from "@/data/cooperations";
+import { getCooperations, getCooperationComparison, commonWorkingMethods, commonWorkflow, onSiteMeetingNote } from "@/data/cooperations";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
 
 const cooperations = getCooperations();
 const comparison = getCooperationComparison();
-const solutionExamples = getCooperationSolutionExamples();
 const comparisonFields = [
   { key: "suitableFor", label: "適合需求" },
   { key: "scope", label: "工作範圍" },
@@ -17,28 +16,36 @@ const comparisonFields = [
 ] as const;
 ---
 
-<Layout title={`合作方式 | ${site.siteName}`} description={`依企業需求選擇單次專案、固定月度合作或彈性包時支援，由 ${site.ownerDisplayName} 提供固定窗口、遠端執行、清楚排程與進度確認。`} mainClass="cooperation-shell">
+<Layout title={`合作方式 | ${site.siteName}`} description={`依企業需求選擇單次專案或月度／半遠端合作，由 ${site.ownerDisplayName} 提供固定窗口、遠端執行、部分現場協作、清楚排程與 KPI／工作指標整理。`} mainClass="cooperation-shell">
   <div class="cooperation-page">
     <header class="cooperation-hero" aria-labelledby="cooperation-title">
+      <div class="cooperation-hero__handwriting" aria-hidden="true">let's goooo!</div>
+      <h1 id="cooperation-title" class="reveal-line">合作模式</h1>
       <p class="home-label reveal-line">COOPERATION</p>
-      <h1 id="cooperation-title" class="reveal-line">合作方式</h1>
-      <p class="cooperation-hero__lead reveal-line">依需求的節奏，<br />安排清楚而有彈性的設計與網站支援。</p>
-      <p class="cooperation-hero__description">由我直接作為合作窗口，以遠端執行、工作排程與進度確認，協助一次性的專案，也支持持續性的品牌工作。</p>
-      <nav class="cooperation-index" aria-label="跳至合作方式">
-        {cooperations.map((cooperation, index) => (
-          <a href={`#${cooperation.slug}`}><span>{String(index + 1).padStart(2, "0")}</span>{cooperation.title}<span aria-hidden="true">↓</span></a>
-        ))}
-        <a href="#comparison">比較合作方式<span aria-hidden="true">↓</span></a>
-      </nav>
     </header>
 
     <section class="cooperation-intro" aria-label="合作方式介紹">
-      <SectionHeader eyebrow="從需求選擇合作" title="明確專案、持續需求，或不定期支援。" body="服務項目說明可以製作什麼，整合服務整理如何完成企業的需求；合作方式則讓雙方確認工作範圍、安排方式與協作節奏。先從目前的需求出發，再一起討論適合的模式。" />
+      <SectionHeader eyebrow="從需求選擇合作" title="明確專案、持續需求，或不定期支援。" body="服務項目說明可以製作什麼；合作方式則讓雙方確認工作範圍、安排方式與協作節奏。先從目前的需求出發，再一起討論適合的模式。" />
     </section>
 
-    <div class="cooperation-details" aria-label="三種合作模式">
+    <div class="cooperation-details" aria-label="合作模式">
+      <nav class="cooperation-progress" aria-label="合作模式瀏覽進度" data-cooperation-progress>
+        <svg viewBox="0 0 120 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" data-progress-svg>
+          <path class="cooperation-progress__track" data-progress-track />
+          <path class="cooperation-progress__fill" data-progress-path />
+        </svg>
+        <ol>
+          {cooperations.map((cooperation, index) => (
+            <li data-progress-item>
+              <a href={`#${cooperation.slug}`} data-progress-dot aria-label={`前往${cooperation.title}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
       {cooperations.map((cooperation, index) => (
-        <article id={cooperation.slug} class="cooperation-detail" aria-labelledby={`${cooperation.slug}-title`} data-cooperation-mode={cooperation.mode}>
+        <article id={cooperation.slug} class="cooperation-detail reveal" aria-labelledby={`${cooperation.slug}-title`} data-cooperation-mode={cooperation.mode}>
           <header class="cooperation-detail__heading reveal">
             <p class="home-label">{String(index + 1).padStart(2, "0")} / {cooperation.shortTitle}</p>
             <h2 id={`${cooperation.slug}-title`}>{cooperation.title}</h2>
@@ -54,30 +61,19 @@ const comparisonFields = [
               <h3 id={`${cooperation.slug}-examples`}>可以討論的需求</h3>
               <ul class="cooperation-needs">{cooperation.exampleNeeds.map((item) => <li>{item}</li>)}</ul>
             </section>
-            <section class="cooperation-part" aria-labelledby={`${cooperation.slug}-scope`}>
-              <h3 id={`${cooperation.slug}-scope`}>合作範圍</h3>
-              <ul class="cooperation-list">{cooperation.scope.map((item) => <li>{item}</li>)}</ul>
+            <section class="cooperation-part cooperation-part--workflow" aria-labelledby={`${cooperation.slug}-workflow`}>
+              <h3 id={`${cooperation.slug}-workflow`}>合作流程</h3>
+              <ol class="cooperation-flow-list">{cooperation.workflow.map((step, stepIndex) => (
+                <li><span class="cooperation-step-number">{String(stepIndex + 1).padStart(2, "0")}</span><span>{step}</span></li>
+              ))}</ol>
             </section>
-            <dl class="cooperation-policies">
-              <div><dt>排程方式</dt><dd>{cooperation.scheduling}</dd></div>
-              <div><dt>溝通安排</dt><dd>{cooperation.meetingPolicy}</dd></div>
-              <div><dt>回饋方式</dt><dd>{cooperation.feedbackPolicy}</dd></div>
-              <div><dt>產能與範圍</dt><dd>{cooperation.hoursPolicy}</dd></div>
-              <div><dt>報價評估</dt><dd>{cooperation.pricingNote}</dd></div>
-            </dl>
           </div>
-          <section class="cooperation-mode-workflow" aria-labelledby={`${cooperation.slug}-workflow`}>
-            <h3 id={`${cooperation.slug}-workflow`}>這種模式如何進行</h3>
-            <ol>{cooperation.workflow.map((step, stepIndex) => (
-              <li><span class="cooperation-step-number">{String(stepIndex + 1).padStart(2, "0")}</span><span>{step}</span>{stepIndex < cooperation.workflow.length - 1 && <span class="cooperation-flow-arrow" aria-hidden="true">→</span>}</li>
-            ))}</ol>
-          </section>
         </article>
       ))}
     </div>
 
-    <section id="comparison" class="cooperation-section" aria-label="三種合作方式比較">
-      <SectionHeader eyebrow="三種模式比較" title="先看需求的型態，再看如何安排工作。" body="單次專案以範圍與成果為基礎；固定月度合作預留產能與持續節奏；彈性包時支援則依不定期需求安排工作。" />
+    <section id="comparison" class="cooperation-section" aria-label="合作方式比較">
+      <SectionHeader eyebrow="合作模式比較" title="先看需求的型態，再看如何安排工作。" body="單次專案以範圍與成果為基礎；月度／半遠端合作則預留產能，依持續需求安排遠端製作、現場協作與 KPI／工作指標整理。" />
       <table class="cooperation-comparison-table">
         <caption>合作方式的需求、範圍與排程比較</caption>
         <thead><tr><th scope="col">合作模式</th>{comparison.map((item) => <th scope="col"><a href={`#${item.cooperation.slug}`}>{item.cooperation.title}</a></th>)}</tr></thead>
@@ -95,162 +91,731 @@ const comparisonFields = [
       </div>
     </section>
 
-    <section id="choose" class="cooperation-section" aria-label="如何選擇合作方式">
-      <SectionHeader eyebrow="如何選擇" title="從最接近你的情況開始談。" body="如果需求還在整理，也可以先討論目前有哪些工作，再一起確認適合的合作範圍。" />
-      <ol class="cooperation-choice-list">
-        {cooperations.map((cooperation) => (
-          <li><p>{cooperation.suitableFor[0]}</p><span aria-hidden="true">→</span><a href={`#${cooperation.slug}`}>{cooperation.title}</a></li>
-        ))}
-      </ol>
-    </section>
-
     <section id="remote-workflow" class="cooperation-section" aria-label="共通遠端合作流程">
       <SectionHeader eyebrow="共同工作方式" title="遠端也能清楚掌握工作進度。" body="由固定聯絡窗口整理需求，透過透明排程、線上回饋與定期確認，讓工作內容、目前進度與接下來的安排有共同依據。" />
       <ul class="cooperation-methods">{commonWorkingMethods.map((method) => <li>{method}</li>)}</ul>
       <p class="cooperation-note">{onSiteMeetingNote}</p>
-      <ol class="cooperation-common-workflow">
-        {commonWorkflow.map((step, index) => (
-          <li class="reveal"><span class="cooperation-step-number">{String(index + 1).padStart(2, "0")}</span><div><h3>{step.title}</h3><p>{step.description}</p></div></li>
+      <ul class="cooperation-common-workflow">
+        {commonWorkflow.map((step) => (
+          <li class="reveal"><div><h3>{step.title}</h3><p>{step.description}</p></div></li>
         ))}
-      </ol>
-    </section>
-
-    <section id="principles" class="cooperation-section" aria-label="合作原則與範圍說明">
-      <SectionHeader eyebrow="合作原則" title="讓範圍、排程與回饋都先說清楚。" />
-      <dl class="cooperation-principles">
-        <div><dt>先確認工作內容</dt><dd>製作項目、所需資料與交付方式會在合作前確認；新增或變更需求時，再一起評估範圍與排程。</dd></div>
-        <div><dt>依實際需求安排產能</dt><dd>依工作量與優先順序安排可執行的項目。合作方式提供安排工作的基礎，實際內容仍需逐項確認。</dd></div>
-        <div><dt>彙整回饋與交付成果</dt><dd>透過線上確認整理需要調整的內容，完成後確認交付項目；持續型合作再安排下一階段需求。</dd></div>
-        <div><dt>合作前確認使用條件</dt><dd>報價依實際需求與範圍評估，包時支援的使用條件與加購方式也會一併討論。</dd></div>
-      </dl>
-      <div class="cooperation-solution-examples">
-        <h3>同一個需求情境，可以搭配不同合作方式。</h3>
-        {solutionExamples.map((example) => (
-          <article>
-            <h4><a href={withBase(`/solutions/#${example.solution.slug}`)}>{example.solution.title}<span aria-hidden="true">↗</span></a></h4>
-            <p>{example.note}</p>
-            <div class="cooperation-example-links"><span>可討論</span>{example.modes.map((cooperation) => <a href={`#${cooperation.slug}`}>{cooperation.title}</a>)}</div>
-            {example.followUpModes.length > 0 && <div class="cooperation-example-links"><span>後續持續需求可討論</span>{example.followUpModes.map((cooperation) => <a href={`#${cooperation.slug}`}>{cooperation.title}</a>)}</div>}
-          </article>
-        ))}
-        <p class="cooperation-note">以上是合作關聯示例，實際模式可依需求調整，不限制單一情境只能使用某一種合作方式。</p>
-      </div>
+      </ul>
     </section>
 
     <section class="cooperation-contact" aria-labelledby="cooperation-contact-title">
       <p class="home-label">CONTACT</p>
-      <h2 id="cooperation-contact-title">一起找出適合你的合作節奏。</h2>
+      <h2 id="cooperation-contact-title">製造雙贏的合作節奏</h2>
       <p>可以先分享想完成的事、預計時程，以及需求是一次性或持續出現，讓我協助整理適合的合作方向。</p>
       <a class="home-works-cta" href={withBase("/contact/")}><span>討論合作需求</span><span aria-hidden="true">→</span></a>
     </section>
   </div>
 </Layout>
 
+<script>
+  const progressRoot = document.querySelector<HTMLElement>("[data-cooperation-progress]");
+  const progressSection = document.querySelector<HTMLElement>(".cooperation-details");
+  const progressSvg = progressRoot?.querySelector<SVGSVGElement>("[data-progress-svg]");
+  const progressTrack = progressRoot?.querySelector<SVGPathElement>("[data-progress-track]");
+  const progressPath = progressRoot?.querySelector<SVGPathElement>("[data-progress-path]");
+  const progressItems = Array.from(progressRoot?.querySelectorAll<HTMLElement>("[data-progress-item]") ?? []);
+  const progressDots = Array.from(progressRoot?.querySelectorAll<HTMLElement>("[data-progress-dot]") ?? []);
+  const progressCards = Array.from(document.querySelectorAll<HTMLElement>(".cooperation-detail"));
+
+  if (progressRoot && progressSection && progressSvg && progressTrack && progressPath && progressItems.length > 0 && progressDots.length > 0 && progressCards.length > 0) {
+    let ticking = false;
+    let pathLength = 1;
+    let dotPositions: number[] = [];
+    let progressEndPosition = 1;
+    const pathCenterX = 60;
+    const waveOffset = 54;
+    const dotRadius = 31;
+    const clamp = (value: number) => Math.min(Math.max(value, 0), 1);
+
+    const buildProgressPath = (points: number[], endPosition: number) => {
+      if (points.length < 2) return "";
+      const anchors = [points[0] + dotRadius, ...points.slice(1), endPosition];
+      let pathData = `M ${pathCenterX} ${anchors[0]}`;
+
+      for (let index = 1; index < anchors.length; index += 1) {
+        const from = anchors[index - 1];
+        const to = anchors[index];
+        const direction = index % 2 === 1 ? 1 : -1;
+        const distance = Math.max(Math.abs(to - from), 1);
+        pathData += ` C ${pathCenterX + direction * waveOffset} ${from + distance * 0.3}, ${pathCenterX - direction * waveOffset} ${to - distance * 0.3}, ${pathCenterX} ${to}`;
+      }
+
+      return pathData;
+    };
+
+    const syncProgressLayout = () => {
+      const rootRect = progressRoot.getBoundingClientRect();
+      const rootTop = window.scrollY + rootRect.top;
+      const rootHeight = Math.max(rootRect.height, 1);
+
+      dotPositions = progressCards.map((card) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardTop = window.scrollY + cardRect.top;
+        const cardOffset = Math.min(Math.max(cardRect.height * 0.16, 82), 118);
+        return Math.min(Math.max(cardTop + cardOffset - rootTop, dotRadius + 18), rootHeight - dotRadius - 18);
+      });
+
+      const lastCardRect = progressCards[progressCards.length - 1]?.getBoundingClientRect();
+      const lastCardBottom = lastCardRect ? window.scrollY + lastCardRect.bottom - rootTop : rootHeight;
+      progressEndPosition = Math.min(Math.max(lastCardBottom - 42, dotPositions[dotPositions.length - 1] + dotRadius + 72), rootHeight - 28);
+
+      progressItems.forEach((item, index) => {
+        item.style.setProperty("--dot-y", `${dotPositions[index] ?? 0}px`);
+      });
+
+      const pathData = buildProgressPath(dotPositions, progressEndPosition);
+      progressSvg.setAttribute("viewBox", `0 0 120 ${rootHeight}`);
+      progressTrack.setAttribute("d", pathData);
+      progressPath.setAttribute("d", pathData);
+      pathLength = pathData ? progressPath.getTotalLength() : 1;
+      progressPath.style.strokeDasharray = `${pathLength}`;
+    };
+
+    const updateProgress = () => {
+      ticking = false;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const rootRect = progressRoot.getBoundingClientRect();
+      const rootTop = window.scrollY + rootRect.top;
+      const marker = window.scrollY + viewportHeight * 0.5;
+      const firstDot = rootTop + (dotPositions[0] ?? 0);
+      const progressEnd = rootTop + progressEndPosition;
+      const progress = clamp((marker - firstDot) / Math.max(progressEnd - firstDot, 1));
+      progressPath.style.strokeDashoffset = `${pathLength * (1 - progress)}`;
+
+      let activeIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      dotPositions.forEach((position, index) => {
+        const distance = Math.abs(rootTop + position - marker);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          activeIndex = index;
+        }
+      });
+
+      progressDots.forEach((dot, index) => {
+        dot.classList.toggle("is-active", index === activeIndex);
+        dot.classList.toggle("is-passed", index < activeIndex);
+      });
+    };
+
+    const requestUpdate = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateProgress);
+      }
+    };
+
+    const requestLayoutUpdate = () => {
+      syncProgressLayout();
+      requestUpdate();
+    };
+
+    requestLayoutUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestLayoutUpdate);
+    window.addEventListener("load", requestLayoutUpdate, { once: true });
+  }
+</script>
 <style>
-  .cooperation-page { width: min(calc(100% - var(--home-safe) * 2), 1240px); margin-inline: auto; padding-block: clamp(64px, 8vw, 112px) clamp(64px, 7vw, 96px); }
-  .cooperation-hero h1 { margin: 18px 0 28px; font-size: clamp(2.6rem, 5.8vw, 5.2rem); line-height: 1.2; }
-  .cooperation-hero__lead { max-width: 850px; margin: 0; font-size: clamp(1.12rem, 2.15vw, 1.75rem); line-height: 1.8; }
-  .cooperation-hero__description { max-width: 730px; margin: 24px 0 0; color: #5e5e5e; line-height: 1.9; }
-  .cooperation-index { display: flex; flex-wrap: wrap; gap: 0 28px; margin-top: 36px; }
-  .cooperation-index a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding-block: 10px; border-bottom: 1px solid var(--line); font-weight: 700; }
-  .cooperation-index a > span:first-child { color: var(--muted); font-size: 0.75rem; font-family: "Manrope", sans-serif; }
-  .cooperation-index a > span:last-child { margin-left: 8px; }
-  .cooperation-intro { padding-block: clamp(54px, 6vw, 80px); }
-  .cooperation-page :global(.section-header) { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 16px 64px; margin-bottom: 0; }
-  .cooperation-page :global(.section-header .eyebrow) { grid-column: 1; margin: 0; color: var(--home-ink); font-size: 0.84rem; }
-  .cooperation-page :global(.section-header h2) { grid-column: 1; font-size: clamp(1.6rem, 2.3vw, 2.4rem); line-height: 1.5; }
-  .cooperation-page :global(.section-header > p:last-child:not(.eyebrow)) { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 1rem; line-height: 2; }
-  .cooperation-detail { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 44px 64px; padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); scroll-margin-top: 112px; }
-  .cooperation-detail__heading, .cooperation-detail__body { min-width: 0; }
-  .cooperation-detail h2 { margin: 18px 0 24px; font-size: clamp(1.7rem, 2.7vw, 2.7rem); line-height: 1.45; }
-  .cooperation-detail__summary { margin: 0; max-width: 400px; color: #5e5e5e; line-height: 1.9; }
-  .cooperation-detail__description { margin: 0; line-height: 2; }
-  .cooperation-part { margin-top: 36px; }
-  .cooperation-detail h3, .cooperation-common-workflow h3 { margin: 0 0 16px; font-size: 1.1rem; line-height: 1.6; }
-  .cooperation-list { display: grid; gap: 12px; margin: 0; padding-left: 1.2em; color: #5e5e5e; line-height: 1.9; }
-  .cooperation-needs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; list-style: none; margin: 0; padding: 0; }
-  .cooperation-needs li { min-width: 0; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 0.95rem; overflow-wrap: anywhere; }
-  .cooperation-policies { margin: 36px 0 0; }
-  .cooperation-policies > div { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 20px; padding-block: 16px; border-top: 1px solid var(--line); }
-  .cooperation-policies dt { font-weight: 700; font-size: 0.9rem; }
-  .cooperation-policies dd { margin: 0; min-width: 0; color: #5e5e5e; font-size: 0.94rem; line-height: 1.9; }
-  .cooperation-mode-workflow { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid var(--line); }
-  .cooperation-mode-workflow ol { display: flex; flex-wrap: wrap; gap: 16px 24px; list-style: none; padding: 0; margin: 0; }
-  .cooperation-mode-workflow li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; font-size: 0.92rem; }
-  .cooperation-step-number { color: var(--muted); font-size: 0.75rem; font-family: "Manrope", sans-serif; }
-  .cooperation-flow-arrow { padding-left: 12px; color: var(--muted); }
-  .cooperation-section { padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); scroll-margin-top: 112px; }
-  .cooperation-comparison-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 40px; font-size: 0.94rem; }
-  .cooperation-comparison-table caption { text-align: left; color: var(--muted); font-size: 0.85rem; padding-bottom: 16px; }
-  .cooperation-comparison-table th, .cooperation-comparison-table td { padding: 18px; text-align: left; vertical-align: top; border: 1px solid var(--line); overflow-wrap: anywhere; line-height: 1.9; }
+  @import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap");
+
+  :global(.cooperation-shell) { background: #f8f4ec; }
+
+  .cooperation-page {
+    --cooperation-rounded: "Zen Maru Gothic", "M PLUS Rounded 1c", "Noto Sans TC", sans-serif;
+    --cooperation-body: "Noto Sans TC", sans-serif;
+    --cooperation-ink: #26211a;
+    --cooperation-muted: #6f6657;
+    --cooperation-yellow: #f0c949;
+    --cooperation-yellow-deep: #a87908;
+    --cooperation-card: #fffdf6;
+    --cooperation-card-soft: rgba(255, 246, 210, 0.62);
+    --cooperation-line: rgba(38, 33, 26, 0.15);
+    width: min(calc(100% - var(--home-safe) * 2), 1240px);
+    margin-inline: auto;
+    padding-block: clamp(64px, 8vw, 112px) clamp(64px, 7vw, 96px);
+    color: var(--cooperation-ink);
+    font-family: var(--cooperation-body);
+  }
+
+  .cooperation-hero {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    min-height: clamp(220px, 28vh, 320px);
+    padding-block: clamp(30px, 4.2vw, 56px);
+    text-align: center;
+  }
+
+  .cooperation-hero__handwriting {
+    position: relative;
+    margin: 0 0 clamp(4px, 0.9vw, 10px);
+    color: rgba(0, 119, 217, 0.76);
+    font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", "Lucida Handwriting", cursive;
+    font-size: clamp(1.85rem, 2.6vw, 3rem);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    white-space: nowrap;
+    transform: rotate(-13deg);
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    animation: cooperation-handwriting-in 880ms cubic-bezier(0.16, 1, 0.3, 1) 160ms forwards;
+  }
+
+  .cooperation-hero .home-label,
+  .cooperation-detail .home-label,
+  .cooperation-contact .home-label {
+    font-family: var(--cooperation-rounded);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .cooperation-hero .home-label {
+    margin: 10px 0 0;
+    color: var(--cooperation-ink);
+    font-size: clamp(0.82rem, 1vw, 0.98rem);
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.24em;
+    text-indent: 0.24em;
+  }
+
+  .cooperation-hero h1 {
+    margin: 0;
+    font-family: var(--cooperation-rounded);
+    font-size: clamp(3rem, 7vw, 6.7rem);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: 0.12em;
+    text-indent: 0.12em;
+  }
+
+  @keyframes cooperation-handwriting-in {
+    0% {
+      opacity: 0;
+      clip-path: inset(0 100% 0 0);
+      transform: translate3d(-12px, 8px, 0) rotate(-13deg);
+    }
+
+    48% {
+      opacity: 0.68;
+    }
+
+    100% {
+      opacity: 0.68;
+      clip-path: inset(0 0 0 0);
+      transform: translate3d(0, 0, 0) rotate(-13deg);
+    }
+  }
+
+  .cooperation-intro,
+  .cooperation-section {
+    padding-block: clamp(56px, 7vw, 88px);
+    border-top: 1px solid var(--cooperation-line);
+    scroll-margin-top: 112px;
+  }
+
+  .cooperation-intro { border-top: 0; }
+
+  .cooperation-page :global(.section-header) {
+    grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
+    gap: 16px clamp(44px, 7vw, 88px);
+    margin-bottom: 0;
+  }
+
+  .cooperation-page :global(.section-header .eyebrow) {
+    grid-column: 1;
+    margin: 0;
+    color: var(--cooperation-yellow-deep);
+    font-family: var(--cooperation-rounded);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .cooperation-page :global(.section-header h2) {
+    grid-column: 1;
+    font-family: var(--cooperation-rounded);
+    font-size: clamp(2.05rem, 4vw, 3.9rem);
+    font-weight: 900;
+    line-height: 1.16;
+    letter-spacing: 0.03em;
+  }
+
+  .cooperation-page :global(.section-header > p:last-child:not(.eyebrow)) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    color: var(--cooperation-muted);
+    font-size: clamp(1rem, 1.16vw, 1.08rem);
+    line-height: 1.95;
+  }
+
+  .cooperation-details {
+    position: relative;
+    display: grid;
+    gap: clamp(72px, 8vw, 108px);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: clamp(72px, 9vw, 124px) max(var(--home-safe), calc((100vw - 1540px) / 2 + var(--home-safe))) clamp(72px, 9vw, 124px) max(calc(var(--home-safe) + 220px), calc((100vw - 1540px) / 2 + var(--home-safe) + 220px));
+    border-radius: clamp(34px, 4vw, 54px);
+    background: var(--cooperation-yellow);
+    overflow: hidden;
+  }
+
+  .cooperation-progress {
+    position: absolute;
+    z-index: 2;
+    inset-block: 0;
+    left: max(calc(var(--home-safe) + 54px), calc((100vw - 1540px) / 2 + var(--home-safe) + 54px));
+    width: 148px;
+    pointer-events: none;
+  }
+
+  .cooperation-progress svg,
+  .cooperation-progress ol {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 124px;
+    height: 100%;
+  }
+
+  .cooperation-progress svg {
+    z-index: 1;
+    display: block;
+    overflow: visible;
+  }
+
+  .cooperation-progress path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .cooperation-progress__track {
+    stroke: rgba(255, 253, 246, 0.28);
+    stroke-width: 18;
+  }
+
+  .cooperation-progress__fill {
+    stroke: #fffdf6;
+    stroke-width: 18;
+    filter: drop-shadow(0 4px 0 rgba(38, 33, 26, 0.05));
+    transition: stroke-dashoffset 180ms linear;
+  }
+
+  .cooperation-progress ol {
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cooperation-progress li {
+    position: absolute;
+    left: 60px;
+    top: var(--dot-y, 0px);
+    transform: translate(-50%, -50%);
+  }
+
+  .cooperation-progress a {
+    display: block;
+    width: clamp(54px, 4.8vw, 64px);
+    height: clamp(54px, 4.8vw, 64px);
+    border-radius: 999px;
+    background: #fffdf6;
+    pointer-events: auto;
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cooperation-progress a span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .cooperation-progress a.is-passed {
+    transform: scale(1);
+  }
+
+  .cooperation-progress a.is-active {
+    transform: scale(1.04);
+  }
+
+  .cooperation-progress a:focus { outline: none; }
+
+  .cooperation-progress a:focus-visible {
+    outline: 2px solid var(--cooperation-ink);
+    outline-offset: 6px;
+  }
+  .cooperation-detail {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(250px, 0.36fr) minmax(0, 0.64fr);
+    gap: clamp(34px, 6vw, 72px);
+    margin-left: 0;
+    padding: clamp(34px, 5.4vw, 64px);
+    border-radius: clamp(26px, 3vw, 36px);
+    background: var(--cooperation-card);
+    box-shadow: 0 18px 52px rgba(38, 33, 26, 0.08);
+    scroll-margin-top: 112px;
+    transform: translateY(28px) scale(0.985);
+    transition:
+      opacity 720ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+      transform 720ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+  }
+
+  .cooperation-detail.is-visible { transform: translateY(0) scale(1); }
+  .cooperation-detail:hover { transform: translateY(-4px) scale(1); }
+  .cooperation-detail__heading,
+  .cooperation-detail__body { min-width: 0; }
+
+  .cooperation-detail .home-label {
+    margin: 0 0 clamp(22px, 3vw, 34px);
+    color: var(--cooperation-yellow-deep);
+    font-size: clamp(0.98rem, 1.2vw, 1.15rem);
+  }
+
+  .cooperation-detail h2 {
+    margin: 0 0 clamp(16px, 2.4vw, 24px);
+    font-family: var(--cooperation-rounded);
+    font-size: clamp(2.3rem, 4.7vw, 4.15rem);
+    font-weight: 900;
+    line-height: 1.12;
+    letter-spacing: 0.03em;
+  }
+
+  .cooperation-detail__summary {
+    margin: 0;
+    max-width: 420px;
+    color: var(--cooperation-muted);
+    font-size: clamp(1rem, 1.22vw, 1.12rem);
+    font-weight: 500;
+    line-height: 1.85;
+  }
+
+  .cooperation-detail__description {
+    margin: 0 0 clamp(22px, 3vw, 32px);
+    color: #4f5b3f;
+    font-size: clamp(1rem, 1.16vw, 1.08rem);
+    line-height: 1.85;
+  }
+
+  .cooperation-part { margin-top: clamp(24px, 3.2vw, 34px); }
+
+  .cooperation-detail h3,
+  .cooperation-common-workflow h3 {
+    margin: 0 0 14px;
+    font-family: var(--cooperation-rounded);
+    font-size: clamp(1.02rem, 1.2vw, 1.16rem);
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.03em;
+  }
+
+  .cooperation-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding-left: 1.2em;
+    color: #4f5b3f;
+    line-height: 1.8;
+  }
+
+  .cooperation-list li::marker { color: var(--cooperation-yellow-deep); }
+
+  .cooperation-needs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cooperation-needs li {
+    min-width: 0;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: var(--cooperation-card-soft);
+    color: #4d573e;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .cooperation-flow-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #3e4a30;
+  }
+
+  .cooperation-flow-list li {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .cooperation-flow-list li:not(:last-child)::after {
+    content: "→";
+    margin-inline: 12px;
+    color: var(--cooperation-yellow-deep);
+  }
+
+  .cooperation-step-number {
+    margin-right: 8px;
+    color: var(--cooperation-yellow-deep);
+    font-family: var(--cooperation-rounded);
+    font-size: 0.86em;
+    font-weight: 700;
+  }
+
+  .cooperation-comparison-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-top: 40px;
+    border-radius: 28px;
+    overflow: hidden;
+    font-size: 0.94rem;
+  }
+
+  .cooperation-comparison-table caption {
+    text-align: left;
+    color: var(--cooperation-muted);
+    font-size: 0.85rem;
+    padding-bottom: 16px;
+  }
+
+  .cooperation-comparison-table th,
+  .cooperation-comparison-table td {
+    padding: 18px;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid var(--cooperation-line);
+    overflow-wrap: anywhere;
+    line-height: 1.85;
+  }
+
   .cooperation-comparison-table th:first-child { width: 16%; }
-  .cooperation-comparison-table thead th { background: var(--home-gray); }
-  .cooperation-comparison-table tbody th { font-weight: 700; }
+  .cooperation-comparison-table thead th { background: #fff6d6; }
+  .cooperation-comparison-table tbody th { font-family: var(--cooperation-rounded); font-weight: 700; }
   .cooperation-comparison-table a { border-bottom: 1px solid currentColor; }
   .cooperation-comparison-mobile { display: none; }
-  .cooperation-choice-list { list-style: none; padding: 0; margin: 40px 0 0; }
-  .cooperation-choice-list li { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(200px,0.5fr); align-items: center; gap: 28px; padding-block: 24px; border-top: 1px solid var(--line); }
-  .cooperation-choice-list p { margin: 0; }
-  .cooperation-choice-list a { justify-self: start; padding-block: 8px; border-bottom: 1px solid currentColor; font-weight: 700; }
-  .cooperation-methods { display: flex; flex-wrap: wrap; gap: 14px 28px; padding: 0; margin: 36px 0 0; list-style: none; }
-  .cooperation-methods li::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 10px; background: var(--home-yellow); vertical-align: middle; }
-  .cooperation-note { margin: 22px 0 0; color: #686868; font-size: 0.9rem; line-height: 1.9; }
-  .cooperation-common-workflow { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 40px; margin: 36px 0 0; padding: 0; list-style: none; }
-  .cooperation-common-workflow li { display: flex; gap: 24px; padding-block: 24px; border-top: 1px solid var(--line); }
+
+  .cooperation-common-workflow,
+  .cooperation-methods { list-style: none; padding: 0; }
+
+  .cooperation-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+    margin: 36px 0 0;
+  }
+
+  .cooperation-methods li::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background: var(--home-yellow);
+    vertical-align: middle;
+  }
+
+  .cooperation-note {
+    margin: 22px 0 0;
+    color: var(--cooperation-muted);
+    font-size: 0.9rem;
+    line-height: 1.9;
+  }
+
+  .cooperation-common-workflow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+    width: min(720px, 100%);
+    margin: 42px auto 0;
+  }
+
+  .cooperation-common-workflow li {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: 24px clamp(22px, 4vw, 42px);
+    border: 1px solid var(--cooperation-line);
+    border-radius: 999px;
+    background: rgba(255, 253, 246, 0.62);
+    text-align: center;
+  }
+
+  .cooperation-common-workflow li:not(:last-child)::after {
+    content: "↓";
+    position: absolute;
+    left: 50%;
+    bottom: -31px;
+    color: var(--cooperation-yellow-deep);
+    font-family: var(--cooperation-rounded);
+    font-size: 1.25rem;
+    font-weight: 900;
+    line-height: 1;
+    transform: translateX(-50%);
+  }
+
   .cooperation-common-workflow h3 { margin-bottom: 8px; }
-  .cooperation-common-workflow p { margin: 0; color: #5e5e5e; font-size: 0.94rem; line-height: 1.9; }
-  .cooperation-principles { margin: 36px 0 0; }
-  .cooperation-principles > div { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr); gap: 64px; padding-block: 24px; border-top: 1px solid var(--line); }
-  .cooperation-principles dt { font-size: 1.05rem; font-weight: 700; }
-  .cooperation-principles dd { margin: 0; color: #5e5e5e; line-height: 1.9; }
-  .cooperation-solution-examples { margin-top: 40px; }
-  .cooperation-solution-examples > h3 { margin: 0 0 24px; font-size: clamp(1.2rem, 2vw, 1.6rem); line-height: 1.6; }
-  .cooperation-solution-examples article { padding-block: 24px; border-top: 1px solid var(--line); }
-  .cooperation-solution-examples h4 { margin: 0; font-size: 1.1rem; }
-  .cooperation-solution-examples h4 a { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; }
-  .cooperation-solution-examples article > p { max-width: 800px; margin: 8px 0 12px; color: #5e5e5e; }
-  .cooperation-example-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; }
-  .cooperation-example-links > span { color: var(--muted); font-size: 0.82rem; }
-  .cooperation-example-links a { padding-block: 10px; border-bottom: 1px solid currentColor; font-size: 0.94rem; }
-  .cooperation-page a:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 5px; }
-  .cooperation-index a:hover, .cooperation-choice-list a:hover, .cooperation-example-links a:hover { background: var(--home-yellow); }
-  .cooperation-contact { margin-top: 24px; padding: clamp(32px, 6vw, 72px); background: var(--home-yellow); }
-  .cooperation-contact h2 { margin: 20px 0 24px; max-width: 760px; font-size: clamp(1.8rem, 3.3vw, 3rem); line-height: 1.5; }
-  .cooperation-contact > p:not(.home-label) { max-width: 650px; margin: 0; line-height: 1.9; }
+
+  .cooperation-common-workflow p {
+    margin: 0;
+    color: var(--cooperation-muted);
+    font-size: 0.94rem;
+    line-height: 1.9;
+  }
+
+  .cooperation-page a:focus-visible {
+    outline: 2px solid var(--cooperation-ink);
+    outline-offset: 5px;
+  }
+
+  .cooperation-contact {
+    margin-top: 24px;
+    padding: clamp(34px, 6vw, 72px);
+    border-radius: clamp(24px, 3vw, 34px);
+    background: var(--home-yellow);
+  }
+
+  .cooperation-contact h2 {
+    margin: 20px 0 24px;
+    max-width: 760px;
+    font-family: var(--cooperation-rounded);
+    font-size: clamp(2.1rem, 4vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.25;
+  }
+
+  .cooperation-contact > p:not(.home-label) {
+    max-width: 650px;
+    margin: 0;
+    line-height: 1.9;
+  }
+
   .cooperation-contact .home-works-cta { margin-left: 0; }
-  :global(.cooperation-shell) { background: var(--home-white); }
-  .cooperation-page :global(.reveal) { animation: none; }
+
+  @media (max-width: 1080px) {
+    .cooperation-details {
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding-inline: clamp(108px, 14vw, 132px) clamp(20px, 4vw, 44px);
+    }
+    .cooperation-progress { left: clamp(20px, 3.5vw, 34px); width: 112px; }
+    .cooperation-progress svg,
+    .cooperation-progress ol { width: 104px; }
+    .cooperation-progress__track,
+    .cooperation-progress__fill { stroke-width: 16; }
+    .cooperation-progress li { left: 52px; }
+    .cooperation-progress a { width: 54px; height: 54px; }
+    .cooperation-detail { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  }
+
   @media (max-width: 900px) {
-    .cooperation-page :global(.section-header), .cooperation-detail, .cooperation-principles > div { grid-template-columns: minmax(0,1fr); gap: 24px; }
-    .cooperation-page :global(.section-header h2), .cooperation-page :global(.section-header .eyebrow), .cooperation-page :global(.section-header > p:last-child:not(.eyebrow)) { grid-column: auto; grid-row: auto; }
-    .cooperation-detail__summary { max-width: 680px; }
-    .cooperation-detail, .cooperation-section { scroll-margin-top: 96px; }
-    .cooperation-mode-workflow { grid-column: auto; }
+    .cooperation-hero,
+    .cooperation-page :global(.section-header) {
+      grid-template-columns: minmax(0,1fr);
+      gap: 24px;
+    }
+
+    .cooperation-page :global(.section-header h2),
+    .cooperation-page :global(.section-header .eyebrow),
+    .cooperation-page :global(.section-header > p:last-child:not(.eyebrow)) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+
+    .cooperation-detail,
+    .cooperation-section { scroll-margin-top: 96px; }
+
     .cooperation-comparison-table { display: none; }
     .cooperation-comparison-mobile { display: block; margin-top: 36px; }
-    .cooperation-comparison-mobile article { padding-block: 24px; border-top: 1px solid var(--line); }
-    .cooperation-comparison-mobile h3 { margin: 0 0 20px; font-size: 1.25rem; }
+    .cooperation-comparison-mobile article { padding-block: 24px; border-top: 1px solid var(--cooperation-line); }
+    .cooperation-comparison-mobile h3 { margin: 0 0 20px; font-family: var(--cooperation-rounded); font-size: 1.25rem; }
     .cooperation-comparison-mobile dl { display: grid; gap: 16px; margin: 0; }
     .cooperation-comparison-mobile dl > div { display: grid; grid-template-columns: 90px minmax(0,1fr); gap: 16px; }
     .cooperation-comparison-mobile dt { font-size: 0.86rem; font-weight: 700; }
-    .cooperation-comparison-mobile dd { margin: 0; color: #5e5e5e; font-size: 0.94rem; line-height: 1.9; }
+    .cooperation-comparison-mobile dd { margin: 0; color: var(--cooperation-muted); font-size: 0.94rem; line-height: 1.9; }
   }
+
   @media (max-width: 640px) {
-    .cooperation-index { display: grid; grid-template-columns: 1fr; gap: 0; }
-    .cooperation-index a { font-size: 0.9rem; }
-    .cooperation-index a > span:last-child { margin-left: auto; }
-    .cooperation-needs, .cooperation-common-workflow { grid-template-columns: minmax(0,1fr); }
-    .cooperation-policies > div { grid-template-columns: 1fr; gap: 6px; }
-    .cooperation-mode-workflow ol { display: grid; gap: 0; }
-    .cooperation-mode-workflow li { display: grid; grid-template-columns: 24px minmax(0,1fr); padding-bottom: 10px; }
-    .cooperation-flow-arrow { grid-column: 2; justify-self: start; padding: 0; transform: rotate(90deg); }
-    .cooperation-choice-list li { grid-template-columns: 20px minmax(0,1fr); gap: 12px; }
-    .cooperation-choice-list p { grid-column: 1 / -1; }
+    .cooperation-page { padding-block: 58px 76px; }
+    .cooperation-hero { min-height: clamp(180px, 28vh, 250px); padding-block: 24px 30px; }
+    .cooperation-hero__handwriting { font-size: clamp(1.65rem, 8vw, 2.55rem); margin-bottom: 6px; }
+    .cooperation-hero .home-label { font-size: clamp(0.74rem, 3.4vw, 0.92rem); letter-spacing: 0.18em; text-indent: 0.18em; }
+    .cooperation-hero h1 { font-size: clamp(2.55rem, 12vw, 4.3rem); letter-spacing: 0.08em; text-indent: 0.08em; }
+    .cooperation-details {
+      gap: 36px;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding: 56px 16px 56px 92px;
+      border-radius: 28px;
+    }
+    .cooperation-progress { left: 14px; width: 78px; }
+    .cooperation-progress svg,
+    .cooperation-progress ol { width: 76px; }
+    .cooperation-progress__track,
+    .cooperation-progress__fill { stroke-width: 12; }
+    .cooperation-progress li { left: 38px; }
+    .cooperation-progress a { width: 40px; height: 40px; }
+    .cooperation-detail { margin-left: 0; padding: 28px 22px; border-radius: 26px; }
+    .cooperation-detail h2 { font-size: clamp(2rem, 11vw, 2.7rem); }
+    .cooperation-needs { gap: 8px; }
+    .cooperation-needs li { padding: 8px 12px; font-size: 0.9rem; }
+    .cooperation-flow-list { display: grid; gap: 8px; }
+    .cooperation-flow-list li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; }
+    .cooperation-flow-list li:not(:last-child)::after { content: none; }
+    .cooperation-common-workflow { width: 100%; gap: 28px; }
+    .cooperation-common-workflow li { padding: 20px 18px; border-radius: 28px; }
+    .cooperation-common-workflow li:not(:last-child)::after { bottom: -27px; }
     .cooperation-comparison-mobile dl > div { grid-template-columns: 1fr; gap: 4px; }
     .cooperation-contact { padding: 30px 24px; }
     .cooperation-contact .home-works-cta { width: 100%; letter-spacing: 0.06em; }
   }
+
+  @media (max-width: 480px) {
+    .cooperation-details {
+      padding: 56px var(--home-safe);
+    }
+    .cooperation-progress { display: none; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .cooperation-page :global(.reveal) { opacity: 1; transform: none; transition: none; }
+    .cooperation-hero__handwriting {
+      opacity: 0.68;
+      clip-path: inset(0 0 0 0);
+      animation: none;
+      transform: rotate(-13deg);
+    }
+
+    .cooperation-progress__fill { transition: none; }
+    .cooperation-detail,
+    .cooperation-detail:hover { transform: none; transition: none; }
+    .cooperation-page :global(.reveal) { opacity: 1; transform: none; transition: none; animation: none; }
   }
 </style>

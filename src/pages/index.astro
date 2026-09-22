@@ -3,16 +3,41 @@ import Layout from "@/components/Layout.astro";
 import CaseCard from "@/components/CaseCard.astro";
 import { getFeaturedCases } from "@/data/cases";
 import { experiencePlaceholders } from "@/data/home";
-import { getFeaturedServices } from "@/data/services";
-import { getFeaturedSolutions } from "@/data/solutions";
-import { getFeaturedCooperations, commonWorkingMethods, commonWorkflow, onSiteMeetingNote } from "@/data/cooperations";
+import { getFeaturedCooperations, commonWorkingMethods, onSiteMeetingNote } from "@/data/cooperations";
 import { site } from "@/data/site";
-import { publicProfile } from "@/data/profile";
 import { contactContent } from "@/data/contact";
 import { withBase } from "@/utils/paths";
 
-const featuredServices = getFeaturedServices();
-const featuredSolutions = getFeaturedSolutions();
+const serviceCards = [
+  {
+    title: "網站建置・維護管理",
+    shortTitle: "網站管理",
+    english: "WEB SITE",
+    summary: "讓網站成為客戶認識你、查看服務與聯絡的重要入口。",
+    image: "/images/works/shiroki-sr-sitetop.jpg"
+  },
+  {
+    title: "活動・教育推廣",
+    shortTitle: "活動教育",
+    english: "EVENT / EDUCATION",
+    summary: "從活動前期宣傳，到報名資訊與現場製作物一起規劃。",
+    image: "/images/works/itayamachibaru-capture.jpg"
+  },
+  {
+    title: "社群・廣告推廣",
+    shortTitle: "社群廣告",
+    english: "SOCIAL MEDIA / ADS",
+    summary: "配合日常曝光、招生與活動檔期，安排社群內容與廣告導流。",
+    image: "/images/works/tokaiunit-sitetop.jpg"
+  },
+  {
+    title: "商家印刷・製作",
+    shortTitle: "印刷製作",
+    english: "PRINT / PRODUCTION",
+    summary: "從設計、印刷規格確認，到實際製作一起處理。",
+    image: "/images/works/iwata-shotenkai-flyer.jpg"
+  }
+];
 const featuredCooperations = getFeaturedCooperations();
 
 const featuredCases = await getFeaturedCases();
@@ -20,7 +45,7 @@ const featuredCases = await getFeaturedCases();
 
 <Layout
   title={`${site.siteName} | 品牌視覺 × 網站 × 長期遠端支援`}
-  description={`${site.siteName}（${site.brandFullName}）由 ${site.ownerDisplayName} 提供品牌視覺、印刷製作、WordPress 網站、社群與影音內容，以單次專案、固定月度合作或包時支援，協助企業的設計與製作需求。`}
+  description={`${site.siteName} / ${site.ownerDisplayName} 提供品牌視覺、印刷製作、WordPress 網站、社群與影音內容，以單次專案或月度／半遠端合作，協助企業的設計與製作需求。`}
   headerVariant="home"
   mainClass="home-page v2-home"
 >
@@ -38,7 +63,7 @@ const featuredCases = await getFeaturedCases();
       </h1>
       <p class="home-hero__lead reveal-line">品牌與平面設計、印刷輸出、WordPress／形象網站、社群廣告素材與影音內容，由我直接與你協作。</p>
       <p class="v2-hero__modes reveal-line">by {site.ownerDisplayName}</p>
-      <p class="v2-hero__modes reveal-line">單次專案・固定月度合作・包時支援</p>
+      <p class="v2-hero__modes reveal-line">單次專案・月度／半遠端合作</p>
       <div class="v2-actions reveal-line">
         <a class="v2-button v2-button--yellow" href={withBase("/services/")}>查看服務項目 <span aria-hidden="true">→</span></a>
         <a class="v2-button v2-button--light" href={withBase("/contact/")}>討論合作需求 <span aria-hidden="true">→</span></a>
@@ -53,14 +78,26 @@ const featuredCases = await getFeaturedCases();
     <header class="v2-section__head reveal">
       <p class="home-label">02 / PROJECT EXPERIENCE</p>
       <h2 id="home-experience-title">合作與專案經驗</h2>
-      <p>從不同品牌、單位與專案累積的設計與製作經驗。</p>
+      <p class="v2-experience__lead">2016~2026參與不同產業累積設計與製作經驗</p>
     </header>
-    <ul class="v2-logo-wall" aria-label="合作與專案經驗素材待補">
-      {experiencePlaceholders.map((label) => (
-        <li><span>{label}</span><small>LOGO／名稱待補</small></li>
-      ))}
-    </ul>
-    <p class="v2-note">相關名稱與 Logo 整理中，已公開作品可於下方案例查看。</p>
+    <div class="v2-logo-marquee" aria-label="合作與專案經驗 Logo 跑馬燈，正式圖片整理中">
+      <ul class="v2-logo-track">
+        {experiencePlaceholders.map((label) => (
+          <li>
+            <span class="v2-logo-mark">T2</span>
+            <span>{label}</span>
+            <small>LOGO／名稱待補</small>
+          </li>
+        ))}
+        {experiencePlaceholders.map((label) => (
+          <li aria-hidden="true">
+            <span class="v2-logo-mark">T2</span>
+            <span>{label}</span>
+            <small>LOGO／名稱待補</small>
+          </li>
+        ))}
+      </ul>
+    </div>
   </section>
 
   <section id="home-services" class="home-skills v2-services" aria-labelledby="home-services-title" data-home-section="services">
@@ -74,23 +111,33 @@ const featuredCases = await getFeaturedCases();
       <header class="home-skills__intro reveal">
         <p class="home-label">03 / SERVICES</p>
         <h2 id="home-services-title">從視覺到製作，<br />讓需求有完整的交付。</h2>
-        <p>依照品牌的溝通目標與實際使用情境，整理五大服務所需的內容、形式與製作範圍。</p>
+        <p>依照實際使用情境，整理服務所需的內容、形式與製作範圍。</p>
         <a class="v2-text-link" href={withBase("/services/")}>查看完整服務項目 <span aria-hidden="true">→</span></a>
       </header>
       <div class="home-skills__orbit" aria-hidden="true" data-skills-orbit>
-        <span>Design</span><span>Web</span><span>Support</span>
+        <span>Design</span><span>Web</span><span>Print</span>
         <i class="home-skills__dot home-skills__dot--yellow"></i><i class="home-skills__dot"></i>
         <i class="home-skills__dot home-skills__dot--white"></i><i class="home-skills__dot"></i><i class="home-skills__dot home-skills__dot--yellow"></i>
         <strong>DESIGN<br />SUPPORT</strong>
       </div>
       <div class="v2-services__grid">
-        {featuredServices.map((service, index) => (
-          <article class="v2-service reveal">
-            <p class="v2-eyebrow">{String(index + 1).padStart(2, "0")} / {service.shortTitle}</p>
-            <h3>{service.title}</h3>
-            <p>{service.summary}</p>
-            <p class="v2-service__examples">{service.deliverables.slice(0, 4).join("・")}</p>
-            <a class="v2-text-link" href={withBase(`/services/#${service.slug}`)} aria-label={`了解${service.title}`}>了解服務內容 <span aria-hidden="true">→</span></a>
+        {serviceCards.map((service, index) => (
+          <article class="v2-service v2-service--flip reveal" tabindex="0" aria-label={String(index + 1).padStart(2, "0") + " / " + service.title + "：" + service.summary}>
+            <div class="v2-service__flip" aria-hidden="true">
+              <div class="v2-service__face v2-service__face--front">
+                <img class="v2-service__image" src={withBase(service.image)} alt="" loading="lazy" />
+                <span class="v2-service__shade"></span>
+                <div class="v2-service__caption">
+                  <p class="v2-service__english">{service.english}</p>
+                  <h3>{service.title}</h3>
+                </div>
+              </div>
+              <div class="v2-service__face v2-service__face--back">
+                <p class="v2-eyebrow">SERVICE {String(index + 1).padStart(2, "0")}</p>
+                <h3>{service.shortTitle}</h3>
+                <p class="v2-service__summary">{service.summary}</p>
+              </div>
+            </div>
           </article>
         ))}
       </div>
@@ -103,50 +150,9 @@ const featuredCases = await getFeaturedCases();
     </div>
   </section>
 
-  <section id="home-solutions" class="home-section v2-section" aria-labelledby="home-solutions-title" data-home-section="solutions">
-    <header class="v2-section__head reveal">
-      <p class="home-label">04 / SOLUTIONS</p>
-      <h2 id="home-solutions-title">從一個需求，延伸到不同製作項目。</h2>
-      <p>你正在建立品牌、籌備活動，或準備推出新商品？先從目標出發，安排需要的服務組合。</p>
-    </header>
-    <div class="v2-solutions-grid">
-      {featuredSolutions.map((solution) => (
-        <article class="v2-panel reveal">
-          <h3>{solution.title}</h3><p>{solution.summary}</p>
-          <ul class="v2-deliverables" aria-label={`${solution.title}可延伸的製作項目`}>
-            {solution.deliverables.slice(0, 4).map((item) => <li>{item}</li>)}
-          </ul>
-          <a class="v2-text-link" href={withBase(`/solutions/#${solution.slug}`)} aria-label={`了解${solution.title}的整合方式`}>了解整合方式 <span aria-hidden="true">→</span></a>
-        </article>
-      ))}
-    </div>
-    <p class="v2-note">以上為服務情境示例，實際項目依需求與合作範圍確認。</p>
-    <a class="v2-text-link" href={withBase("/solutions/")}>了解整合服務 <span aria-hidden="true">→</span></a>
-  </section>
-
-  <section id="home-cooperation" class="home-section v2-section v2-bordered" aria-labelledby="home-cooperation-title" data-home-section="cooperation">
-    <header class="v2-section__head reveal">
-      <p class="home-label">05 / COOPERATION</p>
-      <h2 id="home-cooperation-title">依需求的節奏，選擇合作方式。</h2>
-      <p>由 {site.ownerDisplayName} 作為固定窗口，從一次性的製作需求，到持續性的品牌支援。</p>
-    </header>
-    <div class="v2-cooperation-grid">
-      {featuredCooperations.map((mode, index) => (
-        <article class="v2-panel reveal">
-          <p class="v2-eyebrow">0{index + 1}</p><h3>{mode.title}</h3><p>{mode.summary}</p>
-          <p>適合：{mode.suitableFor[0]}</p>
-          <a class="v2-text-link" href={withBase(`/cooperation/#${mode.slug}`)} aria-label={`了解${mode.title}`}>了解合作方式 <span aria-hidden="true">→</span></a>
-        </article>
-      ))}
-    </div>
-    <ul class="v2-methods" aria-label="共同工作方式">{commonWorkingMethods.map((method) => <li>{method}</li>)}</ul>
-    <p class="v2-note">{onSiteMeetingNote}</p>
-    <a class="v2-text-link" href={withBase("/cooperation/")}>了解合作方式 <span aria-hidden="true">→</span></a>
-  </section>
-
   <section id="home-works" class="home-section v2-section v2-bordered" aria-labelledby="home-works-title" data-home-section="works">
     <header class="v2-section__head reveal">
-      <p class="home-label">06 / SELECTED WORKS</p>
+      <p class="home-label">04 / SELECTED WORKS</p>
       <h2 id="home-works-title">從實際作品，了解設計的應用。</h2>
       <p>精選網站視覺與平面印刷案例，查看畫面與目前已整理的負責項目。</p>
     </header>
@@ -160,32 +166,29 @@ const featuredCases = await getFeaturedCases();
     <a class="home-works-cta" href={withBase("/works/")}><span>查看所有作品案例</span><span aria-hidden="true">→</span></a>
   </section>
 
-  <section id="home-process" class="home-section v2-section v2-bordered" aria-labelledby="home-process-title" data-home-section="process">
+  <section id="home-cooperation" class="home-section v2-section v2-bordered" aria-labelledby="home-cooperation-title" data-home-section="cooperation">
     <header class="v2-section__head reveal">
-      <p class="home-label">07 / PROCESS</p>
-      <h2 id="home-process-title">每個階段，都有清楚的下一步。</h2>
-      <p>先確認目標與交付，再透過排程與回饋，逐步完成設計和製作。</p>
+      <p class="home-label">05 / COOPERATION</p>
+      <h2 id="home-cooperation-title">依需求的節奏，選擇合作方式。</h2>
+      <p class="v2-cooperation__lead">從一次性製作需求，到月度半遠端品牌支援。</p>
     </header>
-    <ol class="v2-process">
-      {commonWorkflow.map((step, index) => (
-        <li class="reveal"><span class="v2-process__number">{String(index + 1).padStart(2, "0")}</span><div><h3>{step.title}</h3><p>{step.description}</p></div></li>
+    <div class="v2-cooperation-grid">
+      {featuredCooperations.map((mode, index) => (
+        <article class="v2-panel v2-cooperation-card reveal">
+          <div class="v2-cooperation-card__arch">
+            <p class="v2-eyebrow">0{index + 1}</p>
+            <h3>{mode.title}</h3>
+          </div>
+          <div class="v2-cooperation-card__body">
+            <p>{mode.summary}</p>
+            <p>適合：{mode.suitableFor[0]}</p>
+          </div>
+        </article>
       ))}
-    </ol>
-  </section>
-
-  <section id="home-about" class="home-section v2-section v2-bordered v2-about" aria-labelledby="home-about-title" data-home-section="about">
-    <header class="v2-section__head reveal">
-      <p class="home-label">08 / ABOUT</p>
-      <h2 id="home-about-title">{publicProfile.brandName}<br /><span class="v2-about__name">{publicProfile.ownerDisplayName}</span></h2>
-    </header>
-    <div class="v2-about__body reveal">
-      <p>{publicProfile.shortBio}</p>
-      <p>{publicProfile.aboutIntro}</p>
-      <div class="v2-actions">
-        <a class="v2-button" href={withBase("/about/")}>了解我的背景 <span aria-hidden="true">→</span></a>
-        <button class="v2-button v2-button--pending" type="button" disabled>{publicProfile.resume.label}<span>公開版履歷未製作完成</span></button>
-      </div>
     </div>
+    <ul class="v2-methods" aria-label="共同工作方式">{commonWorkingMethods.map((method) => <li>{method}</li>)}</ul>
+    <p class="v2-note">{onSiteMeetingNote}</p>
+    <a class="v2-text-link" href={withBase("/cooperation/")}>了解合作方式 <span aria-hidden="true">→</span></a>
   </section>
 
   <section id="home-contact" class="home-contact v2-contact" aria-labelledby="home-contact-title" data-home-section="contact">
@@ -193,7 +196,7 @@ const featuredCases = await getFeaturedCases();
       <img src={withBase("/images/works/glitter8-catalog-mockup.jpg")} alt="GLITTER8 型錄設計細節" loading="lazy" />
     </div>
     <div class="home-contact__panel reveal">
-      <p class="home-label">09 / CONTACT</p>
+      <p class="home-label">06 / CONTACT</p>
       <h2 id="home-contact-title">{contactContent.title}</h2>
       <p class="home-contact__lead">{contactContent.intro}</p>
       <a class="home-contact__button" href={withBase("/contact/")}><span>{contactContent.ctaLabel}</span><span aria-hidden="true">→</span></a>
@@ -259,37 +262,79 @@ const featuredCases = await getFeaturedCases();
   .v2-button--pending span { font-size: 0.76rem; font-weight: 400; }
   .v2-button--pending:hover { transform: none; }
   .v2-section { padding-block: clamp(64px, 7.5vw, 104px); }
+  #home-works.v2-section { padding-top: clamp(34px, 4vw, 58px); }
   .v2-section__head { max-width: 800px; margin-bottom: 36px; }
   .v2-section__head .home-label { margin-bottom: 20px; }
   .v2-section__head h2 { line-height: 1.45; }
   .v2-section__head > p:last-child:not(.home-label) { max-width: 680px; margin: 18px 0 0; color: #636363; line-height: 1.9; }
+  .v2-experience__lead { font-weight: 800; }
+  .v2-cooperation__lead { font-weight: 800; }
   .v2-bordered { border-top: 1px solid #e6e6e2; }
   .v2-note { margin: 22px 0 0; color: #696969; font-size: 0.9rem; }
-  .v2-logo-wall { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid #deded8; border-left: 1px solid #deded8; }
-  .v2-logo-wall li { display: grid; align-content: center; justify-items: center; gap: 10px; min-height: 138px; padding: 24px 16px; border-right: 1px solid #deded8; border-bottom: 1px solid #deded8; text-align: center; background: var(--home-gray); }
-  .v2-logo-wall span { font-weight: 700; }
-  .v2-logo-wall small { color: #747474; font-size: 0.76rem; }
+  .v2-logo-marquee { position: relative; overflow: hidden; border-block: 1px solid #deded8; background: var(--home-gray); mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%); }
+  .v2-logo-marquee::before,
+  .v2-logo-marquee::after { content: ""; position: absolute; z-index: 1; top: 0; bottom: 0; width: clamp(34px, 7vw, 96px); pointer-events: none; }
+  .v2-logo-marquee::before { left: 0; background: linear-gradient(90deg, var(--home-white), transparent); }
+  .v2-logo-marquee::after { right: 0; background: linear-gradient(270deg, var(--home-white), transparent); }
+  .v2-logo-track { display: flex; width: max-content; margin: 0; padding: 0; list-style: none; animation: v2-logo-marquee 28s linear infinite; }
+  .v2-logo-marquee:hover .v2-logo-track { animation-play-state: paused; }
+  .v2-logo-track li { display: grid; align-content: center; justify-items: center; gap: 8px; width: clamp(220px, 24vw, 340px); min-height: clamp(118px, 11vw, 152px); padding: 22px 28px; border-right: 1px solid #deded8; text-align: center; }
+  .v2-logo-track li:nth-child(2n) { background: color-mix(in srgb, var(--home-yellow) 6%, var(--home-gray)); }
+  .v2-logo-mark { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid color-mix(in srgb, var(--home-ink) 48%, transparent); border-radius: 999px; color: var(--home-ink); font-family: "Manrope", "Noto Sans TC", sans-serif; font-weight: 900; letter-spacing: -0.04em; }
+  .v2-logo-track span:not(.v2-logo-mark) { font-weight: 800; letter-spacing: 0.02em; }
+  .v2-logo-track small { color: #747474; font-size: 0.76rem; letter-spacing: 0.06em; }
+  @keyframes v2-logo-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
   .v2-services { margin-top: 42px; }
+  .v2-services .home-skills__wave--bottom { height: clamp(90px, 11vw, 150px); }
   .v2-services .home-skills__inner { grid-template-columns: minmax(0,1fr) minmax(0,0.8fr); gap: 48px 64px; padding-top: 88px; }
   .v2-services .home-skills__intro { width: 100%; justify-self: start; align-self: center; }
   .v2-services .home-skills__intro h2 { margin-top: 20px; font-size: clamp(1.7rem, 2.7vw, 2.7rem); line-height: 1.45; }
   .v2-services .home-skills__intro > p:not(.home-label) { margin-top: 22px; max-width: 520px; line-height: 1.9; }
-  .v2-services .home-skills__orbit { grid-row: 1; width: min(100%, 380px); min-width: 0; margin-block: 32px; }
-  .v2-services .home-skills__orbit strong { font-size: clamp(1.1rem, 2vw, 1.8rem); line-height: 1.3; letter-spacing: 0.08em; }
-  .v2-services .home-skills__orbit span { min-width: 105px; min-height: 46px; font-size: 0.95rem; letter-spacing: 0.03em; }
-  .v2-services__grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); grid-column: 1 / -1; gap: 24px; }
-  .v2-service { min-width: 0; padding: 28px 0; border-top: 1px solid rgba(17,17,17,0.32); }
-  .v2-eyebrow { margin: 0 0 16px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; }
+  .v2-services .home-skills__intro .v2-text-link { position: relative; isolation: isolate; padding: 10px 14px 11px; overflow: hidden; transition: color 220ms ease, border-color 220ms ease; }
+  .v2-services .home-skills__intro .v2-text-link::before { content: ""; position: absolute; inset: 0 0 -1px; z-index: -1; background: #1687d9; transform: scaleX(0); transform-origin: left center; transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .v2-services .home-skills__intro .v2-text-link:hover,
+  .v2-services .home-skills__intro .v2-text-link:focus-visible { color: #fff; border-color: #1687d9; }
+  .v2-services .home-skills__intro .v2-text-link:hover::before,
+  .v2-services .home-skills__intro .v2-text-link:focus-visible::before { transform: scaleX(1); }
+  .v2-services .home-skills__orbit { grid-row: 1; width: min(100%, 460px); min-width: 0; margin-block: 22px; }
+  .v2-services .home-skills__orbit strong { font-size: clamp(1.35rem, 2.45vw, 2.25rem); line-height: 1.25; letter-spacing: 0.1em; }
+  .v2-services .home-skills__orbit span { min-width: 122px; min-height: 52px; font-size: 1.05rem; letter-spacing: 0.04em; }
+  .v2-services__grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); grid-column: 1 / -1; gap: 18px; }
+  .v2-service { min-width: 0; perspective: 1200px; }
+  .v2-service--flip { display: block; outline: none; cursor: default; }
+  .v2-service__flip { position: relative; aspect-ratio: 1 / 1; min-height: clamp(176px, 17vw, 246px); transform-style: preserve-3d; transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .v2-service:hover .v2-service__flip,
+  .v2-service:focus-visible .v2-service__flip { transform: rotateY(180deg); }
+  .v2-service:focus-visible .v2-service__flip { outline: 2px solid var(--home-ink); outline-offset: 6px; }
+  .v2-service__face { position: absolute; inset: 0; overflow: hidden; display: grid; place-items: center; padding: clamp(18px, 2vw, 26px); border: 1.5px solid rgba(17,17,17,0.45); backface-visibility: hidden; text-align: center; }
+  .v2-service__face--front { color: #fff; background: #111; }
+  .v2-service__face--back { align-content: center; justify-items: center; gap: 16px; background: var(--home-ink); color: #fff; transform: rotateY(180deg); }
+  .v2-service__image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(8%) saturate(0.82) brightness(0.64); transform: scale(1.04); }
+  .v2-service__shade { position: absolute; inset: 0; background: rgba(0,0,0,0.28); }
+  .v2-service__caption { position: relative; z-index: 1; display: grid; justify-items: center; align-content: center; gap: clamp(18px, 2vw, 28px); width: 100%; }
+  .v2-service__english { margin: 0; font-family: "Manrope", "Noto Sans TC", sans-serif; font-size: clamp(0.66rem, 0.82vw, 0.82rem); font-weight: 800; line-height: 1; letter-spacing: 0.32em; text-indent: 0.32em; }
+  .v2-eyebrow { margin: 0; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.12em; }
   .v2-service h3, .v2-panel h3 { margin: 0; font-size: clamp(1.2rem, 1.7vw, 1.55rem); line-height: 1.45; }
+  .v2-service--flip h3 { max-width: 9em; font-family: "Noto Sans TC", "Manrope", sans-serif; font-size: clamp(1.12rem, 1.55vw, 1.55rem); font-weight: 700; line-height: 1.28; letter-spacing: 0.08em; text-indent: 0.08em; }
+  .v2-service__face--back h3 { color: var(--home-yellow); font-family: "Manrope", "Noto Sans TC", sans-serif; font-size: clamp(1.15rem, 1.5vw, 1.45rem); font-weight: 900; letter-spacing: 0.04em; text-indent: 0; }
+  .v2-service__summary { max-width: 18em; margin: 0; color: #fff; font-size: clamp(0.82rem, 0.9vw, 0.95rem); font-weight: 600; line-height: 1.85; letter-spacing: 0.04em; }
   .v2-service > p:not(.v2-eyebrow) { margin: 16px 0 0; line-height: 1.9; }
-  .v2-service .v2-service__examples { font-size: 0.86rem; color: #4e4c2e; }
   .v2-text-link { display: inline-flex; align-items: center; gap: 30px; min-height: 44px; margin-top: 24px; padding-block: 8px; border-bottom: 1px solid currentColor; font-size: 0.95rem; font-weight: 700; }
-  .v2-solutions-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px; }
   .v2-panel { padding: clamp(24px, 3vw, 36px); min-width: 0; border: 1px solid #deded8; }
   .v2-panel > p:not(.v2-eyebrow) { color: #636363; line-height: 1.9; }
   .v2-deliverables { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 24px 0 0; list-style: none; }
   .v2-deliverables li { padding: 5px 10px; background: var(--home-gray); font-size: 0.85rem; }
-  .v2-cooperation-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px; }
+  .v2-cooperation-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px; }
+  .v2-cooperation-card { display: grid; align-content: start; padding: clamp(18px, 2vw, 26px) clamp(22px, 2.8vw, 34px) clamp(18px, 2.2vw, 26px); border: 2px solid var(--home-yellow); border-radius: 999px 999px 0 0 / 170% 170% 0 0; background: #fffdf8; }
+  .v2-cooperation-card__arch { display: grid; place-items: center; align-content: center; min-height: clamp(210px, 18vw, 292px); text-align: center; transform: translateY(clamp(-32px, -2.4vw, -18px)); }
+  .v2-cooperation-card__arch .v2-eyebrow { margin: 0 0 12px; color: #a87908; font-size: clamp(2.15rem, 4vw, 3.8rem); font-weight: 900; letter-spacing: -0.03em; line-height: 0.95; }
+  .v2-cooperation-card__arch h3 { max-width: 10em; font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif; font-size: clamp(1.55rem, 2.2vw, 2.25rem); font-weight: 900; line-height: 1.22; letter-spacing: 0.02em; }
+  .v2-cooperation-card__body { display: grid; align-content: start; gap: 12px; margin-top: clamp(-44px, -3.2vw, -28px); }
+  .v2-cooperation-card__body p { margin: 0; color: #636363; line-height: 1.8; }
+  .v2-cooperation-card__body p + p { padding-top: 10px; border-top: 1px solid #e6e0d2; color: var(--home-ink); font-weight: 700; }
   .v2-methods { display: flex; flex-wrap: wrap; gap: 12px 24px; list-style: none; padding: 0; margin: 32px 0 0; }
   .v2-methods li::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 9px; background: var(--home-yellow); vertical-align: middle; }
   .v2-cases-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 44px 32px; }
@@ -313,7 +358,8 @@ const featuredCases = await getFeaturedCases();
     .v2-services .home-skills__inner { grid-template-columns: minmax(0,1fr) minmax(0,0.8fr); gap: 36px; }
     .v2-services .home-skills__orbit { grid-column: 2; }
     .v2-services__grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    .v2-cooperation-grid { grid-template-columns: 1fr; }
+    .v2-service__flip { min-height: clamp(180px, 32vw, 240px); }
+    .v2-cooperation-card__arch { min-height: 220px; transform: translateY(-22px); }
   }
   @media (max-width: 640px) {
     .v2-hero { min-height: auto; }
@@ -324,12 +370,17 @@ const featuredCases = await getFeaturedCases();
     .v2-hero__modes { font-size: 0.83rem; }
     .v2-actions { flex-direction: column; }
     .v2-button { width: 100%; }
-    .v2-logo-wall { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    .v2-logo-wall li { min-height: 120px; font-size: 0.88rem; }
+    .v2-logo-track { animation-duration: 22s; }
+    .v2-logo-track li { width: clamp(180px, 62vw, 260px); min-height: 112px; padding: 20px; font-size: 0.88rem; }
+    .v2-logo-mark { width: 48px; height: 48px; }
+    #home-works.v2-section { padding-top: 36px; }
     .v2-services .home-skills__inner { grid-template-columns: 1fr; padding-top: 66px; padding-bottom: 36px; }
-    .v2-services .home-skills__orbit { grid-column: 1; grid-row: auto; width: min(76vw,300px); margin-block: 18px; }
-    .v2-services__grid, .v2-solutions-grid, .v2-cases-grid, .v2-process, .v2-about { grid-template-columns: 1fr; }
-    .v2-services__grid { gap: 0; }
+    .v2-services .home-skills__wave--bottom { height: 88px; }
+    .v2-services .home-skills__orbit { grid-column: 1; grid-row: auto; width: min(82vw,340px); margin-block: 18px; }
+    .v2-cooperation-grid { grid-template-columns: 1fr; }
+    .v2-services__grid, .v2-cases-grid, .v2-process, .v2-about { grid-template-columns: 1fr; }
+    .v2-services__grid { gap: 14px; }
+    .v2-service__flip { min-height: 190px; aspect-ratio: 1.2 / 1; }
     .v2-about { gap: 0; }
     .v2-process li { gap: 20px; }
     .v2-contact .home-contact__button { letter-spacing: 0.04em; padding-inline: 24px; min-width: 0; width: 100%; }
@@ -337,9 +388,13 @@ const featuredCases = await getFeaturedCases();
   @media (prefers-reduced-motion: reduce) {
     .v2-button { transition: none; }
     .v2-button:hover { transform: none; }
+    .v2-logo-track { animation: none; transform: none; }
     .v2-services .home-skills-line__path { animation: none; }
+    .v2-services .home-skills__intro .v2-text-link::before { transition: none; }
+    .v2-service__flip { transition: none; }
+    .v2-service:hover .v2-service__flip,
+    .v2-service:focus-visible .v2-service__flip { transform: none; }
     .v2-contact .home-contact__media { clip-path: none; animation: none; }
     :global(.v2-home .reveal) { opacity: 1; transform: none; transition: none; }
   }
 </style>
-

@@ -9,8 +9,8 @@ import { withBase } from "@/utils/paths";
     <div class="site-footer__main">
       <section class="footer-brand" aria-label="個人品牌工作室">
         <p class="footer-kicker">DESIGN & REMOTE SUPPORT</p>
-        <strong class="footer-brand__name">{site.siteName}<small>{site.brandFullName}</small></strong>
-        <p>T2（旭泰整合設計）由 {site.ownerDisplayName} 提供品牌視覺、印刷製作、網站、社群、影音與長期遠端支援。</p>
+        <strong class="footer-brand__name">{site.siteName}<small>/ {site.brandFullName}</small></strong>
+        <p>{site.siteName} / {site.ownerDisplayName} 提供品牌視覺、印刷製作、網站、社群、影音與長期遠端支援。</p>
         <span>{site.location}</span>
       </section>
 
@@ -24,8 +24,7 @@ import { withBase } from "@/utils/paths";
       <section class="footer-links" aria-label="合作形式">
         <p class="footer-kicker">COOPERATION</p>
         <a href={withBase("/cooperation/")}>單次專案</a>
-        <a href={withBase("/cooperation/")}>固定月度合作</a>
-        <a href={withBase("/cooperation/")}>包時支援</a>
+        <a href={withBase("/cooperation/")}>月度／半遠端合作</a>
       </section>
 
       <section class="footer-contact" aria-label="聯絡合作">
@@ -34,7 +33,7 @@ import { withBase } from "@/utils/paths";
         <dl>
           <div>
             <dt>WORK</dt>
-            <dd>遠端執行・由我直接溝通</dd>
+            <dd>遠端執行・半遠端協作</dd>
           </div>
           <div>
             <dt>AREA</dt>
@@ -47,7 +46,7 @@ import { withBase } from "@/utils/paths";
     </div>
 
     <div class="site-footer__bottom">
-      <span>Copyright © 2026 {site.siteName} / {site.brandFullName} / {site.ownerDisplayName}. All Rights Reserved.</span>
+      <span>Copyright © 2026 {site.siteName} / {site.ownerDisplayName}. All Rights Reserved.</span>
       <span>品牌視覺 × 網站 × 長期遠端支援</span>
     </div>
   </div>

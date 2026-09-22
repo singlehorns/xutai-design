@@ -1,10 +1,10 @@
 export const site = {
   siteName: "T2",
-  brandFullName: "旭泰整合設計",
+  brandFullName: "Tseting Chen",
   ownerDisplayName: "Tseting Chen",
   name: "T2",
   title: "T2 | 品牌視覺 × 網站 × 長期遠端支援",
-  description: "T2（旭泰整合設計）由 Tseting Chen 提供品牌視覺、印刷、網站與數位內容相關服務，支援單次專案與長期遠端合作。",
+  description: "T2 / Tseting Chen 提供品牌視覺、印刷、網站與數位內容相關服務，支援單次專案與長期遠端合作。",
   location: "Tainan, Taiwan",
   contactEmail: "待使用者確認"
 };

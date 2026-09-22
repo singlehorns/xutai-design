@@ -1,0 +1,180 @@
+---
+import Layout from "@/components/Layout.astro";
+import { site } from "@/data/site";
+---
+
+<Layout
+  title={`購物須知與常見問題 | ${site.siteName}`}
+  description="購買公版印刷品、半客製與客製化商品前，請先閱讀購物須知與退換貨須知。"
+  mainClass="shopping-guide-shell"
+>
+  <main class="shopping-guide-page" aria-labelledby="shopping-guide-title">
+    <header class="shopping-guide-hero">
+      <p class="home-label">SHOPPING GUIDE</p>
+      <h1 id="shopping-guide-title">購物須知與常見問題</h1>
+      <p>購買公版印刷品、半客製與客製化商品前，請先閱讀以下說明。</p>
+    </header>
+
+    <section class="shopping-guide-section" aria-labelledby="shopping-notice-title">
+      <p class="shopping-guide-section__mark" aria-hidden="true">○</p>
+      <div class="shopping-guide-section__content">
+        <h2 id="shopping-notice-title">購物須知</h2>
+
+        <p>
+          賣場裡的「公版印刷品」，雖享有網路購物之七天鑑賞期。但不可拆封產品外的包裝袋、使產品破損、遺漏或已使用至無法恢復原狀則不在此限。退換貨須以「契約解除後回復原狀的方式」，若產品退回不完整、破損、已經使用我們將有權利拒絕退款或退貨或需補償包裝費用。
+        </p>
+
+        <ul>
+          <li>產品有任何問題請第一時間通知客服，我們都非常有誠意為您解決。</li>
+          <li>產品尺寸都有詳細標註在商品描述內，請詳閱後再下單。</li>
+          <li>因個人顯示器不同、拍攝商品的環境燈光及角度都會影響肉眼所見之顏色，商品顏色會與實體稍有落差，下單前請先確認是否能夠接受。</li>
+          <li>印刷產品的顏色會因每批色彩值設定及紙材而有些許差異，每批印製的顏色可能稍有不同。此項不為瑕疵。</li>
+        </ul>
+
+        <p class="shopping-guide-note">
+          注意：訂單成立後，即為同意上述須知，商品無重大瑕疵者，不予以退換貨。
+        </p>
+
+        <p>
+          「半客製、客製化商品」不適用消費者保護法第十九條七天鑑賞及猶豫期間規定。
+        </p>
+
+        <p>
+          下單之前請先考慮清楚，客製化的商品是不能退換貨的。
+        </p>
+      </div>
+    </section>
+
+    <section class="shopping-guide-section" aria-labelledby="return-notice-title">
+      <p class="shopping-guide-section__mark" aria-hidden="true">○</p>
+      <div class="shopping-guide-section__content">
+        <h2 id="return-notice-title">退換貨須知</h2>
+
+        <ul>
+          <li>請於收到商品後七日內通知我們並寄回，逾期恕不受理。請保持產品的原始狀態與包裝完整不可拆封或使用。「鑑賞期」並非「試用期」，若收到產品不滿意請勿拆開使用，請立即按照退貨規定辦理退貨，若產品退回不完整、破損或已無完整包裝，我們有權拒絕退貨。</li>
+          <li>如因產品有瑕疵運費由我方支付，若非重大瑕疵或損壞欲退換貨運費則以買家自行負擔，請於寄回更換產品的包裹內附上費用，或以轉帳方式支付，以便我方為您處理。</li>
+          <li>若使用優惠券或折扣代碼則不補發優惠券及折扣碼。</li>
+          <li>若當初訂購產品達免運門檻，需扣除退貨之產品金額，若未達免運門檻，退費需扣除運費。</li>
+          <li>若產品有瑕疵或破損需退換貨，請聯繫客服LINE官方帳號，請提供照片或開箱影片及訂單編號供我們處理。</li>
+          <li>若產品已毀損或無法恢復原狀，將依毀損程度將視為產品已恕無法受理退貨，或扣除為回復原狀必要費用、包裝費用作為退費。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  :global(.shopping-guide-shell) {
+    background: var(--home-white);
+  }
+
+  .shopping-guide-page {
+    width: min(calc(100% - var(--home-safe) * 2), 1080px);
+    margin-inline: auto;
+    padding-block: clamp(72px, 8vw, 118px);
+  }
+
+  .shopping-guide-page :global(.home-label) {
+    margin-bottom: 18px;
+  }
+
+  .shopping-guide-hero {
+    display: grid;
+    gap: 18px;
+    max-width: 820px;
+    margin-bottom: clamp(46px, 7vw, 82px);
+  }
+
+  .shopping-guide-hero h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4.6vw, 4.6rem);
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+  }
+
+  .shopping-guide-hero p:not(.home-label) {
+    margin: 0;
+    color: #5f5f5f;
+    font-size: clamp(1rem, 1.45vw, 1.2rem);
+    font-weight: 700;
+    line-height: 1.9;
+  }
+
+  .shopping-guide-section {
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: clamp(18px, 4vw, 54px);
+    padding-block: clamp(34px, 5vw, 62px);
+    border-top: 1px solid var(--line);
+  }
+
+  .shopping-guide-section:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .shopping-guide-section__mark {
+    margin: 0;
+    color: var(--home-yellow);
+    font-family: "Manrope", "Noto Sans TC", sans-serif;
+    font-size: clamp(2rem, 4vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .shopping-guide-section__content {
+    display: grid;
+    gap: 22px;
+  }
+
+  .shopping-guide-section h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 2.2vw, 2.2rem);
+    line-height: 1.35;
+  }
+
+  .shopping-guide-section p,
+  .shopping-guide-section li {
+    color: #555;
+    font-size: clamp(0.95rem, 1.08vw, 1.04rem);
+    font-weight: 500;
+    line-height: 2;
+  }
+
+  .shopping-guide-section p {
+    margin: 0;
+  }
+
+  .shopping-guide-section ul {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding-left: 1.2em;
+  }
+
+  .shopping-guide-section li::marker {
+    color: #a87908;
+  }
+
+  .shopping-guide-note {
+    padding: 18px 20px;
+    border-left: 4px solid var(--home-yellow);
+    background: color-mix(in srgb, var(--home-yellow) 12%, #fff);
+    color: var(--home-ink) !important;
+    font-weight: 800 !important;
+  }
+
+  @media (max-width: 700px) {
+    .shopping-guide-page {
+      padding-block: 56px 82px;
+    }
+
+    .shopping-guide-section {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .shopping-guide-section__mark {
+      font-size: 2rem;
+    }
+  }
+</style>
