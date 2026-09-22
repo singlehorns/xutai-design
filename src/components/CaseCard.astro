@@ -14,7 +14,7 @@ const { caseStudy, compact = false } = Astro.props;
       <figcaption><span>VIEW CASE</span></figcaption>
     </figure>
     <div class="work-card__body case-card__body">
-      <p class="case-card__service">{caseStudy.services[0]?.title ?? caseStudy.categoryLabel}</p>
+      <p class="case-card__service">{caseStudy.source === "wordpress" ? caseStudy.categoryLabel : caseStudy.services[0]?.title ?? caseStudy.categoryLabel}</p>
       <h3>{caseStudy.title}</h3>
       {!compact && <p class="case-card__meta">{caseStudy.clientName ?? caseStudy.clientType ?? "客戶資料待補"} · {caseStudy.year ?? "年份待補"}</p>}
       <p class="case-card__summary">{caseStudy.summary}</p>

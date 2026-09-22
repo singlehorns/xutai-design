@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  repository_dispatch:
+    types: [t2-content-updated]
 
 permissions:
   contents: read
@@ -25,7 +27,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Setup Pages
@@ -34,8 +36,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify WordPress content adapter
+        run: npm run test:wordpress
+
       - name: Build
         run: npm run build
+        env:
+          WORDPRESS_URL: ${{ vars.WORDPRESS_URL }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

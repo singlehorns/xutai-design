@@ -2,7 +2,9 @@ import type { Service, ServiceId } from "./services";
 import type { Solution, SolutionId } from "./solutions";
 
 export type CaseContentStatus = "complete" | "partial" | "legacy";
-export type CaseCategory = "brand" | "print" | "web" | "social" | "motion";
+export type CaseCategory = string;
+export interface CaseCategoryOption { key: CaseCategory; label: string; }
+export interface CaseRelatedLink { href: string; label: string; }
 
 export interface CaseImage {
   src: string;
@@ -12,6 +14,11 @@ export interface CaseImage {
 
 /** Source-independent case contract. Unconfirmed facts remain absent. */
 export interface CaseData {
+  source?: "local" | "wordpress";
+  /** Sanitized editor HTML. Undefined means the legacy image/section layout. */
+  contentHtml?: string;
+  /** Null explicitly disables the related link; undefined uses legacy data. */
+  relatedLink?: CaseRelatedLink | null;
   id: string;
   slug: string;
   title: string;
@@ -45,6 +52,7 @@ export interface CaseData {
 export interface CaseViewModel extends CaseData {
   url: string;
   categories: CaseCategory[];
+  categoryTerms: CaseCategoryOption[];
   categoryLabel: string;
   services: Service[];
   solutions: Solution[];

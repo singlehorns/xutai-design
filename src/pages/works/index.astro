@@ -1,11 +1,11 @@
 ---
 import Layout from "@/components/Layout.astro";
 import CaseCard from "@/components/CaseCard.astro";
-import { getCases, getAvailableCaseCategories } from "@/data/cases";
+import { getCaseCatalog } from "@/data/cases";
 import { site } from "@/data/site";
 
-const cases = await getCases();
-const filters = [{ key: "all", label: "全部" }, ...getAvailableCaseCategories(cases)];
+const { cases, categories } = await getCaseCatalog();
+const filters = [{ key: "all", label: "全部" }, ...categories];
 ---
 
 <Layout title={`作品案例 | ${site.siteName}`} description={`查看 ${site.ownerDisplayName} 的網站視覺、平面印刷與影像作品，了解已確認的負責項目與相關服務。`}>
@@ -35,12 +35,14 @@ const filters = [{ key: "all", label: "全部" }, ...getAvailableCaseCategories(
     <div id="case-grid" class="works-grid works-archive__grid" data-work-list>
       {cases.map((caseStudy) => <CaseCard caseStudy={caseStudy} />)}
     </div>
+    <p class="case-archive__empty" data-empty-results hidden={cases.length > 0}>此分類目前尚無作品。</p>
   </section>
 
   <script>
     const root = document.querySelector("[data-case-archive]");
     const buttons = root?.querySelectorAll<HTMLButtonElement>("[data-filter]") ?? [];
     const cards = root?.querySelectorAll<HTMLElement>("[data-case-categories]") ?? [];
+    const empty = root?.querySelector<HTMLElement>("[data-empty-results]");
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
         const filter = button.dataset.filter;
@@ -53,6 +55,7 @@ const filters = [{ key: "all", label: "全部" }, ...getAvailableCaseCategories(
           card.hidden = !matches;
           card.classList.toggle("is-hidden", !matches);
         });
+        if (empty) empty.hidden = Array.from(cards).some((card) => !card.hidden);
       });
     });
   </script>
@@ -62,4 +65,5 @@ const filters = [{ key: "all", label: "全部" }, ...getAvailableCaseCategories(
   .case-archive__intro { max-width: 740px; margin: 34px auto 0; text-align: center; line-height: 1.9; color: #686868; }
   .case-archive .works-archive__grid { margin-top: 48px; }
   .case-archive button:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 4px; }
+  .case-archive__empty { text-align: center; margin: 36px 20px; color: var(--muted); }
 </style>

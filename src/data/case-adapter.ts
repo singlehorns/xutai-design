@@ -1,5 +1,5 @@
 import type { CollectionEntry } from "astro:content";
-import type { CaseCategory, CaseData, CaseImage, CaseViewModel } from "./case-model";
+import type { CaseCategory, CaseCategoryOption, CaseData, CaseImage, CaseViewModel } from "./case-model";
 import { getServices } from "./services";
 import { getSolutions } from "./solutions";
 
@@ -75,7 +75,7 @@ export function adaptLocalCase(entry: CollectionEntry<"works">): CaseViewModel {
 }
 
 /** Any future API adapter can pass the same plain CaseData into this presenter. */
-export function createCaseViewModel(data: CaseData, extra: { legacyCategories?: readonly string[]; referenceLinks?: string[]; pendingNotes?: string[] } = {}): CaseViewModel {
+export function createCaseViewModel(data: CaseData, extra: { categories?: readonly CaseCategoryOption[]; legacyCategories?: readonly string[]; referenceLinks?: string[]; pendingNotes?: string[] } = {}): CaseViewModel {
   const services = getServices().filter((service) => data.serviceIds.includes(service.id));
   const solutions = getSolutions().filter((solution) => data.solutionIds.includes(solution.id));
   const legacyMap: Record<string, CaseCategory | undefined> = { visual: "brand", brand: "brand", print: "print", web: "web", admin: "web", social: "social", motion: "motion" };
@@ -83,12 +83,13 @@ export function createCaseViewModel(data: CaseData, extra: { legacyCategories?: 
     ...data.serviceIds,
     ...(extra.legacyCategories ?? []).map((category) => legacyMap[category]).filter((category): category is CaseCategory => Boolean(category))
   ]);
-  const categories = caseCategories.filter((category) => categoryKeys.has(category.key));
+  const categories = extra.categories ?? caseCategories.filter((category) => categoryKeys.has(category.key));
   return {
     ...data,
     url: `/works/${data.slug}/`,
     categories: categories.map((category) => category.key),
-    categoryLabel: categories.map((category) => category.label).join(" / ") || "影像紀錄",
+    categoryTerms: [...categories],
+    categoryLabel: categories.map((category) => category.label).join(" / ") || (data.source !== "wordpress" || (data.slug === "photography-sample" && data.contentStatus === "legacy") ? "影像紀錄" : "未分類"),
     services,
     solutions,
     referenceLinks: [...new Set(extra.referenceLinks ?? [])],

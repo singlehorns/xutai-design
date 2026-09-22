@@ -9,6 +9,7 @@ dist/
 # Environment and credentials
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 *token*
