@@ -2,7 +2,7 @@
 /**
  * Plugin Name: T2 作品管理
  * Description: 管理作品、分類、作品內容與單一相關連結，提供 Astro 靜態網站的公開內容 API。
- * Version: 1.0.1
+ * Version: 1.1.0
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: T2
@@ -62,7 +62,7 @@ function t2_portfolio_meta_box($post) {
     <?php foreach (array('complete' => '資料完整', 'partial' => '部分資料待補', 'legacy' => '舊作紀錄') as $key => $label) : ?>
         <option value="<?php echo esc_attr($key); ?>" <?php selected($meta('content_status') ?: 'complete', $key); ?>><?php echo esc_html($label); ?></option>
     <?php endforeach; ?></select></label></p>
-    <p>發布／更新後，請前往「作品案例 → 網站更新」重新建置前台。草稿、私人作品及有密碼的作品不會出現在公開內容 API。</p>
+    <p><?php echo t2_publish_enabled() && t2_portfolio_dispatch_ready() ? '發布／更新後，系統會自動更新網站；建置與部署完成前，前台維持上一次成功版本。' : '作品儲存後，請由管理者在「網站更新」完成自動更新連線。'; ?>草稿、私人作品及有密碼的作品不會出現在公開內容 API。</p>
     <?php
 }
 
@@ -158,52 +158,7 @@ add_action('rest_api_init', function () {
     ));
 });
 
-function t2_portfolio_dispatch_ready() {
-    return defined('T2_GITHUB_TOKEN') && T2_GITHUB_TOKEN && defined('T2_GITHUB_REPOSITORY') && preg_match('#^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$#D', T2_GITHUB_REPOSITORY);
-}
-
-add_action('admin_menu', function () {
-    add_submenu_page('edit.php?post_type=t2_work', '網站更新', '網站更新', 'manage_options', 't2-site-update', 't2_portfolio_update_page');
-});
-
-function t2_portfolio_update_page() {
-    if (!current_user_can('manage_options')) { return; }
-    echo '<div class="wrap"><h1>更新作品網站</h1><p>先發布作品／分類，再按下方按鈕。GitHub 會重新建置並發布網站；完成前，前台維持上一次成功的版本。</p>';
-    if (isset($_GET['t2_result'])) {
-        $ok = $_GET['t2_result'] === 'sent';
-        echo '<div class="notice ' . ($ok ? 'notice-success' : 'notice-error') . '"><p>' . ($ok ? '已送出網站更新請求。請至 GitHub Actions 查看建置與發布結果。' : '未能送出更新請求。請管理者檢查伺服器的 GitHub 設定與網路連線。') . '</p></div>';
-    }
-    if (t2_portfolio_dispatch_ready()) {
-        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
-        wp_nonce_field('t2_rebuild_site');
-        echo '<input type="hidden" name="action" value="t2_rebuild_site" />';
-        submit_button('更新網站');
-        echo '</form><p><a target="_blank" rel="noopener noreferrer" href="' . esc_url('https://github.com/' . T2_GITHUB_REPOSITORY . '/actions') . '">查看 GitHub Actions</a></p>';
-    } else {
-        $repository = defined('T2_GITHUB_REPOSITORY') && preg_match('#^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$#D', T2_GITHUB_REPOSITORY) ? T2_GITHUB_REPOSITORY : 'singlehorns/xutai-design';
-        $workflow_url = 'https://github.com/' . $repository . '/actions/workflows/deploy.yml';
-        echo '<p>作品與分類儲存完成後，請前往 GitHub 發布網站。在頁面右側點選「Run workflow」，保留 main 分支，再按一次「Run workflow」。</p>';
-        echo '<p><a class="button button-primary" target="_blank" rel="noopener noreferrer" href="' . esc_url($workflow_url) . '">前往 GitHub 發布網站</a></p>';
-        echo '<p>需要先登入有此網站發布權限的 GitHub 帳號。等待建置與部署成功後，新內容才會出現在前台；完成前會保留上一次成功發布的網站。</p>';
-    }
-    echo '<p>作品內容 API：<code>' . esc_html(rest_url('t2-portfolio/v1/works')) . '</code></p></div>';
-}
-
-add_action('admin_post_t2_rebuild_site', function () {
-    if (!current_user_can('manage_options')) { wp_die('沒有權限。', '', array('response' => 403)); }
-    check_admin_referer('t2_rebuild_site');
-    $ok = false;
-    if (t2_portfolio_dispatch_ready()) {
-        $response = wp_remote_post('https://api.github.com/repos/' . T2_GITHUB_REPOSITORY . '/dispatches', array(
-            'timeout' => 15, 'redirection' => 0,
-            'headers' => array('Authorization' => 'Bearer ' . T2_GITHUB_TOKEN, 'Accept' => 'application/vnd.github+json', 'Content-Type' => 'application/json', 'X-GitHub-Api-Version' => '2022-11-28'),
-            'body' => wp_json_encode(array('event_type' => 't2-content-updated')),
-        ));
-        $ok = !is_wp_error($response) && wp_remote_retrieve_response_code($response) === 204;
-    }
-    wp_safe_redirect(add_query_arg(array('post_type' => 't2_work', 'page' => 't2-site-update', 't2_result' => $ok ? 'sent' : 'failed'), admin_url('edit.php')));
-    exit;
-});
+require_once __DIR__ . '/publish.php';
 
 /** Import only explicitly supplied local media; never download a URL from a manifest. */
 function t2_portfolio_import_media($filename, $root, $alt) {
