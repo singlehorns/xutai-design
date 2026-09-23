@@ -21,8 +21,6 @@ export async function getStaticPaths() {
 interface Props { caseStudy: CaseViewModel; prev: CaseViewModel; next: CaseViewModel; }
 const { caseStudy, prev, next } = Astro.props;
 // Show each existing image once. The first image also serves as the project cover.
-const summaryEnd = caseStudy.summary.search(/[。！？.!?]/);
-const heroSummary = caseStudy.source === "wordpress" ? caseStudy.summary : summaryEnd >= 0 ? caseStudy.summary.slice(0, summaryEnd + 1) : caseStudy.summary;
 
 const relatedLink = caseStudy.relatedLink !== undefined
   ? caseStudy.relatedLink && { ...caseStudy.relatedLink, external: true }
@@ -46,7 +44,6 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
     <header class="project__header case-hero">
       <a class="case-back" href={withBase("/works/")}>← 所有作品案例</a>
       <h1>{caseStudy.title}</h1>
-      <p class="case-hero__summary">{heroSummary}</p>
       {caseStudy.categoryTerms.length > 0 && <div class="case-categories" aria-label="作品標籤">
         {caseStudy.categoryTerms.map((tag) => <span class="case-category-badge">{tag.label}</span>)}
       </div>}
@@ -97,7 +94,6 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
   .case-hero { padding: 0 clamp(22px,4vw,58px); }
   .case-hero h1 { overflow-wrap: anywhere; }
   .case-back { width: fit-content; margin-bottom: 12px; font-size: 0.85rem; font-weight: 700; }
-  .case-hero .case-hero__summary { max-width: 760px; overflow: hidden; color: var(--muted); white-space: nowrap; text-overflow: ellipsis; }
   .case-categories { display: flex; flex-wrap: wrap; gap: 8px; }
   .case-hero .case-category-badge { width: fit-content; margin: 0; padding: 4px 12px; background: var(--home-yellow); color: var(--home-ink); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; }
   .case-viewer { display: block; }
