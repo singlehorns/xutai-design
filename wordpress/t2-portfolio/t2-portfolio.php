@@ -2,7 +2,7 @@
 /**
  * Plugin Name: T2 作品管理
  * Description: 管理作品、分類、作品內容與單一相關連結，提供 Astro 靜態網站的公開內容 API。
- * Version: 1.1.0
+ * Version: 1.2.0
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: T2
@@ -37,7 +37,7 @@ add_filter('allowed_block_types_all', function ($allowed, $context) {
 function t2_portfolio_services() { return array('brand' => '品牌與視覺', 'print' => '印刷與輸出', 'web' => '網站', 'social' => '社群與廣告', 'motion' => '影音'); }
 
 add_action('add_meta_boxes_t2_work', function () {
-    add_meta_box('t2-work-settings', '作品顯示設定', 't2_portfolio_meta_box', 't2_work', 'normal', 'high');
+    add_meta_box('t2-work-settings', '相關連結與顯示設定', 't2_portfolio_meta_box', 't2_work', 'normal', 'default');
 });
 
 function t2_portfolio_meta_box($post) {
@@ -45,7 +45,7 @@ function t2_portfolio_meta_box($post) {
     $meta = function ($key) use ($post) { return get_post_meta($post->ID, '_t2_' . $key, true); };
     $services = (array) $meta('service_ids');
     ?>
-    <p>標題用於作品名稱；「摘要」填寫一行簡短描述。上方編輯器可以依順序新增文字、圖片與圖庫；右側「作品封面」用於作品列表。分類會同步顯示於篩選列和作品內頁。</p>
+    <p>可設定一個相關連結，以及作品的顯示順序與對應服務。</p>
     <p><label><input type="checkbox" name="t2_featured" value="1" <?php checked($meta('featured'), '1'); ?> /> 顯示於首頁精選作品</label></p>
     <p><label>顯示順序（數字越小越前面） <input type="number" name="t2_display_order" value="<?php echo esc_attr($meta('display_order') ?: 0); ?>" /></label></p>
     <p><label for="t2-related-url">相關連結（選填，只顯示一個）</label><br /><input class="widefat" id="t2-related-url" type="url" name="t2_related_url" placeholder="https://example.com/" value="<?php echo esc_attr($meta('related_url')); ?>" /></p>
@@ -95,10 +95,10 @@ function t2_portfolio_rest_categories() {
 }
 
 function t2_portfolio_full_image($html, $block) {
-    if (($block['blockName'] ?? '') !== 'core/image' || empty($block['attrs']['id']) || ($block['attrs']['sizeSlug'] ?? '') !== 'full') { return $html; }
+    if (($block['blockName'] ?? '') !== 'core/image' || empty($block['attrs']['id'])) { return $html; }
     $original = wp_get_original_image_url((int) $block['attrs']['id']);
     if (!$original) { return $html; }
-    // Keep intentionally smaller image sizes; "full" means the uploaded original.
+    // Portfolio pictures use the uploaded original, including legacy editor thumbnails.
     $processor = new WP_HTML_Tag_Processor($html);
     if ($processor->next_tag('img')) {
         $processor->set_attribute('src', $original);
@@ -159,6 +159,7 @@ add_action('rest_api_init', function () {
 });
 
 require_once __DIR__ . '/publish.php';
+require_once __DIR__ . '/editor.php';
 
 /** Import only explicitly supplied local media; never download a URL from a manifest. */
 function t2_portfolio_import_media($filename, $root, $alt) {
