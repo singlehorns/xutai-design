@@ -16,6 +16,24 @@ test("published catalog retains empty categories, authoritative renamed labels a
   assert.equal((await loadWordPressCatalog("https://cms.example.com", fixture())).cases[0].relatedLink, null);
 });
 
+test("WordPress can publish an untitled work without losing its route, categories or content", async () => {
+  for (const title of ["", " \n\t "]) {
+    const input = sample({ slug: "33", title, summary: "新作品的簡短描述。", relatedLink: { href: "https://example.com/project", label: "查看網站" } });
+    const existing = Array.from({ length: 9 }, (_, index) => sample({ slug: `existing-${index + 1}`, displayOrder: index + 1 }));
+    const result = await loadWordPressCatalog("https://cms.example.com", fixture([...existing, input]));
+    assert.equal(result.cases.length, 10);
+    const untitled = result.cases.find((item) => item.slug === "33");
+    assert.equal(untitled.title, "未命名作品");
+    assert.equal(untitled.shortTitle, "未命名作品");
+    assert.equal(untitled.summary, input.summary);
+    assert.deepEqual(untitled.categoryTerms, input.categories);
+    assert.deepEqual(untitled.coverImage, input.coverImage);
+    assert.deepEqual(untitled.relatedLink, input.relatedLink);
+    assert.match(untitled.contentHtml, /設計說明/);
+    assert.match(untitled.contentHtml, /https:\/\/cms.example.com\/a.jpg/);
+  }
+});
+
 test("collects multiple pages, sorts display order, and normalizes percent-encoded Chinese names", async () => {
   const categories = [{ key: "%e8%a8%ad%e8%a8%88", label: "設計" }];
   const requests = [];
@@ -59,6 +77,9 @@ for (const [name, update] of [
   ["category mismatch", { categories: [{ key: "web", label: "Changed midway" }] }],
   ["unknown category", { categories: [{ key: "missing", label: "新" }] }],
   ["incorrect type", { featured: "false" }],
+  ["missing title", { title: undefined }],
+  ["null title", { title: null }],
+  ["non-string title", { title: 33 }],
   ["missing explicit link", { relatedLink: undefined }]
 ]) test(`rejects ${name} instead of building incorrect routes or content`, async () => {
   await assert.rejects(loadWordPressCatalog("https://cms.example.com", fixture([sample(update)])), /WordPress/);

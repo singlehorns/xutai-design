@@ -68,7 +68,8 @@ export function sanitizeCaseContent(html: string): string {
 function work(value: unknown, categories: Map<string, CaseCategoryOption>): WordPressCase {
   if (!object(value)) return fail("作品格式不正確");
   const workSlug = slug(value.slug, "作品代稱");
-  const title = text(value.title, "作品標題");
+  // WordPress permits published posts without a title. Keep their route/content visible.
+  const title = text(value.title, "作品標題", 500, true) || "未命名作品";
   if (!Array.isArray(value.categories)) return fail(`${workSlug} 缺少分類陣列`);
   const terms = value.categories.map(category).map((term) => {
     const authoritative = categories.get(term.key);
