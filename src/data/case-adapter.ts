@@ -2,6 +2,7 @@ import type { CollectionEntry } from "astro:content";
 import type { CaseCategory, CaseCategoryOption, CaseData, CaseImage, CaseViewModel } from "./case-model";
 import { getServices } from "./services";
 import { getSolutions } from "./solutions";
+import { legacyServiceGroups } from "./service-groups";
 
 export const caseCategories: readonly { key: CaseCategory; label: string }[] = [
   { key: "brand", label: "品牌與視覺" },
@@ -86,6 +87,7 @@ export function createCaseViewModel(data: CaseData, extra: { categories?: readon
   const categories = extra.categories ?? caseCategories.filter((category) => categoryKeys.has(category.key));
   return {
     ...data,
+    serviceGroups: data.serviceGroups ?? legacyServiceGroups(data.serviceIds),
     url: `/works/${data.slug}/`,
     categories: categories.map((category) => category.key),
     categoryTerms: [...categories],

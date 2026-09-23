@@ -7,7 +7,7 @@ interface Props { caseStudy: CaseViewModel; compact?: boolean; }
 const { caseStudy, compact = false } = Astro.props;
 ---
 
-<article class="work-card case-card" data-case-categories={caseStudy.categories.join(" ")}>
+<article class="work-card case-card" data-case-service-groups={caseStudy.serviceGroups.join(" ")}>
   <a href={withBase(caseStudy.url)} aria-label={`查看 ${caseStudy.title} 案例`}>
     <figure>
       {caseStudy.coverImage ? <img src={withBase(caseStudy.coverImage.src)} alt={caseStudy.coverImage.alt} loading="lazy" /> : <PendingImage />}

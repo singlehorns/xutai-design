@@ -76,11 +76,11 @@
     if (button.hasAttribute('data-row-down') && row.nextElementSibling) row.nextElementSibling.after(row);
     if (button.hasAttribute('data-add-category')) {
       const field = document.getElementById('t2-new-category-name'); const message = root.querySelector('[data-category-status]');
-      if (!field.value.trim()) { message.textContent = '請輸入分類名稱。'; return; }
+      if (!field.value.trim()) { message.textContent = '請輸入標籤名稱。'; return; }
       button.disabled = true;
       $.post(window.ajaxurl, { action: 't2_add_work_category', post_id: root.dataset.postId, nonce: form.querySelector('[name="t2_editor_nonce"]').value, name: field.value.trim() }).done(function (result) {
         if (!result.success) { message.textContent = result.data.message || '新增未成功。'; return; }
-        const li = document.createElement('li'); const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.name = 'tax_input[t2_work_category][]'; check.value = result.data.id; check.checked = true; label.append(check, document.createTextNode(' ' + result.data.name)); li.append(label); document.getElementById('t2-category-list').append(li); field.value = ''; message.textContent = '分類已新增，儲存作品後套用。';
+        const li = document.createElement('li'); const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.name = 'tax_input[t2_work_category][]'; check.value = result.data.id; check.checked = true; label.append(check, document.createTextNode(' ' + result.data.name)); li.append(label); document.getElementById('t2-category-list').append(li); field.value = ''; message.textContent = '標籤已新增，儲存作品後套用。';
       }).fail(function (response) { message.textContent = response.responseJSON?.data?.message || '新增未成功，請稍後再試。'; }).always(function () { button.disabled = false; });
     }
     sync();

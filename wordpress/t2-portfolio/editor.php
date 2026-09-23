@@ -17,6 +17,7 @@ function t2_editor_snapshot($id) {
     sort($terms, SORT_NUMERIC);
     $meta = array();
     foreach (array('_thumbnail_id', '_t2_related_url', '_t2_related_label', '_t2_featured', '_t2_display_order', '_t2_client_name', '_t2_year', '_t2_service_ids', '_t2_content_status') as $key) { $meta[$key] = get_post_meta($id, $key, true); }
+    $meta['_t2_service_groups'] = array(metadata_exists('post', $id, '_t2_service_groups'), get_post_meta($id, '_t2_service_groups', true));
     return hash('sha256', wp_json_encode(array($post->post_title, $post->post_excerpt, $post->post_content, $post->post_status, $post->post_password, $post->post_name, $terms, $meta)));
 }
 
@@ -94,6 +95,11 @@ function t2_editor_validate($id, $input) {
     if (($input['t2_editor_ready'] ?? '') !== '1') { return new WP_Error('editor_not_ready', '作品表單尚未載入完成，本次不會儲存。請重新整理後再試。'); }
     if (!isset($input['t2_editor_snapshot']) || !is_string($input['t2_editor_snapshot']) || !hash_equals(t2_editor_snapshot($id), $input['t2_editor_snapshot'])) { return new WP_Error('conflict', '作品已在其他分頁更新。本次尚未儲存，請先保留輸入，再重新開啟作品確認。'); }
     if (!isset($input['post_title']) || !is_string($input['post_title']) || mb_strlen($input['post_title']) > 500) { return new WP_Error('title', '作品名稱最多可填寫 500 字。'); }
+    if (($input['t2_service_groups_present'] ?? '') !== '1') { return new WP_Error('groups', '服務大項欄位尚未載入完成，請重新整理後再試。'); }
+    $groups = $input['t2_service_groups'] ?? array();
+    if (!is_array($groups) || array_keys($groups) !== ($groups ? range(0, count($groups) - 1) : array()) || count($groups) > 4) { return new WP_Error('groups', '服務大項格式不正確。'); }
+    foreach ($groups as $group) { if (!is_string($group) || !array_key_exists($group, t2_portfolio_service_groups())) { return new WP_Error('groups', '請從現有四個服務大項勾選。'); } }
+    if (count(array_unique($groups)) !== count($groups)) { return new WP_Error('groups', '服務大項不可重複。'); }
     if (!isset($input['t2_editor_rows']) || !is_string($input['t2_editor_rows']) || strlen($input['t2_editor_rows']) > 2000000) { return new WP_Error('rows', '作品內容格式不正確。'); }
     $submitted = json_decode($input['t2_editor_rows'], true);
     if (!is_array($submitted) || array_keys($submitted) !== ($submitted ? range(0, count($submitted) - 1) : array()) || count($submitted) > 100) { return new WP_Error('rows', '作品內容最多可放置 100 個段落或圖片。'); }
@@ -136,7 +142,7 @@ function t2_editor_validate($id, $input) {
     $cover = (int) $cover;
     if ($cover && !wp_attachment_is_image($cover)) { return new WP_Error('cover', '請選取有效的封面圖片。'); }
     if (!isset($input['excerpt']) || !is_string($input['excerpt']) || mb_strlen($input['excerpt']) > 4000) { return new WP_Error('excerpt', '簡短描述格式不正確或過長。'); }
-    return array('content' => $unchanged ? $post->post_content : implode("\n\n", $rendered), 'excerpt' => sanitize_textarea_field($input['excerpt']), 'cover' => $cover);
+    return array('content' => $unchanged ? $post->post_content : implode("\n\n", $rendered), 'excerpt' => sanitize_textarea_field($input['excerpt']), 'cover' => $cover, 'serviceGroups' => array_values(array_intersect(array_keys(t2_portfolio_service_groups()), $groups)));
 }
 
 /** Runs before core edit_post touches title, content, metadata, or taxonomy relationships. */
@@ -164,6 +170,7 @@ add_action('save_post_t2_work', function ($id) {
     if (empty($_POST['t2_editor_present']) || !isset($GLOBALS['t2_editor_validated'][$id]) || wp_is_post_revision($id) || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) { return; }
     $cover = $GLOBALS['t2_editor_validated'][$id]['cover'];
     if ($cover) { set_post_thumbnail($id, $cover); } else { delete_post_thumbnail($id); }
+    update_post_meta($id, '_t2_service_groups', $GLOBALS['t2_editor_validated'][$id]['serviceGroups']);
 }, 20);
 
 add_action('add_meta_boxes_t2_work', function () {
@@ -179,8 +186,8 @@ add_action('admin_enqueue_scripts', function () {
     // Custom rows save together through the native draft/publish buttons, never via partial autosave.
     wp_deregister_script('autosave');
     wp_enqueue_media();
-    wp_enqueue_style('t2-work-editor', plugins_url('editor.css', __FILE__), array(), '1.2.0');
-    wp_enqueue_script('t2-work-editor', plugins_url('editor.js', __FILE__), array('jquery', 'media-views'), '1.2.0', true);
+    wp_enqueue_style('t2-work-editor', plugins_url('editor.css', __FILE__), array(), '1.3.0');
+    wp_enqueue_script('t2-work-editor', plugins_url('editor.js', __FILE__), array('jquery', 'media-views'), '1.3.0', true);
 });
 
 function t2_editor_form($post) {
@@ -190,11 +197,15 @@ function t2_editor_form($post) {
     echo '<textarea hidden name="t2_editor_rows" id="t2-editor-rows">' . esc_textarea(wp_json_encode(array_map(function ($row) { unset($row['raw']); return $row; }, $rows))) . '</textarea>';
     echo '<div id="t2-work-form" data-post-id="' . intval($post->ID) . '"><p class="description">依序填寫下方欄位。右側可儲存草稿或發布；圖片會以原始尺寸用於前台，移除圖片只會移除作品中的引用。</p>';
     echo '<label class="t2-field-label" for="t2-work-excerpt">簡短描述</label><textarea id="t2-work-excerpt" name="excerpt" class="widefat" rows="2" maxlength="4000">' . esc_textarea($post->post_excerpt) . '</textarea>';
-    echo '<div class="t2-field-label">作品分類</div><div class="t2-category-box"><input type="hidden" name="tax_input[t2_work_category][]" value="0" /><ul id="t2-category-list" class="categorychecklist">';
+    echo '<fieldset><legend class="t2-field-label">服務大項</legend><input type="hidden" name="t2_service_groups_present" value="1" /><p class="description">勾選適用的服務，可複選。作品案例頁依這四個大項篩選。</p><div class="t2-service-groups">';
+    $groups = t2_portfolio_work_groups($post->ID);
+    foreach (t2_portfolio_service_groups() as $key => $label) { echo '<label><input type="checkbox" name="t2_service_groups[]" value="' . esc_attr($key) . '" ' . checked(in_array($key, $groups, true), true, false) . ' /> ' . esc_html($label) . '</label>'; }
+    echo '</div></fieldset>';
+    echo '<div class="t2-field-label">作品標籤</div><p class="description">可自由新增，例如 ICON、Logo 或設計風格。標籤顯示於作品內頁，不會增加篩選大項。</p><div class="t2-category-box"><input type="hidden" name="tax_input[t2_work_category][]" value="0" /><ul id="t2-category-list" class="categorychecklist">';
     wp_terms_checklist($post->ID, array('taxonomy' => 't2_work_category', 'checked_ontop' => false));
     echo '</ul>';
     $taxonomy = get_taxonomy('t2_work_category');
-    if (current_user_can($taxonomy->cap->manage_terms)) { echo '<div class="t2-new-category"><label for="t2-new-category-name">新增分類</label><input id="t2-new-category-name" type="text" maxlength="120" /><button class="button" type="button" data-add-category>加入分類</button><span role="status" data-category-status></span></div>'; }
+    if (current_user_can($taxonomy->cap->manage_terms)) { echo '<div class="t2-new-category"><label for="t2-new-category-name">新增標籤</label><input id="t2-new-category-name" type="text" maxlength="120" /><button class="button" type="button" data-add-category>加入標籤</button><span role="status" data-category-status></span></div>'; }
     echo '</div><div class="t2-field-label">作品封面</div>';
     $cover = get_post_thumbnail_id($post);
     $url = t2_editor_original_url($cover);
@@ -222,10 +233,10 @@ function t2_editor_render_row($row) {
 add_action('wp_ajax_t2_add_work_category', function () {
     $id = absint($_POST['post_id'] ?? 0);
     $taxonomy = get_taxonomy('t2_work_category');
-    if (get_post_type($id) !== 't2_work' || !current_user_can('edit_post', $id) || !current_user_can($taxonomy->cap->manage_terms)) { wp_send_json_error(array('message' => '沒有新增分類的權限。'), 403); }
+    if (get_post_type($id) !== 't2_work' || !current_user_can('edit_post', $id) || !current_user_can($taxonomy->cap->manage_terms)) { wp_send_json_error(array('message' => '沒有新增標籤的權限。'), 403); }
     check_ajax_referer('t2_edit_work_' . $id, 'nonce');
     $name = isset($_POST['name']) && is_string($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
-    if ($name === '' || mb_strlen($name) > 120) { wp_send_json_error(array('message' => '請輸入分類名稱（最多 120 字）。'), 400); }
+    if ($name === '' || mb_strlen($name) > 120) { wp_send_json_error(array('message' => '請輸入標籤名稱（最多 120 字）。'), 400); }
     $term = wp_insert_term($name, 't2_work_category');
     if (is_wp_error($term)) { wp_send_json_error(array('message' => $term->get_error_message()), 400); }
     wp_send_json_success(array('id' => (int) $term['term_id'], 'name' => $name));

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: T2 作品管理
  * Description: 管理作品、分類、作品內容與單一相關連結，提供 Astro 靜態網站的公開內容 API。
- * Version: 1.2.0
+ * Version: 1.3.0
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: T2
@@ -20,7 +20,7 @@ function t2_portfolio_register() {
         'taxonomies' => array('t2_work_category'), 'capability_type' => 'post', 'map_meta_cap' => true,
     ));
     register_taxonomy('t2_work_category', array('t2_work'), array(
-        'labels' => array('name' => '作品分類', 'singular_name' => '作品分類', 'add_new_item' => '新增作品分類', 'edit_item' => '編輯作品分類', 'search_items' => '搜尋作品分類'),
+        'labels' => array('name' => '作品標籤', 'singular_name' => '作品標籤', 'add_new_item' => '新增作品標籤', 'edit_item' => '編輯作品標籤', 'search_items' => '搜尋作品標籤'),
         'public' => false, 'show_ui' => true, 'show_admin_column' => true, 'show_in_rest' => true,
         'rest_base' => 't2-work-categories', 'hierarchical' => true,
     ));
@@ -36,6 +36,19 @@ add_filter('allowed_block_types_all', function ($allowed, $context) {
 
 function t2_portfolio_services() { return array('brand' => '品牌與視覺', 'print' => '印刷與輸出', 'web' => '網站', 'social' => '社群與廣告', 'motion' => '影音'); }
 
+/** Fixed archive groups. Legacy service IDs remain untouched for existing records/imports. */
+function t2_portfolio_service_groups() {
+    return array('web' => '網站建置・維護管理', 'event' => '活動・教育推廣', 'social' => '社群・廣告推廣', 'print' => '商家印刷・製作');
+}
+
+function t2_portfolio_work_groups($id) {
+    if (metadata_exists('post', $id, '_t2_service_groups')) {
+        return array_values(array_intersect(array_keys(t2_portfolio_service_groups()), (array) get_post_meta($id, '_t2_service_groups', true)));
+    }
+    // Brand and motion cannot be mapped safely to event/social.
+    return array_values(array_intersect(array('web', 'social', 'print'), (array) get_post_meta($id, '_t2_service_ids', true)));
+}
+
 add_action('add_meta_boxes_t2_work', function () {
     add_meta_box('t2-work-settings', '相關連結與顯示設定', 't2_portfolio_meta_box', 't2_work', 'normal', 'default');
 });
@@ -43,9 +56,8 @@ add_action('add_meta_boxes_t2_work', function () {
 function t2_portfolio_meta_box($post) {
     wp_nonce_field('t2_save_work', 't2_work_nonce');
     $meta = function ($key) use ($post) { return get_post_meta($post->ID, '_t2_' . $key, true); };
-    $services = (array) $meta('service_ids');
     ?>
-    <p>可設定一個相關連結，以及作品的顯示順序與對應服務。</p>
+    <p>可設定一個相關連結，以及作品的顯示順序。</p>
     <p><label><input type="checkbox" name="t2_featured" value="1" <?php checked($meta('featured'), '1'); ?> /> 顯示於首頁精選作品</label></p>
     <p><label>顯示順序（數字越小越前面） <input type="number" name="t2_display_order" value="<?php echo esc_attr($meta('display_order') ?: 0); ?>" /></label></p>
     <p><label for="t2-related-url">相關連結（選填，只顯示一個）</label><br /><input class="widefat" id="t2-related-url" type="url" name="t2_related_url" placeholder="https://example.com/" value="<?php echo esc_attr($meta('related_url')); ?>" /></p>
@@ -53,11 +65,6 @@ function t2_portfolio_meta_box($post) {
     <p>相關連結留空時，作品頁不顯示「相關連結」區塊。</p>
     <p><label>客戶／品牌（選填） <input name="t2_client_name" value="<?php echo esc_attr($meta('client_name')); ?>" /></label></p>
     <p><label>年份（選填） <input name="t2_year" value="<?php echo esc_attr($meta('year')); ?>" /></label></p>
-    <fieldset><legend>對應服務（保留服務頁與作品的對應，不影響自訂分類）</legend>
-    <?php foreach (t2_portfolio_services() as $key => $label) : ?>
-        <label style="display:inline-block;margin:8px 16px 8px 0"><input type="checkbox" name="t2_service_ids[]" value="<?php echo esc_attr($key); ?>" <?php checked(in_array($key, $services, true)); ?> /> <?php echo esc_html($label); ?></label>
-    <?php endforeach; ?>
-    </fieldset>
     <p><label>資料整理狀態 <select name="t2_content_status">
     <?php foreach (array('complete' => '資料完整', 'partial' => '部分資料待補', 'legacy' => '舊作紀錄') as $key => $label) : ?>
         <option value="<?php echo esc_attr($key); ?>" <?php selected($meta('content_status') ?: 'complete', $key); ?>><?php echo esc_html($label); ?></option>
@@ -77,8 +84,7 @@ add_action('save_post_t2_work', function ($id) {
     update_post_meta($id, '_t2_related_url', $url);
     update_post_meta($id, '_t2_featured', isset($_POST['t2_featured']) ? '1' : '0');
     update_post_meta($id, '_t2_display_order', intval($_POST['t2_display_order'] ?? 0));
-    $services = isset($_POST['t2_service_ids']) && is_array($_POST['t2_service_ids']) ? array_map('sanitize_key', wp_unslash($_POST['t2_service_ids'])) : array();
-    update_post_meta($id, '_t2_service_ids', array_values(array_intersect(array_keys(t2_portfolio_services()), $services)));
+    // The retired serviceIds field is intentionally retained; the new form never clears it.
     $status = sanitize_key($_POST['t2_content_status'] ?? 'complete');
     update_post_meta($id, '_t2_content_status', in_array($status, array('complete', 'partial', 'legacy'), true) ? $status : 'complete');
 });
@@ -139,6 +145,7 @@ function t2_portfolio_rest_works($request) {
             'relatedLink' => $url ? array('href' => $url, 'label' => $meta('related_label') ?: '前往網站') : null,
             'featured' => $meta('featured') === '1', 'displayOrder' => intval($meta('display_order')),
             'serviceIds' => array_values(array_intersect(array_keys(t2_portfolio_services()), (array) $meta('service_ids'))),
+            'serviceGroups' => t2_portfolio_work_groups($post->ID),
             'contentStatus' => in_array($status, array('complete', 'partial', 'legacy'), true) ? $status : 'complete',
             'clientName' => t2_portfolio_plain($meta('client_name')), 'year' => t2_portfolio_plain($meta('year')),
         );

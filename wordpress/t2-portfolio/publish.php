@@ -186,7 +186,7 @@ function t2_portfolio_update_page() {
     if (!current_user_can('manage_options')) { return; }
     $state = get_option('t2_publish_state', array());
     $ready = t2_portfolio_dispatch_ready();
-    echo '<div class="wrap"><h1>網站自動更新</h1><p>啟用後，發布、修改或下架作品，以及新增／調整分類時，都會自動更新網站。一般儲存草稿不會發布到前台。</p>';
+    echo '<div class="wrap"><h1>網站自動更新</h1><p>啟用後，發布、修改或下架作品，以及調整服務大項或作品標籤時，都會自動更新網站。一般儲存草稿不會發布到前台。</p>';
     $notice = get_transient('t2_connection_notice_' . get_current_user_id());
     if ($notice) { echo '<div class="notice notice-error"><p>' . esc_html($notice) . '</p></div>'; delete_transient('t2_connection_notice_' . get_current_user_id()); }
     echo '<div class="notice ' . (($state['status'] ?? '') === 'failed' ? 'notice-error' : 'notice-info') . '"><p>' . esc_html(t2_publish_status_message($state)) . '</p></div>';

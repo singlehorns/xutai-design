@@ -47,9 +47,9 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
       <a class="case-back" href={withBase("/works/")}>← 所有作品案例</a>
       <h1>{caseStudy.title}</h1>
       <p class="case-hero__summary">{heroSummary}</p>
-      <div class="case-categories" aria-label="作品分類">
-        {caseStudy.categoryTerms.length ? caseStudy.categoryTerms.map((category) => <span class="case-category-badge">{category.label}</span>) : <span class="case-category-badge">{caseStudy.categoryLabel}</span>}
-      </div>
+      {caseStudy.categoryTerms.length > 0 && <div class="case-categories" aria-label="作品標籤">
+        {caseStudy.categoryTerms.map((tag) => <span class="case-category-badge">{tag.label}</span>)}
+      </div>}
     </header>
 
     <div class="project-viewer case-viewer">

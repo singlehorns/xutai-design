@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { loadWordPressCatalog, sanitizeCaseContent, wordpressEndpoint } from "../src/data/wordpress-source.ts";
+import { serviceGroups, legacyServiceGroups } from "../src/data/service-groups.ts";
 
 const terms = [{ key: "web", label: "網站" }, { key: "new-category", label: "新分類" }];
 const sample = (overrides = {}) => ({ slug: "sample-work", title: "作品名稱", summary: "簡短描述。", categories: [terms[0]], contentHtml: '<p>設計說明</p><figure class="wp-block-image"><img src="https://cms.example.com/a.jpg" alt="作品"></figure>', coverImage: { src: "https://cms.example.com/a.jpg", alt: "作品" }, relatedLink: null, featured: true, displayOrder: 1, serviceIds: ["web"], contentStatus: "complete", ...overrides });
@@ -51,6 +52,43 @@ test("collects multiple pages, sorts display order, and normalizes percent-encod
 test("empty WordPress site is valid and does not invent local cases", async () => {
   const result = await loadWordPressCatalog("https://cms.example.com", fixture([], []));
   assert.deepEqual(result, { cases: [], categories: [] });
+});
+
+test("fixed service filters do not grow when a work has brand, print, web and ICON tags", async () => {
+  const tags = [{ key: "brand", label: "品牌與視覺" }, { key: "print", label: "印刷與輸出" }, { key: "web", label: "網站" }, { key: "icon", label: "ICON" }];
+  const result = await loadWordPressCatalog("https://cms.example.com", fixture([sample({ slug: "33", title: "作品一號", serviceIds: ["social"], categories: tags })], tags));
+  assert.deepEqual(serviceGroups.map(({ key }) => key), ["web", "event", "social", "print"]);
+  assert.deepEqual(result.cases[0].serviceGroups, ["social"]);
+  assert.deepEqual(result.cases[0].categoryTerms, tags);
+  assert.equal(result.cases[0].serviceGroups.includes("web"), false);
+  assert.equal(serviceGroups.some(({ key }) => key === "icon" || key === "brand"), false);
+});
+
+test("explicit event and empty service groups override the old plugin fallback", async () => {
+  const result = await loadWordPressCatalog("https://cms.example.com", fixture([
+    sample({ slug: "event-work", serviceIds: ["brand", "web", "motion"], serviceGroups: ["event"], categories: [] }),
+    sample({ slug: "cleared-work", serviceIds: ["web"], serviceGroups: [], categories: [] }),
+    sample({ slug: "old-brand-work", serviceIds: ["brand", "motion"], categories: [] })
+  ]));
+  assert.deepEqual(result.cases.find((work) => work.slug === "event-work").serviceGroups, ["event"]);
+  assert.deepEqual(result.cases.find((work) => work.slug === "cleared-work").serviceGroups, []);
+  assert.deepEqual(result.cases.find((work) => work.slug === "old-brand-work").serviceGroups, []);
+  assert.deepEqual(result.cases.find((work) => work.slug === "event-work").serviceIds, ["brand", "web", "motion"]);
+  assert.deepEqual(legacyServiceGroups(["brand", "motion", "print"]), ["print"]);
+});
+
+test("tags may use names reserved for routes and never become links or filters", async () => {
+  const tags = [{ key: "all", label: "ALL" }, { key: "index", label: "INDEX" }, { key: "%e9%a2%a8%e6%a0%bc", label: "風格" }];
+  const result = await loadWordPressCatalog("https://cms.example.com", fixture([sample({ categories: tags, serviceGroups: [] })], tags));
+  assert.deepEqual(result.cases[0].categoryTerms.map((tag) => tag.key), ["all", "index", "風格"]);
+  assert.deepEqual(result.cases[0].serviceGroups, []);
+  assert.equal(result.cases[0].categoryTerms.some((tag) => "href" in tag), false);
+});
+
+test("unknown, malformed and duplicate service groups fail instead of creating new filters", async () => {
+  for (const value of [["ICON"], ["brand"], ["web", "web"], null, "social", { event: true }]) {
+    await assert.rejects(loadWordPressCatalog("https://cms.example.com", fixture([sample({ serviceGroups: value })])), /服務大項/);
+  }
 });
 
 test("supports site subdirectory, wp-json root and plain permalink API roots", () => {

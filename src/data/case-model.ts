@@ -1,5 +1,6 @@
 import type { Service, ServiceId } from "./services";
 import type { Solution, SolutionId } from "./solutions";
+import type { ServiceGroupId } from "./service-groups";
 
 export type CaseContentStatus = "complete" | "partial" | "legacy";
 export type CaseCategory = string;
@@ -36,6 +37,8 @@ export interface CaseData {
   responsibilities: string[];
   deliverables: string[];
   serviceIds: ServiceId[];
+  /** Fixed archive groups; absence uses recognized legacy services, [] explicitly selects none. */
+  serviceGroups?: ServiceGroupId[];
   solutionIds: SolutionId[];
   tools: string[];
   technologies: string[];
@@ -50,6 +53,7 @@ export interface CaseData {
 
 /** Presentation data adds links, categories and missing-data notes without CMS types. */
 export interface CaseViewModel extends CaseData {
+  serviceGroups: ServiceGroupId[];
   url: string;
   categories: CaseCategory[];
   categoryTerms: CaseCategoryOption[];

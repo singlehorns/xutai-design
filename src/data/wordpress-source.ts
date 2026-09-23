@@ -1,6 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import type { CaseCategoryOption, CaseContentStatus, CaseData, CaseImage } from "./case-model";
 import type { ServiceId } from "./services";
+import { isServiceGroupId, legacyServiceGroups, type ServiceGroupId } from "./service-groups.ts";
 
 export interface WordPressCase extends CaseData { categoryTerms: CaseCategoryOption[]; }
 export interface WordPressCatalog { cases: WordPressCase[]; categories: CaseCategoryOption[]; }
@@ -32,7 +33,10 @@ function slug(value: unknown, field: string): string {
 
 function category(value: unknown): CaseCategoryOption {
   if (!object(value)) return fail("分類格式不正確");
-  return { key: slug(value.key, "分類代稱"), label: text(value.label, "分類名稱", 120) };
+  // Tags do not form URLs or archive filter keys, so names such as "all" remain valid.
+  let key = text(value.key, "標籤代稱", 240);
+  try { key = decodeURIComponent(key).normalize("NFC"); } catch { return fail("標籤代稱編碼不正確"); }
+  return { key, label: text(value.label, "標籤名稱", 120) };
 }
 
 function image(value: unknown): CaseImage | undefined {
@@ -78,6 +82,12 @@ function work(value: unknown, categories: Map<string, CaseCategoryOption>): Word
   });
   if (new Set(terms.map((term) => term.key)).size !== terms.length) return fail(`${workSlug} 有重複分類`);
   if (!Array.isArray(value.serviceIds) || value.serviceIds.some((id) => typeof id !== "string" || !serviceIds.has(id))) return fail(`${workSlug} 服務對應不正確`);
+  let groups: ServiceGroupId[];
+  if (!Object.hasOwn(value, "serviceGroups")) groups = legacyServiceGroups(value.serviceIds as string[]);
+  else {
+    if (!Array.isArray(value.serviceGroups) || value.serviceGroups.some((id) => !isServiceGroupId(id)) || new Set(value.serviceGroups).size !== value.serviceGroups.length) return fail(`${workSlug} 服務大項不正確`);
+    groups = value.serviceGroups as ServiceGroupId[];
+  }
   if (typeof value.featured !== "boolean" || !Number.isSafeInteger(value.displayOrder)) return fail(`${workSlug} 精選或排序格式不正確`);
   if (!["complete", "partial", "legacy"].includes(String(value.contentStatus))) return fail(`${workSlug} 內容狀態不正確`);
   const relatedLink = value.relatedLink;
@@ -88,7 +98,7 @@ function work(value: unknown, categories: Map<string, CaseCategoryOption>): Word
     summary: text(value.summary, "簡短描述", 4000, true), contentHtml,
     categoryTerms: terms, coverImage: image(value.coverImage), gallery: [],
     relatedLink: relatedLink ? { href: httpUrl(relatedLink.href, "相關連結"), label: text(relatedLink.label, "相關連結文字", 120) } : null,
-    featured: value.featured, displayOrder: value.displayOrder as number, serviceIds: value.serviceIds as ServiceId[],
+    featured: value.featured, displayOrder: value.displayOrder as number, serviceIds: value.serviceIds as ServiceId[], serviceGroups: groups,
     contentStatus: value.contentStatus as CaseContentStatus,
     ...(value.clientName ? { clientName: text(value.clientName, "客戶名稱") } : {}),
     ...(value.year ? { year: text(value.year, "年份", 120) } : {}),
