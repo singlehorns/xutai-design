@@ -180,6 +180,37 @@ add_action('add_meta_boxes_t2_work', function () {
     add_meta_box('t2-work-fields', '作品資料與圖片', 't2_editor_form', 't2_work', 'normal', 'high');
 }, 30);
 
+/** Core has registered its boxes by this point; retain the native revision callback. */
+function t2_editor_metabox_layout($post_type, $context, $post) {
+    if ($post_type !== 't2_work') { return; }
+    global $wp_meta_boxes;
+    $revision = null;
+    $contexts = array_unique(array_merge(array('normal', 'advanced', 'side'), array_keys($wp_meta_boxes['t2_work'] ?? array())));
+    foreach ($contexts as $box_context) {
+        remove_meta_box('slugdiv', 't2_work', $box_context);
+        foreach ($wp_meta_boxes['t2_work'][$box_context] ?? array() as $priority => $boxes) {
+            if (!empty($boxes['revisionsdiv']) && is_array($boxes['revisionsdiv'])) { $revision = $boxes['revisionsdiv']; }
+            unset($wp_meta_boxes['t2_work'][$box_context][$priority]['revisionsdiv']);
+        }
+    }
+    if ($revision) {
+        // Advanced is rendered after the main fields; inserting last at low priority keeps it last.
+        add_meta_box('revisionsdiv', $revision['title'], $revision['callback'], 't2_work', 'advanced', 'low', $revision['args']);
+    }
+}
+add_action('do_meta_boxes', 't2_editor_metabox_layout', PHP_INT_MAX, 3);
+
+/** Ignore only these two positions at read time; leave the user's saved settings untouched. */
+function t2_editor_metabox_order($order) {
+    if (!is_array($order)) { return $order; }
+    foreach ($order as $context => $ids) {
+        if (!is_string($ids)) { continue; }
+        $order[$context] = implode(',', array_filter(explode(',', $ids), function ($id) { return $id !== 'slugdiv' && $id !== 'revisionsdiv'; }));
+    }
+    return $order;
+}
+add_filter('get_user_option_meta-box-order_t2_work', 't2_editor_metabox_order');
+
 add_action('admin_enqueue_scripts', function () {
     $screen = get_current_screen();
     if (!$screen || $screen->post_type !== 't2_work' || $screen->base !== 'post') { return; }

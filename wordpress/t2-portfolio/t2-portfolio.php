@@ -2,7 +2,7 @@
 /**
  * Plugin Name: T2 作品管理
  * Description: 管理作品、分類、作品內容與單一相關連結，提供 Astro 靜態網站的公開內容 API。
- * Version: 1.3.0
+ * Version: 1.3.1
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: T2
