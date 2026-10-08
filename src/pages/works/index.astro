@@ -34,7 +34,13 @@ const filters = [{ key: "all", label: "全部" }, ...serviceGroups];
     <div id="case-grid" class="works-grid works-archive__grid" data-work-list>
       {cases.map((caseStudy) => <CaseCard caseStudy={caseStudy} />)}
     </div>
-    <p class="case-archive__empty" data-empty-results hidden={cases.length > 0}>此服務大項目前尚無作品。</p>
+    <div class="case-archive__empty" data-empty-results hidden={cases.length > 0}>
+      <svg class="case-archive__empty-icon" viewBox="0 0 96 72" aria-hidden="true" focusable="false">
+        <path d="M15 8h66c6.627 0 12 5.373 12 12v29c0 6.627-5.373 12-12 12H48L31 70V61H15c-6.627 0-12-5.373-12-12V20C3 13.373 8.373 8 15 8Z" />
+        <path d="M25 32h46M25 45h30" />
+      </svg>
+      <p>此服務大項目前尚無作品。</p>
+    </div>
   </section>
 
   <script>
@@ -61,7 +67,16 @@ const filters = [{ key: "all", label: "全部" }, ...serviceGroups];
 </Layout>
 
 <style>
+  .case-archive .works-archive__hero h1 { font-size: clamp(2.7rem, 6.3vw, 6.03rem); }
+  .case-archive .works-archive__hero p { font-size: clamp(0.83rem, 1.08vw, 0.97rem); }
+  .case-archive .works-archive__filters button { font-size: clamp(0.81rem, 0.918vw, 0.945rem); }
+  .case-archive .works-archive__grid .work-card__body h3 { font-size: clamp(0.9rem, 1.062vw, 1.116rem); }
+  .case-archive .works-archive__grid .work-card__body p,
+  .case-archive .works-archive__grid .work-card__body span { font-size: clamp(0.648rem, 0.72vw, 0.738rem); }
   .case-archive .works-archive__grid { margin-top: 48px; }
   .case-archive button:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 4px; }
-  .case-archive__empty { text-align: center; margin: 36px 20px; color: var(--muted); }
+  .case-archive__empty { display: grid; justify-items: center; gap: 18px; text-align: center; margin: 36px 20px; color: var(--muted); }
+  .case-archive__empty[hidden] { display: none; }
+  .case-archive__empty p { margin: 0; }
+  .case-archive__empty-icon { width: 78px; height: auto; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; opacity: 0.72; }
 </style>

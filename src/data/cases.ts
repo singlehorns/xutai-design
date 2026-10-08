@@ -9,8 +9,12 @@ let catalogPromise: Promise<CaseCatalog> | undefined;
 async function loadCatalog(): Promise<CaseCatalog> {
   const wordpressUrl = import.meta.env.WORDPRESS_URL?.trim();
   if (wordpressUrl) {
-    const catalog = await loadWordPressCatalog(wordpressUrl);
-    return { categories: catalog.categories, cases: catalog.cases.map(({ categoryTerms, ...data }) => createCaseViewModel(data, { categories: categoryTerms })) };
+    try {
+      const catalog = await loadWordPressCatalog(wordpressUrl);
+      return { categories: catalog.categories, cases: catalog.cases.map(({ categoryTerms, ...data }) => createCaseViewModel(data, { categories: categoryTerms })) };
+    } catch (error) {
+      console.error("WordPress 作品資料無法載入，改用本地作品資料：", error);
+    }
   }
   const cases = (await getCollection("works"))
     .filter((entry) => entry.data.visible)

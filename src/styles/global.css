@@ -106,44 +106,6 @@ main {
   }
 }
 
-.cursor-dot {
-  --cursor-x: 50vw;
-  --cursor-y: 50vh;
-  --cursor-blue: #0077d9;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  background: var(--cursor-blue);
-  box-shadow: 0 0 0 8px color-mix(in srgb, var(--cursor-blue) 18%, transparent);
-  opacity: 0;
-  pointer-events: none;
-  transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-50%, -50%) scale(0.72);
-  transition:
-    opacity 160ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
-  will-change: transform, box-shadow, opacity;
-}
-
-.cursor-dot.is-visible {
-  opacity: 1;
-}
-
-.cursor-dot.is-active {
-  box-shadow: 0 0 0 14px color-mix(in srgb, var(--cursor-blue) 16%, transparent);
-  transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-50%, -50%) scale(1.28);
-}
-
-@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
-  .cursor-dot {
-    display: none;
-  }
-}
-
 .site-header {
   position: sticky;
   top: 0;
@@ -4483,9 +4445,53 @@ dd {
   }
 
   .site-header--home .brand::after {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
+    flex: 0 0 12px;
     margin-left: 12px;
+    animation: header-accent-dot-burst-mobile 1.65s ease-in-out infinite;
+  }
+
+  @keyframes header-accent-dot-burst-mobile {
+    0%, 18%, 100% {
+      opacity: 1;
+      transform: scale(0.96);
+      box-shadow:
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent,
+        0 0 0 -5px transparent;
+    }
+    46% {
+      opacity: 1;
+      transform: scale(1.04);
+      box-shadow:
+        6px 0 0 -5px var(--home-yellow),
+        -6px 0 0 -5px var(--home-yellow),
+        0 6px 0 -5px var(--home-yellow),
+        0 -6px 0 -5px var(--home-yellow),
+        4px 4px 0 -5px var(--home-yellow),
+        -4px 4px 0 -5px var(--home-yellow),
+        4px -4px 0 -5px var(--home-yellow),
+        -4px -4px 0 -5px var(--home-yellow);
+    }
+    68%, 82% {
+      opacity: 0.95;
+      transform: scale(1);
+      box-shadow:
+        7px 0 0 -5px transparent,
+        -7px 0 0 -5px transparent,
+        0 7px 0 -5px transparent,
+        0 -7px 0 -5px transparent,
+        5px 5px 0 -5px transparent,
+        -5px 5px 0 -5px transparent,
+        5px -5px 0 -5px transparent,
+        -5px -5px 0 -5px transparent;
+    }
   }
 
   .site-header--home .nav-toggle {

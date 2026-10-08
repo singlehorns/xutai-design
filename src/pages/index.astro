@@ -1,8 +1,8 @@
 ---
 import Layout from "@/components/Layout.astro";
 import CaseCard from "@/components/CaseCard.astro";
+import LogoMarquee from "@/components/LogoMarquee.astro";
 import { getFeaturedCases } from "@/data/cases";
-import { experiencePlaceholders } from "@/data/home";
 import { getFeaturedCooperations, commonWorkingMethods, onSiteMeetingNote } from "@/data/cooperations";
 import { site } from "@/data/site";
 import { contactContent } from "@/data/contact";
@@ -56,10 +56,10 @@ const featuredCases = await getFeaturedCases();
     <div class="home-hero__shade" aria-hidden="true"></div>
     <div class="home-hero__content">
       <p class="home-hero__kicker reveal-line">{site.siteName} / DESIGN & REMOTE SUPPORT</p>
-      <h1 id="home-hero-title" class="home-hero__title" aria-label="品牌視覺 × 網站 × 長期遠端支援">
-        <span class="reveal-line">品牌視覺</span>
-        <span class="reveal-line"><mark>× 網站</mark></span>
-        <span class="reveal-line">× 長期遠端支援</span>
+      <h1 id="home-hero-title" class="home-hero__title" aria-label="印刷平面↗網站架設↗社群經營">
+        <span class="reveal-line">印刷平面</span>
+        <span class="reveal-line"><mark>↗網站架設</mark></span>
+        <span class="reveal-line">↗社群經營</span>
       </h1>
       <p class="home-hero__lead reveal-line">品牌與平面設計、印刷輸出、WordPress／形象網站、社群廣告素材與影音內容，由我直接與你協作。</p>
       <p class="v2-hero__modes reveal-line">by {site.ownerDisplayName}</p>
@@ -80,24 +80,7 @@ const featuredCases = await getFeaturedCases();
       <h2 id="home-experience-title">合作與專案經驗</h2>
       <p class="v2-experience__lead">2016~2026參與不同產業累積設計與製作經驗</p>
     </header>
-    <div class="v2-logo-marquee" aria-label="合作與專案經驗 Logo 跑馬燈，正式圖片整理中">
-      <ul class="v2-logo-track">
-        {experiencePlaceholders.map((label) => (
-          <li>
-            <span class="v2-logo-mark">T2</span>
-            <span>{label}</span>
-            <small>LOGO／名稱待補</small>
-          </li>
-        ))}
-        {experiencePlaceholders.map((label) => (
-          <li aria-hidden="true">
-            <span class="v2-logo-mark">T2</span>
-            <span>{label}</span>
-            <small>LOGO／名稱待補</small>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <LogoMarquee />
   </section>
 
   <section id="home-services" class="home-skills v2-services" aria-labelledby="home-services-title" data-home-section="services">
@@ -271,22 +254,6 @@ const featuredCases = await getFeaturedCases();
   .v2-cooperation__lead { font-weight: 800; }
   .v2-bordered { border-top: 1px solid #e6e6e2; }
   .v2-note { margin: 22px 0 0; color: #696969; font-size: 0.9rem; }
-  .v2-logo-marquee { position: relative; overflow: hidden; border-block: 1px solid #deded8; background: var(--home-gray); mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%); }
-  .v2-logo-marquee::before,
-  .v2-logo-marquee::after { content: ""; position: absolute; z-index: 1; top: 0; bottom: 0; width: clamp(34px, 7vw, 96px); pointer-events: none; }
-  .v2-logo-marquee::before { left: 0; background: linear-gradient(90deg, var(--home-white), transparent); }
-  .v2-logo-marquee::after { right: 0; background: linear-gradient(270deg, var(--home-white), transparent); }
-  .v2-logo-track { display: flex; width: max-content; margin: 0; padding: 0; list-style: none; animation: v2-logo-marquee 28s linear infinite; }
-  .v2-logo-marquee:hover .v2-logo-track { animation-play-state: paused; }
-  .v2-logo-track li { display: grid; align-content: center; justify-items: center; gap: 8px; width: clamp(220px, 24vw, 340px); min-height: clamp(118px, 11vw, 152px); padding: 22px 28px; border-right: 1px solid #deded8; text-align: center; }
-  .v2-logo-track li:nth-child(2n) { background: color-mix(in srgb, var(--home-yellow) 6%, var(--home-gray)); }
-  .v2-logo-mark { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid color-mix(in srgb, var(--home-ink) 48%, transparent); border-radius: 999px; color: var(--home-ink); font-family: "Manrope", "Noto Sans TC", sans-serif; font-weight: 900; letter-spacing: -0.04em; }
-  .v2-logo-track span:not(.v2-logo-mark) { font-weight: 800; letter-spacing: 0.02em; }
-  .v2-logo-track small { color: #747474; font-size: 0.76rem; letter-spacing: 0.06em; }
-  @keyframes v2-logo-marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
   .v2-services { margin-top: 42px; }
   .v2-services .home-skills__wave--bottom { height: clamp(90px, 11vw, 150px); }
   .v2-services .home-skills__inner { grid-template-columns: minmax(0,1fr) minmax(0,0.8fr); gap: 48px 64px; padding-top: 88px; }
@@ -371,9 +338,6 @@ const featuredCases = await getFeaturedCases();
     .v2-hero__modes { font-size: 0.83rem; }
     .v2-actions { flex-direction: column; }
     .v2-button { width: 100%; }
-    .v2-logo-track { animation-duration: 22s; }
-    .v2-logo-track li { width: clamp(180px, 62vw, 260px); min-height: 112px; padding: 20px; font-size: 0.88rem; }
-    .v2-logo-mark { width: 48px; height: 48px; }
     #home-works.v2-section { padding-top: 36px; }
     .v2-services .home-skills__inner { grid-template-columns: 1fr; padding-top: 66px; padding-bottom: 36px; }
     .v2-services .home-skills__wave--bottom { height: 88px; }
@@ -399,7 +363,6 @@ const featuredCases = await getFeaturedCases();
   @media (prefers-reduced-motion: reduce) {
     .v2-button { transition: none; }
     .v2-button:hover { transform: none; }
-    .v2-logo-track { animation: none; transform: none; }
     .v2-services .home-skills-line__path { animation: none; }
     .v2-services .home-skills__intro .v2-text-link::before { transition: none; }
     .v2-service__flip { transition: none; }

@@ -23,25 +23,30 @@ import { withBase } from "@/utils/paths";
 
       <section class="footer-links" aria-label="合作形式">
         <p class="footer-kicker">COOPERATION</p>
-        <a href={withBase("/cooperation/")}>單次專案</a>
-        <a href={withBase("/cooperation/")}>月度／半遠端合作</a>
+        <a href={withBase("/cooperation/")}>半遠端合作</a>
+        <div class="footer-cta">
+          <p>從單次製作到持續性設計需求，依服務範圍與工作排程安排合作。</p>
+          <a class="footer-outline" href={withBase("/contact/")}>討論合作需求</a>
+        </div>
       </section>
 
-      <section class="footer-contact" aria-label="聯絡合作">
-        <p class="footer-kicker">CONTACT</p>
-        <a class="footer-contact__email" href={withBase("/contact/")}>一起討論新的需求</a>
-        <dl>
-          <div>
-            <dt>WORK</dt>
-            <dd>遠端執行・半遠端協作</dd>
-          </div>
-          <div>
-            <dt>AREA</dt>
-            <dd>{site.location}</dd>
-          </div>
-        </dl>
-        <p>從單次製作到持續性設計需求，依服務範圍與工作排程安排合作。</p>
-        <a class="footer-outline" href={withBase("/contact/")}>討論合作需求</a>
+      <section class="footer-social" aria-label="社群媒體">
+        <p class="footer-kicker">SOCIAL MEDIA</p>
+        <div class="footer-social__icons">
+          <span class="footer-social__icon" role="img" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4.2" />
+              <circle cx="17.6" cy="6.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </span>
+          <span class="footer-social__icon" role="img" aria-label="LINE">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M16 3C8.82 3 3 7.54 3 13.15c0 4.98 4.62 9.15 10.86 10 .42.09.99.27 1.13.64.13.33.09.85.04 1.19l-.18 1.13c-.05.34-.26 1.32 1.16.72 1.41-.6 7.6-4.5 10.37-7.7C28.24 17.08 29 15.22 29 13.15 29 7.54 23.18 3 16 3Z" />
+              <path class="footer-social__line-word" d="M8 10v6h3m2-6v6m2 0v-6l4 6v-6m5 0h-3v6h3m-3-3h2.5" />
+            </svg>
+          </span>
+        </div>
       </section>
     </div>
 
@@ -53,6 +58,9 @@ import { withBase } from "@/utils/paths";
 </footer>
 
 <style>
+  .site-footer__main {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 1.1fr) minmax(0, 0.65fr);
+  }
   .site-footer__main > * { min-width: 0; }
   .footer-brand__name {
     display: inline-flex;
@@ -64,8 +72,67 @@ import { withBase } from "@/utils/paths";
     letter-spacing: 0.08em;
     opacity: 0.72;
   }
-  .footer-contact__email { overflow-wrap: anywhere; }
-  @media (min-width: 769px) and (max-width: 1180px) {
+  .footer-social {
+    display: grid;
+    gap: 14px;
+  }
+  .footer-social__icons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .footer-social__icon {
+    display: inline-grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    color: var(--footer-ink);
+  }
+  .footer-social__icon svg {
+    display: block;
+    width: 28px;
+    height: 28px;
+  }
+  .footer-social__line-word {
+    fill: none;
+    stroke: var(--footer-dark);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .footer-cta {
+    display: grid;
+    justify-items: start;
+    gap: 16px;
+    margin-top: 4px;
+    text-align: left;
+  }
+  .footer-cta p {
+    max-width: 32ch;
+    margin: 0;
+    color: var(--footer-muted);
+    font-size: 0.92rem;
+    line-height: 1.85;
+  }
+  .footer-cta .footer-outline {
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 0;
+    padding-inline: 20px;
+    color: var(--footer-ink);
+    font-family: "Manrope", "Noto Sans TC", sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .footer-cta .footer-outline:hover {
+    color: var(--home-yellow, #fff019);
+    transform: none;
+  }
+  .site-footer__bottom {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+  @media (max-width: 1180px) {
     .site-footer__main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 768px) {

@@ -71,8 +71,7 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
           </div>
         </section>}
         {relatedLink && (
-          <section class="case-section" aria-labelledby="case-links-title">
-            <h2 id="case-links-title">相關連結</h2>
+          <section class="case-section case-link-section" aria-label="作品相關連結">
             <a class="case-related-link" href={relatedLink.href} target={relatedLink.external ? "_blank" : undefined} rel={relatedLink.external ? "noopener noreferrer" : undefined}>
               {relatedLink.label}<span aria-hidden="true">→</span>
             </a>
@@ -92,10 +91,15 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
 <style>
   .case-study { color: var(--home-ink); }
   .case-hero { padding: 0 clamp(22px,4vw,58px); }
-  .case-hero h1 { overflow-wrap: anywhere; }
+  .case-hero h1 { max-width: 760px; overflow-wrap: anywhere; font-size: clamp(1.4rem, 1.98vw, 2.295rem); }
   .case-back { width: fit-content; margin-bottom: 12px; font-size: 0.85rem; font-weight: 700; }
   .case-categories { display: flex; flex-wrap: wrap; gap: 8px; }
-  .case-hero .case-category-badge { width: fit-content; margin: 0; padding: 4px 12px; background: var(--home-yellow); color: var(--home-ink); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; }
+  .case-hero .case-category-badge { width: fit-content; margin: 0; padding: 4px 12px; background: #c8c0b4; color: #2f2b27; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; }
+  .case-category-badge:nth-child(5n + 1) { background: #c8c0b4; }
+  .case-category-badge:nth-child(5n + 2) { background: #b9c4c0; }
+  .case-category-badge:nth-child(5n + 3) { background: #c7b9b5; }
+  .case-category-badge:nth-child(5n + 4) { background: #c4c3ad; }
+  .case-category-badge:nth-child(5n + 5) { background: #b8bdca; }
   .case-viewer { display: block; }
   .case-main { min-width: 0; }
   .case-section + .case-section { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--line); }
@@ -117,7 +121,14 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
   .case-editor :global(table) { border-collapse: collapse; width: 100%; }
   .case-editor :global(th), .case-editor :global(td) { padding: 12px; border: 1px solid var(--line); }
   .case-editor :global(pre) { overflow-x: auto; padding: 16px; }
-  .case-related-link { display: flex; gap: 20px; align-items: center; justify-content: space-between; min-height: 56px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--home-ink); font-weight: 700; overflow-wrap: anywhere; }
+  .case-link-section { padding-block: 28px; }
+  .case-related-link { display: inline-flex; gap: 12px; align-items: center; min-height: 56px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--home-ink); font-weight: 700; overflow-wrap: anywhere; transition: color 220ms ease; }
+  .case-related-link span { display: inline-block; transition: transform 220ms ease; }
+  .case-related-link:hover, .case-related-link:focus-visible { color: var(--cursor-blue, #0077d9); }
+  .case-related-link:hover span, .case-related-link:focus-visible span { transform: translateX(8px); }
+  @media (prefers-reduced-motion: reduce) {
+    .case-related-link, .case-related-link span { transition: none; }
+  }
   .case-navigation { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px; margin: 48px 0 0; padding: 28px clamp(22px,4vw,58px); border-top: 1px solid var(--line); }
   .case-navigation a { display: grid; gap: 12px; min-width: 0; padding: 12px 0; }
   .case-navigation a:last-child { text-align: right; }

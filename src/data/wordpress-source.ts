@@ -27,7 +27,9 @@ export function httpUrl(value: unknown, field = "網址"): string {
 function slug(value: unknown, field: string): string {
   let result = text(value, field, 240);
   try { result = decodeURIComponent(result).normalize("NFC"); } catch { return fail(`${field} 編碼不正確`); }
-  if (!/^[\p{L}\p{N}]+(?:[-_][\p{L}\p{N}]+)*$/u.test(result) || reservedSlugs.has(result.toLowerCase()) || result.toLowerCase() === "all") return fail(`${field} 含有無效或保留字元`);
+  if (result.includes("/") || result.includes("\\") || result.includes("..")) return fail(`${field}「${result}」含有不安全路徑字元`);
+  result = result.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
+  if (!result || reservedSlugs.has(result.toLowerCase()) || result.toLowerCase() === "all") return fail(`${field}「${result || value}」含有無效或保留字元`);
   return result;
 }
 

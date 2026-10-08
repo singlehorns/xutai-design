@@ -15,6 +15,11 @@ export interface ExperienceSummary {
   description: string;
 }
 
+export interface WorkExperience {
+  year: string;
+  company: string;
+}
+
 export interface ToolGroup {
   id: string;
   title: string;
@@ -64,6 +69,36 @@ export const publicProfile = {
     "網站與數位專案可依需求使用 GitHub 等工具管理版本或協作內容。",
     "必要時依專案性質討論現場會議。"
   ],
+  workExperience: [
+    {
+      year: "2016–2017",
+      company: "南台育成中心"
+    },
+    {
+      year: "2017–2018",
+      company: "Studio2 動畫公司"
+    },
+    {
+      year: "2018–2020",
+      company: "鴻泰資訊科技有限公司"
+    },
+    {
+      year: "2021–2023",
+      company: "集美生技有限公司"
+    },
+    {
+      year: "2024",
+      company: "個人接案 / SOHO"
+    },
+    {
+      year: "2025",
+      company: "資訊職業工會"
+    },
+    {
+      year: "2026–至今",
+      company: "鑽之韻公司"
+    }
+  ] satisfies readonly WorkExperience[],
   experienceSummaries: [
     {
       id: "brand-print",
