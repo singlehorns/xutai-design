@@ -1,10 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="右上箭頭">
-  <path
-    d="M17 47 49 15M15 15h34v34"
-    fill="none"
-    stroke="#1f6fff"
-    stroke-width="7"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="四格藍色圖示">
+  <rect x="8" y="8" width="23" height="23" rx="5" fill="#1689e5" />
+  <rect x="39" y="10" width="17" height="17" rx="4.5" fill="#5bb4ed" />
+  <rect x="10" y="39" width="17" height="17" rx="4.5" fill="#5bb4ed" />
+  <rect x="33" y="33" width="23" height="23" rx="5" fill="#1689e5" />
 </svg>

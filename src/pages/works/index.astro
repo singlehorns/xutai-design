@@ -9,7 +9,7 @@ const { cases } = await getCaseCatalog();
 const filters = [{ key: "all", label: "全部" }, ...serviceGroups];
 ---
 
-<Layout title={`作品案例 | ${site.siteName}`} description={`查看 ${site.ownerDisplayName} 的網站視覺、平面印刷與影像作品，了解已確認的負責項目與相關服務。`}>
+<Layout title={`作品案例 | ${site.siteName}`} description={`查看 ${site.ownerDisplayName} 的網站視覺、平面印刷與影像作品，了解已確認的負責項目與相關服務。`} mainClass="works-archive-shell">
   <section class="works-archive case-archive" aria-labelledby="works-title" data-case-archive>
     <header class="works-archive__hero">
       <div class="works-archive__title-row">
@@ -67,6 +67,8 @@ const filters = [{ key: "all", label: "全部" }, ...serviceGroups];
 </Layout>
 
 <style>
+  :global(.works-archive-shell) { background: #fff; }
+  .case-archive { background: #fff; }
   .case-archive .works-archive__hero h1 { font-size: clamp(2.7rem, 6.3vw, 6.03rem); }
   .case-archive .works-archive__hero p { font-size: clamp(0.83rem, 1.08vw, 0.97rem); }
   .case-archive .works-archive__filters button { font-size: clamp(0.81rem, 0.918vw, 0.945rem); }

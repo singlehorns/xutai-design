@@ -2,7 +2,7 @@
 export const navigation = [
   { href: "/services/", label: "服務項目" },
   { href: "/works/", label: "作品案例" },
-  { href: "/cooperation/", label: "合作方式" },
+  { href: "/cooperation/", label: "線上 × 線下整合" },
   { href: "/about/", label: "關於我" },
   { href: "/shopping-guide/", label: "購物須知" },
   { href: "/contact/", label: "聯絡合作" }

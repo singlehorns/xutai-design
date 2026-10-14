@@ -1,5 +1,16 @@
 ---
-import { experiencePlaceholders } from "@/data/home";
+import { withBase } from "@/utils/paths";
+
+const partnerLogos = [
+  { src: "/images/partners/gmax-biotech.png", alt: "GMAX Biotech", label: "GMAX Biotech" },
+  { src: "/images/partners/smesa-incubator.png", alt: "南科育成中心", label: "南科育成中心" },
+  { src: "/images/partners/jiu-system-integration.png", alt: "久發網資訊整合", label: "久發網資訊整合" },
+  { src: "/images/partners/stust-innovation-incubator.png", alt: "南臺科技大學創新創業育成中心", label: "南臺科技大學創新創業育成中心" },
+  { src: "/images/partners/tncvs.png", alt: "國立臺南高級商業職業學校", label: "國立臺南高級商業職業學校" },
+  { src: "/images/partners/nkust.png", alt: "國立高雄科技大學", label: "國立高雄科技大學" },
+  { src: "/images/partners/qilong-security-mirror.png", alt: "鉅龍監控", label: "鉅龍監控" },
+  { src: "/images/partners/chiayi-social.png", alt: "梅山瑞峰", label: "梅山瑞峰" }
+];
 
 interface Props {
   class?: string;
@@ -8,21 +19,13 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<div class:list={["logo-marquee", className]} aria-label="合作與專案經驗 Logo 跑馬燈，正式圖片整理中">
+<div class:list={["logo-marquee", className]} aria-label="合作與專案經驗 Logo 跑馬燈">
   <ul class="logo-marquee__track">
-    {experiencePlaceholders.map((label) => (
-      <li>
-        <span class="logo-marquee__mark">T2</span>
-        <span>{label}</span>
-        <small>LOGO／名稱待補</small>
-      </li>
+    {partnerLogos.map((logo) => (
+      <li><img src={withBase(logo.src)} alt={logo.alt} loading="lazy" /><span>{logo.label}</span></li>
     ))}
-    {experiencePlaceholders.map((label) => (
-      <li aria-hidden="true">
-        <span class="logo-marquee__mark">T2</span>
-        <span>{label}</span>
-        <small>LOGO／名稱待補</small>
-      </li>
+    {partnerLogos.map((logo) => (
+      <li aria-hidden="true"><img src={withBase(logo.src)} alt="" loading="lazy" /><span>{logo.label}</span></li>
     ))}
   </ul>
 </div>
@@ -31,8 +34,8 @@ const { class: className = "" } = Astro.props;
   .logo-marquee {
     position: relative;
     overflow: hidden;
-    border-block: 1px solid #deded8;
-    background: var(--home-gray);
+    border-block: 0;
+    background: transparent;
     mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
   }
 
@@ -66,14 +69,44 @@ const { class: className = "" } = Astro.props;
     align-content: center;
     justify-items: center;
     gap: 8px;
-    width: clamp(220px, 24vw, 340px);
-    min-height: clamp(118px, 11vw, 152px);
+    flex: 0 0 clamp(180px, 18vw, 260px);
+    width: clamp(180px, 18vw, 260px);
+    box-sizing: border-box;
+    min-height: clamp(140px, 13vw, 180px);
     padding: 22px 28px;
-    border-right: 1px solid #deded8;
+    border-right: 0;
     text-align: center;
   }
 
-  .logo-marquee__track li:nth-child(2n) { background: color-mix(in srgb, var(--home-yellow) 6%, var(--home-gray)); }
+  .logo-marquee__track li img {
+    display: block;
+    width: min(100%, 230px);
+    height: 112px;
+    max-width: 100%;
+    min-width: 0;
+    object-fit: contain;
+    object-position: center;
+    filter: none;
+    transition: transform 260ms ease;
+  }
+
+  .logo-marquee__track li:hover img,
+  .logo-marquee__track li:focus-within img { transform: scale(1.04); }
+
+  .logo-marquee__track li span {
+    color: #111;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .logo-marquee__track li:nth-child(2) img,
+  .logo-marquee__track li:nth-child(10) img {
+    width: min(100%, 240px);
+    height: 124px;
+  }
+
+  .logo-marquee__track li:nth-child(2n) { background: transparent; }
 
   .logo-marquee__mark {
     display: grid;
@@ -88,8 +121,6 @@ const { class: className = "" } = Astro.props;
     letter-spacing: -0.04em;
   }
 
-  .logo-marquee__track span:not(.logo-marquee__mark) { font-weight: 800; letter-spacing: 0.02em; }
-  .logo-marquee__track small { color: #747474; font-size: 0.76rem; letter-spacing: 0.06em; }
 
   @keyframes logo-marquee {
     from { transform: translateX(0); }
@@ -98,11 +129,13 @@ const { class: className = "" } = Astro.props;
 
   @media (max-width: 640px) {
     .logo-marquee__track { animation-duration: 22s; }
-    .logo-marquee__track li { width: clamp(180px, 62vw, 260px); min-height: 112px; padding: 20px; font-size: 0.88rem; }
+    .logo-marquee__track li { flex-basis: clamp(170px, 52vw, 240px); width: clamp(170px, 52vw, 240px); min-height: 128px; padding: 18px 12px; font-size: 0.88rem; }
     .logo-marquee__mark { width: 48px; height: 48px; }
+    .logo-marquee__track li img { width: min(100%, 210px); height: 88px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .logo-marquee__track { animation: none; transform: none; }
+    .logo-marquee__track li img { transition: none; }
   }
 </style>

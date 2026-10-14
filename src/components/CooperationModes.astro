@@ -1,0 +1,50 @@
+<div class="cooperation-modes">
+  <article class="cooperation-mode cooperation-mode--project" tabindex="0">
+    <span class="cooperation-mode__index">A</span>
+    <p class="cooperation-mode__label">單一專案模式</p>
+    <h3>先完成一個明確的目標。</h3>
+    <p>適合品牌活動、網站頁面、商品素材或印刷製作等，有清楚需求、交付範圍與預計時程的工作。先釐清目標與必要素材，再依確認的內容安排企劃、製作、修改與交付。</p>
+    <ul>
+      <li>適合明確的單次需求</li>
+      <li>依專案範圍與排程執行</li>
+      <li>完成確認的成果後交付</li>
+    </ul>
+    <span class="cooperation-mode__cursor" aria-hidden="true">↗</span>
+  </article>
+  <article class="cooperation-mode cooperation-mode--ongoing" tabindex="0">
+    <span class="cooperation-mode__index">B</span>
+    <p class="cooperation-mode__label">持續性合作模式</p>
+    <h3>讓不同階段的需求有人接續。</h3>
+    <p>適合網站、社群、品牌內容或活動需求會持續發生的情況。以固定窗口整理每階段優先事項，依當期工作量與需求彈性安排線上製作、討論及必要的線下應用。</p>
+    <ul>
+      <li>適合持續出現的設計需求</li>
+      <li>依優先順序安排工作節奏</li>
+      <li>可延伸不同線上線下媒介</li>
+    </ul>
+    <span class="cooperation-mode__cursor" aria-hidden="true">↗</span>
+  </article>
+</div>
+
+<style>
+  .cooperation-modes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:clamp(18px,4vw,54px); }
+  .cooperation-mode { position:relative; min-height:520px; padding:clamp(112px,9vw,138px) clamp(38px,4.5vw,68px) 76px; overflow:hidden; border:2px solid #b18409; background:#fff; color:#26211a; cursor:default; box-shadow:none; transition:transform 280ms ease,box-shadow 280ms ease; }
+  .cooperation-mode--project { border-radius:50% 50% 44px 44px / 27% 27% 44px 44px; }
+  .cooperation-mode--ongoing { margin-top:clamp(56px,7vw,108px); border-color:#0077d9; border-radius:44px 36% 58px 30% / 44px 24% 58px 22%; }
+  .cooperation-mode:hover,.cooperation-mode:focus-visible { transform:translateY(-5px); box-shadow:0 18px 42px rgba(38,33,26,.08); outline:none; }
+  .cooperation-mode:focus-visible { outline:2px solid currentColor; outline-offset:5px; }
+  .cooperation-mode__index { position:absolute; right:clamp(50px,6vw,88px); top:66px; color:#a87908; font:900 2.2rem/1 "Zen Maru Gothic",sans-serif; }
+  .cooperation-mode--ongoing .cooperation-mode__index { color:#0077d9; }
+  .cooperation-mode__label { margin:0 0 24px; color:#a87908; font:700 .78rem/1.4 "Zen Maru Gothic",sans-serif; letter-spacing:.14em; }
+  .cooperation-mode--ongoing .cooperation-mode__label { color:#0077d9; }
+  .cooperation-mode h3 { margin:0; font:900 clamp(1.35rem,2.2vw,1.9rem)/1.4 "Zen Maru Gothic",sans-serif; }
+  .cooperation-mode>p:not(.cooperation-mode__label) { max-width:36em; margin:18px 0 0; color:#6f6657; font-size:.96rem; line-height:1.9; }
+  .cooperation-mode ul { display:flex; flex-wrap:wrap; gap:8px 18px; margin:24px 0 0; padding:0; list-style:none; }
+  .cooperation-mode li { color:#26211a; font-size:.84rem; line-height:1.7; }
+  .cooperation-mode li::before { content:"↗"; margin-right:6px; color:#a87908; }
+  .cooperation-mode--ongoing li::before { color:#0077d9; }
+  .cooperation-mode__cursor { position:absolute; right:54px; bottom:34px; color:#a87908; font-size:1.45rem; }
+  .cooperation-mode--ongoing .cooperation-mode__cursor { color:#0077d9; }
+  @media (max-width:800px) { .cooperation-modes { grid-template-columns:1fr; gap:26px; } .cooperation-mode--ongoing { margin-top:0; } }
+  @media (max-width:560px) { .cooperation-mode { min-height:0; padding:108px 32px 72px; } .cooperation-mode--project { border-radius:50% 50% 32px 32px / 20% 20% 32px 32px; } .cooperation-mode--ongoing { border-radius:32px 36% 40px 28% / 32px 18% 40px 18%; } .cooperation-mode__index { top:62px; right:44px; } .cooperation-mode__cursor { right:36px; bottom:28px; } }
+  @media (prefers-reduced-motion:reduce) { .cooperation-mode { transition:none; } .cooperation-mode:hover,.cooperation-mode:focus-visible { transform:none; } }
+</style>

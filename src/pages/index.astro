@@ -3,7 +3,6 @@ import Layout from "@/components/Layout.astro";
 import CaseCard from "@/components/CaseCard.astro";
 import LogoMarquee from "@/components/LogoMarquee.astro";
 import { getFeaturedCases } from "@/data/cases";
-import { getFeaturedCooperations, commonWorkingMethods, onSiteMeetingNote } from "@/data/cooperations";
 import { site } from "@/data/site";
 import { contactContent } from "@/data/contact";
 import { withBase } from "@/utils/paths";
@@ -14,7 +13,7 @@ const serviceCards = [
     shortTitle: "網站管理",
     english: "WEB SITE",
     summary: "讓網站成為客戶認識你、查看服務與聯絡的重要入口。",
-    image: "/images/works/shiroki-sr-sitetop.jpg"
+    image: "/images/works/yamojin-website.png?v=2"
   },
   {
     title: "活動・教育推廣",
@@ -35,11 +34,9 @@ const serviceCards = [
     shortTitle: "印刷製作",
     english: "PRINT / PRODUCTION",
     summary: "從設計、印刷規格確認，到實際製作一起處理。",
-    image: "/images/works/iwata-shotenkai-flyer.jpg"
+    image: "/images/works/print-production-imirror.png"
   }
 ];
-const featuredCooperations = getFeaturedCooperations();
-
 const featuredCases = await getFeaturedCases();
 ---
 
@@ -51,7 +48,7 @@ const featuredCases = await getFeaturedCases();
 >
   <section id="home-hero" class="home-hero v2-hero" aria-labelledby="home-hero-title" data-home-section="hero">
     <div class="home-hero__media reveal-mask">
-      <img src={withBase("/images/works/glitter8-catalog-mockup.jpg")} alt="GLITTER8 型錄設計作品" fetchpriority="high" />
+        <img src={withBase("/images/works/convex-security-mirror-catalog-1549.png")} alt="凸面安全鏡產品型錄設計作品" fetchpriority="high" />
     </div>
     <div class="home-hero__shade" aria-hidden="true"></div>
     <div class="home-hero__content">
@@ -61,17 +58,13 @@ const featuredCases = await getFeaturedCases();
         <span class="reveal-line"><mark>↗網站架設</mark></span>
         <span class="reveal-line">↗社群經營</span>
       </h1>
-      <p class="home-hero__lead reveal-line">品牌與平面設計、印刷輸出、WordPress／形象網站、社群廣告素材與影音內容，由我直接與你協作。</p>
-      <p class="v2-hero__modes reveal-line">by {site.ownerDisplayName}</p>
-      <p class="v2-hero__modes reveal-line">單次專案・月度／半遠端合作</p>
-      <div class="v2-actions reveal-line">
-        <a class="v2-button v2-button--yellow" href={withBase("/services/")}>查看服務項目 <span aria-hidden="true">→</span></a>
-        <a class="v2-button v2-button--light" href={withBase("/contact/")}>討論合作需求 <span aria-hidden="true">→</span></a>
-      </div>
+      <p class="home-hero__lead reveal-line">品牌與平面設計、印刷輸出、WordPress／形象網站、社群廣告素材與影音內容。</p>
     </div>
-    <aside class="home-hero__side" aria-label="個人品牌工作室">
-      <span>{site.siteName}</span><span>{site.ownerDisplayName}</span>
-    </aside>
+    <a class="home-hero__side" href="#home-experience" aria-label="向下捲動至合作與專案經驗">
+      <span class="home-hero__side-label" aria-hidden="true">SCROLL</span>
+      <span class="home-hero__side-line" aria-hidden="true"></span>
+      <span class="home-hero__side-arrow" aria-hidden="true">↓</span>
+    </a>
   </section>
 
   <section id="home-experience" class="home-section v2-section v2-experience" aria-labelledby="home-experience-title" data-home-section="experience">
@@ -149,40 +142,16 @@ const featuredCases = await getFeaturedCases();
     <a class="home-works-cta" href={withBase("/works/")}><span>查看所有作品案例</span><span aria-hidden="true">→</span></a>
   </section>
 
-  <section id="home-cooperation" class="home-section v2-section v2-bordered" aria-labelledby="home-cooperation-title" data-home-section="cooperation">
-    <header class="v2-section__head reveal">
-      <p class="home-label">05 / COOPERATION</p>
-      <h2 id="home-cooperation-title">依需求的節奏，選擇合作方式。</h2>
-      <p class="v2-cooperation__lead">從一次性製作需求，到月度半遠端品牌支援。</p>
-    </header>
-    <div class="v2-cooperation-grid">
-      {featuredCooperations.map((mode, index) => (
-        <article class="v2-panel v2-cooperation-card reveal">
-          <div class="v2-cooperation-card__arch">
-            <p class="v2-eyebrow">0{index + 1}</p>
-            <h3>{mode.title}</h3>
-          </div>
-          <div class="v2-cooperation-card__body">
-            <p>{mode.summary}</p>
-            <p>適合：{mode.suitableFor[0]}</p>
-          </div>
-        </article>
-      ))}
-    </div>
-    <ul class="v2-methods" aria-label="共同工作方式">{commonWorkingMethods.map((method) => <li>{method}</li>)}</ul>
-    <p class="v2-note">{onSiteMeetingNote}</p>
-    <a class="v2-text-link" href={withBase("/cooperation/")}>了解合作方式 <span aria-hidden="true">→</span></a>
-  </section>
-
   <section id="home-contact" class="home-contact v2-contact" aria-labelledby="home-contact-title" data-home-section="contact">
     <div class="home-contact__media reveal-mask">
-      <img src={withBase("/images/works/glitter8-catalog-mockup.jpg")} alt="GLITTER8 型錄設計細節" loading="lazy" />
+      <img src={withBase("/images/works/convex-security-mirror-catalog-1549.png")} alt="凸面安全鏡產品型錄設計作品" loading="lazy" />
     </div>
     <div class="home-contact__panel reveal">
-      <p class="home-label">06 / CONTACT</p>
-      <h2 id="home-contact-title">{contactContent.title}</h2>
-      <p class="home-contact__lead">{contactContent.intro}</p>
-      <a class="home-contact__button" href={withBase("/contact/")}><span>{contactContent.ctaLabel}</span><span aria-hidden="true">→</span></a>
+      <p class="home-label">06 / ONLINE × OFFLINE</p>
+      <p class="home-contact__eyebrow">Online × Offline</p>
+      <h2 id="home-contact-title">線上 × 線下整合見證</h2>
+      <p class="home-contact__lead">我們已開始與多家夥伴合作，整合線上社群與實體印刷服務，讓品牌內容從曝光、互動到現場應用，都能有一致且完整的執行。歡迎來找 T2 合作。</p>
+      <a class="home-contact__button" href={withBase("/cooperation/")}><span>查看線上 × 線下整合</span><span aria-hidden="true">→</span></a>
     </div>
   </section>
 </Layout>
@@ -246,6 +215,7 @@ const featuredCases = await getFeaturedCases();
   .v2-button--pending:hover { transform: none; }
   .v2-section { padding-block: clamp(64px, 7.5vw, 104px); }
   #home-works.v2-section { padding-top: clamp(34px, 4vw, 58px); }
+  .v2-experience { padding-bottom: 0; }
   .v2-section__head { max-width: 800px; margin-bottom: 36px; }
   .v2-section__head .home-label { margin-bottom: 20px; }
   .v2-section__head h2 { line-height: 1.45; }
@@ -254,7 +224,7 @@ const featuredCases = await getFeaturedCases();
   .v2-cooperation__lead { font-weight: 800; }
   .v2-bordered { border-top: 1px solid #e6e6e2; }
   .v2-note { margin: 22px 0 0; color: #696969; font-size: 0.9rem; }
-  .v2-services { margin-top: 42px; }
+  .v2-services { margin-top: 0; }
   .v2-services .home-skills__wave--bottom { height: clamp(90px, 11vw, 150px); }
   .v2-services .home-skills__inner { grid-template-columns: minmax(0,1fr) minmax(0,0.8fr); gap: 48px 64px; padding-top: 88px; }
   .v2-services .home-skills__intro { width: 100%; justify-self: start; align-self: center; }
@@ -295,18 +265,9 @@ const featuredCases = await getFeaturedCases();
   .v2-panel > p:not(.v2-eyebrow) { color: #636363; line-height: 1.9; }
   .v2-deliverables { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 24px 0 0; list-style: none; }
   .v2-deliverables li { padding: 5px 10px; background: var(--home-gray); font-size: 0.85rem; }
-  .v2-cooperation-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px; }
-  .v2-cooperation-card { display: grid; align-content: start; padding: clamp(18px, 2vw, 26px) clamp(22px, 2.8vw, 34px) clamp(18px, 2.2vw, 26px); border: 2px solid var(--home-yellow); border-radius: 999px 999px 0 0 / 170% 170% 0 0; background: #fffdf8; }
-  .v2-cooperation-card__arch { display: grid; place-items: center; align-content: center; min-height: clamp(210px, 18vw, 292px); text-align: center; transform: translateY(clamp(-32px, -2.4vw, -18px)); }
-  .v2-cooperation-card__arch .v2-eyebrow { margin: 0 0 12px; color: #a87908; font-size: clamp(2.15rem, 4vw, 3.8rem); font-weight: 900; letter-spacing: -0.03em; line-height: 0.95; }
-  .v2-cooperation-card__arch h3 { max-width: 10em; font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif; font-size: clamp(1.55rem, 2.2vw, 2.25rem); font-weight: 900; line-height: 1.22; letter-spacing: 0.02em; }
-  .v2-cooperation-card__body { display: grid; align-content: start; gap: 12px; margin-top: clamp(-44px, -3.2vw, -28px); }
-  .v2-cooperation-card__body p { margin: 0; color: #636363; line-height: 1.8; }
-  .v2-cooperation-card__body p + p { padding-top: 10px; border-top: 1px solid #e6e0d2; color: var(--home-ink); font-weight: 700; }
-  .v2-methods { display: flex; flex-wrap: wrap; gap: 12px 24px; list-style: none; padding: 0; margin: 32px 0 0; }
-  .v2-methods li::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 9px; background: var(--home-yellow); vertical-align: middle; }
   .v2-cases-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 44px 32px; }
   .v2-case { min-width: 0; }
+  .v2-case:nth-child(even) { margin-top: clamp(28px, 6vw, 84px); }
   .v2-case__context { border-top: 1px solid #e6e6e2; margin-top: 18px; padding-top: 6px; color: #686868; font-size: 0.9rem; line-height: 1.9; }
   .v2-case__context strong { color: var(--home-ink); margin-right: 6px; }
   .v2-case__context p { margin: 12px 0 0; }
@@ -319,15 +280,23 @@ const featuredCases = await getFeaturedCases();
   .v2-about__name { font-size: 0.56em; letter-spacing: 0.12em; }
   .v2-about__body p { margin: 0 0 20px; line-height: 2; color: #636363; }
   .v2-contact { margin-top: 0; }
-  .v2-contact .home-label { margin-bottom: 24px; }
-  .v2-contact h2 { line-height: 1.45; }
+  .v2-contact { width: min(calc(100% - var(--home-safe) * 2), 1440px); min-height: clamp(360px, 38vw, 520px); margin: clamp(24px, 3.5vw, 52px) auto clamp(64px, 9vw, 128px); border-radius: 24px; overflow: hidden; background: #111; }
+  .v2-contact .home-contact__media { position: absolute; inset: 0; min-height: 100%; }
+  .v2-contact .home-contact__media::after { content: ""; position: absolute; inset: 0; background: rgba(17, 17, 17, 0.58); }
+  .v2-contact .home-contact__panel { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: min(820px, 100%); min-height: inherit; margin: 0 auto; padding: clamp(42px, 6vw, 78px) var(--home-safe); color: #fff; text-align: center; }
+  .v2-contact .home-contact__panel > * { width: 100%; }
+  .v2-contact .home-label { margin-bottom: 20px; color: var(--home-yellow); }
+  .v2-contact .home-contact__eyebrow { margin: 0 0 6px; font-family: "Manrope", sans-serif; font-size: clamp(1.1rem, 1.8vw, 1.5rem); letter-spacing: 0.08em; }
+  .v2-contact h2 { max-width: 680px; margin-inline: auto; line-height: 1.35; }
+  .v2-contact .home-contact__lead { max-width: 680px; margin-inline: auto; color: rgba(255,255,255,.9); font-size: clamp(.95rem,1.2vw,1.12rem); line-height: 1.9; }
+  .v2-contact .home-contact__button { margin-inline: auto; background: var(--home-yellow); color: var(--home-ink); }
+  .v2-contact .home-contact__button:hover { background: #fff; }
   :global(.v2-home .reveal) { animation: none; }
   @media (max-width: 980px) {
     .v2-services .home-skills__inner { grid-template-columns: minmax(0,1fr) minmax(0,0.8fr); gap: 36px; }
     .v2-services .home-skills__orbit { grid-column: 2; }
     .v2-services__grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .v2-service__flip { min-height: clamp(180px, 32vw, 240px); }
-    .v2-cooperation-card__arch { min-height: 220px; transform: translateY(-22px); }
   }
   @media (max-width: 640px) {
     .v2-hero { min-height: auto; }
@@ -342,8 +311,8 @@ const featuredCases = await getFeaturedCases();
     .v2-services .home-skills__inner { grid-template-columns: 1fr; padding-top: 66px; padding-bottom: 36px; }
     .v2-services .home-skills__wave--bottom { height: 88px; }
     .v2-services .home-skills__orbit { grid-column: 1; grid-row: auto; width: min(82vw,340px); margin-block: 18px; }
-    .v2-cooperation-grid { grid-template-columns: 1fr; }
     .v2-services__grid, .v2-cases-grid, .v2-process, .v2-about { grid-template-columns: 1fr; }
+    .v2-case:nth-child(even) { margin-top: 0; }
     .v2-services__grid { gap: 14px; }
     .v2-service { perspective: none; -webkit-perspective: none; }
     .v2-service__flip { min-height: 190px; aspect-ratio: 1.2 / 1; transform: none !important; transform-style: flat; -webkit-transform-style: flat; transition: none; }
@@ -358,6 +327,7 @@ const featuredCases = await getFeaturedCases();
     .v2-service:focus-visible .v2-service__face--back { opacity: 1; }
     .v2-about { gap: 0; }
     .v2-process li { gap: 20px; }
+    .v2-contact { width: calc(100% - 32px); border-radius: 16px; }
     .v2-contact .home-contact__button { letter-spacing: 0.04em; padding-inline: 24px; min-width: 0; width: 100%; }
   }
   @media (prefers-reduced-motion: reduce) {

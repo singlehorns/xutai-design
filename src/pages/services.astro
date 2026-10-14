@@ -12,9 +12,9 @@ const serviceItems = [
     english: "WEB SITE",
     title: "網站建置・維護管理",
     statement: "讓網站成為客戶認識你、查看服務與聯絡的重要入口。",
-    image: "/images/works/shiroki-sr-sitetop.jpg",
+    image: "/images/works/veloria-website-products.jpg",
     imagePosition: "center top",
-    imageLabel: "網站 Mockup / Desktop + Mobile",
+    imageLabel: "Veloria 薇洛雅網站商品頁畫面",
     description: [
       "公司網站除了提供基本資訊，也經常是客戶認識公司、查看服務與聯絡的重要管道。",
       "可協助企業與商家進行網站規劃、設計與建置，包含既有網站改版、WordPress 網站以及活動頁面等。網站上線後，如有持續更新的需求，也能協助處理內容、主機及網站日常維護。"
@@ -28,9 +28,9 @@ const serviceItems = [
     english: "EVENT / EDUCATION",
     title: "活動・教育推廣",
     statement: "從活動前期宣傳，到報名資訊與現場製作物一起規劃。",
-    image: "/images/works/itayamachibaru-capture.jpg",
+    image: "/images/works/event-education-tea-booklet.jpg",
     imagePosition: "center center",
-    imageLabel: "研習、競賽、食農教育展覽或現場照片",
+    imageLabel: "茶葉教育手冊設計與印刷成品",
     description: [
       "學校研習、競賽、招生或推廣活動，除了前期宣傳之外，通常還會需要報名資訊、活動手冊、現場展示及相關製作物。",
       "過去有參與學校研習與競賽相關製作，也曾協助食農教育的假日展覽，因此可以依照不同活動內容，協助規劃宣傳、報名到活動現場所需要的設計與製作項目。"
@@ -44,9 +44,9 @@ const serviceItems = [
     english: "SOCIAL MEDIA / ADS",
     title: "社群・廣告推廣",
     statement: "配合日常曝光、招生與活動檔期，安排社群內容與廣告導流。",
-    image: "/images/works/tokaiunit-sitetop.jpg",
+    image: "/images/works/veloria-social-page.png",
     imagePosition: "center top",
-    imageLabel: "IG 貼文、Meta Ads、招生宣傳素材",
+    imageLabel: "Veloria 薇洛雅社群頁面截圖",
     description: [
       "社群可以用來維持日常曝光，也可以配合招生、活動或特定期間進行宣傳。",
       "目前有協助公司與學校進行社群貼文製作與發布，並依照活動時間安排 Meta 廣告，將看到廣告的人導向網站或報名頁面。廣告發布後，也可以查看基本成效，作為下一次內容與投放方式調整的參考。"
@@ -60,9 +60,9 @@ const serviceItems = [
     english: "PRINT / PRODUCTION",
     title: "商家印刷・製作",
     statement: "從設計、印刷規格確認，到實際製作一起處理。",
-    image: "/images/works/iwata-shotenkai-flyer.jpg",
+    image: "/images/works/print-production-nanke-banners.jpg",
     imagePosition: "center center",
-    imageLabel: "菜單、貼紙、DM、壓克力製作成品",
+    imageLabel: "南科育成中心印刷旗幟照片",
     description: [
       "店家平常會使用到的菜單、貼紙、傳單或其他宣傳品，除了設計之外，還需要考慮尺寸、材質、數量以及實際製作方式。",
       "目前有配合商家、補習班等單位進行印刷製作，可從版面設計、印刷規格確認到後續製作一起處理，減少另外尋找設計與印刷窗口的時間。"
@@ -283,6 +283,11 @@ const getCaseStatus = (caseStudy: CaseViewModel) => caseStudy.contentStatus === 
     object-position: var(--image-position, center center);
     filter: grayscale(6%) saturate(0.9) brightness(0.72);
     transform: scale(1.02);
+  }
+
+  #social-ads .service-image img {
+    transform-origin: center top;
+    transform: scale(1.12);
   }
 
   .service-image::after {
@@ -843,6 +848,10 @@ const getCaseStatus = (caseStudy: CaseViewModel) => caseStudy.contentStatus === 
 
     .service-image {
       height: clamp(280px, 68vw, 360px);
+    }
+
+    #social-ads .service-image img {
+      transform: scale(1.9);
     }
 
     .service-image figcaption {

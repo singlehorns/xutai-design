@@ -71,7 +71,7 @@
     if (button.hasAttribute('data-select-cover')) selectImage(null, true);
     if (button.hasAttribute('data-remove-cover')) { document.getElementById('t2-cover-id').value = '0'; preview(root.querySelector('[data-cover-preview]'), '', true); }
     if (button.hasAttribute('data-select-image')) selectImage(row, false);
-    if (button.hasAttribute('data-row-remove') && window.confirm('移除此段內容？媒體庫的原始圖片會保留。')) row.remove();
+    if (button.hasAttribute('data-row-remove') && window.confirm('確定移除此段內容？媒體庫的原始圖片會保留，但儲存後不會再顯示於此作品內頁。')) row.remove();
     if (button.hasAttribute('data-row-up') && row.previousElementSibling) row.previousElementSibling.before(row);
     if (button.hasAttribute('data-row-down') && row.nextElementSibling) row.nextElementSibling.after(row);
     if (button.hasAttribute('data-add-category')) {

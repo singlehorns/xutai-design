@@ -2,7 +2,7 @@
 import Layout from "@/components/Layout.astro";
 import PendingImage from "@/components/PendingImage.astro";
 import { getCases } from "@/data/cases";
-import type { CaseViewModel } from "@/data/case-model";
+import type { CaseImage, CaseViewModel } from "@/data/case-model";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
 
@@ -31,9 +31,17 @@ const relatedLink = caseStudy.relatedLink !== undefined
     : caseStudy.services[0]
       ? { label: caseStudy.services[0].title, href: withBase(`/services/#${caseStudy.services[0].slug}`), external: false }
       : undefined;
-const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.src === caseStudy.coverImage?.src)
-  ? [caseStudy.coverImage, ...caseStudy.gallery]
-  : caseStudy.gallery;
+const contentImages: CaseImage[] = Array.from(caseStudy.contentHtml?.matchAll(/<img\b[^>]*\bsrc="([^"]+)"[^>]*>/gi) ?? []).map((match) => {
+  const tag = match[0];
+  const alt = tag.match(/\balt="([^"]*)"/i)?.[1] ?? "作品圖片";
+  return { src: match[1], alt };
+});
+const gallery = [
+  ...(caseStudy.coverImage ? [caseStudy.coverImage] : []),
+  ...caseStudy.gallery,
+  ...contentImages
+].filter((item, index, items) => items.findIndex((candidate) => candidate.src === item.src) === index);
+const summaryWithBreaks = caseStudy.summary.replace(/<br\s*\/?\s*>/gi, "\n");
 ---
 
 <Layout title={`${caseStudy.title} | ${site.siteName}`} description={caseStudy.summary}>
@@ -52,15 +60,15 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
     <div class="project-viewer case-viewer">
 
       <div class="project-main case-main">
+        <section class="case-summary" aria-label="作品簡短描述">
+          <p>{summaryWithBreaks}</p>
+        </section>
         {caseStudy.background && <section class="case-section" aria-labelledby="case-background-title"><h2 id="case-background-title">專案背景</h2><p>{caseStudy.background}</p></section>}
         {caseStudy.challenge && <section class="case-section" aria-labelledby="case-challenge-title"><h2 id="case-challenge-title">面對的課題</h2><p>{caseStudy.challenge}</p></section>}
         {caseStudy.approach && <section class="case-section" aria-labelledby="case-approach-title"><h2 id="case-approach-title">執行方式</h2><p>{caseStudy.approach}</p></section>}
         {caseStudy.deliverables.length > 0 && <section class="case-section" aria-labelledby="case-deliverables-title"><h2 id="case-deliverables-title">實際交付內容</h2><ul>{caseStudy.deliverables.map((item) => <li>{item}</li>)}</ul></section>}
 
-        {caseStudy.contentHtml !== undefined ? (
-          <section class="case-section case-editor" aria-label="作品內容" set:html={caseStudy.contentHtml} />
-        ) : <section class="case-section case-gallery" aria-labelledby="case-gallery-title">
-          <h2 id="case-gallery-title">作品畫面</h2>
+        <section class="case-section case-gallery" aria-labelledby="case-gallery-title">
           <div class="project__media">
             {gallery.length > 0 ? gallery.map((item, index) => (
               <figure>
@@ -69,7 +77,7 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
               </figure>
             )) : <PendingImage />}
           </div>
-        </section>}
+        </section>
         {relatedLink && (
           <section class="case-section case-link-section" aria-label="作品相關連結">
             <a class="case-related-link" href={relatedLink.href} target={relatedLink.external ? "_blank" : undefined} rel={relatedLink.external ? "noopener noreferrer" : undefined}>
@@ -89,8 +97,11 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
 </Layout>
 
 <style>
-  .case-study { color: var(--home-ink); }
-  .case-hero { padding: 0 clamp(22px,4vw,58px); }
+  .case-study {
+    width: min(calc(100% - 64px), 1280px);
+    color: var(--home-ink);
+  }
+  .case-hero { padding: 0 clamp(22px,4vw,58px); margin-bottom: 0; }
   .case-hero h1 { max-width: 760px; overflow-wrap: anywhere; font-size: clamp(1.4rem, 1.98vw, 2.295rem); }
   .case-back { width: fit-content; margin-bottom: 12px; font-size: 0.85rem; font-weight: 700; }
   .case-categories { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -101,13 +112,22 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
   .case-category-badge:nth-child(5n + 4) { background: #c4c3ad; }
   .case-category-badge:nth-child(5n + 5) { background: #b8bdca; }
   .case-viewer { display: block; }
-  .case-main { min-width: 0; }
+  .case-main { min-width: 0; margin-top: clamp(28px, 4vw, 44px); padding-top: clamp(34px, 4vw, 58px); }
+  .case-summary { margin: 0 0 40px; }
+  .case-summary p { max-width: 1180px; margin: 0; color: var(--muted); font-size: clamp(0.85rem, 1vw, 1.05rem); line-height: 1.9; white-space: pre-line; }
   .case-section + .case-section { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--line); }
   .case-section h2 { margin: 0 0 20px; font-size: clamp(1.1rem,1.35vw,1.35rem); line-height: 1.5; }
   .case-section p, .case-section li { font-size: 0.95rem; line-height: 1.95; color: var(--muted); }
   .case-section p { white-space: pre-line; }
   .case-section ul { padding-left: 1.3em; }
   .case-gallery figure { min-width: 0; margin: 0; }
+  .case-gallery figure img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
   .case-gallery figcaption { margin-top: 12px; color: var(--muted); font-size: 0.8rem; }
   .case-editor :global(img) { display: block; width: auto; max-width: 100%; height: auto; margin-inline: auto; }
   .case-editor :global(figure) { min-width: 0; margin: 0 0 28px; }
@@ -136,6 +156,7 @@ const gallery = caseStudy.coverImage && !caseStudy.gallery.some((item) => item.s
   .case-navigation strong { font-size: 1rem; line-height: 1.6; overflow-wrap: anywhere; }
   .case-study a:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 4px; }
   @media (max-width: 640px) {
+    .case-study { width: min(calc(100% - 32px), 1280px); }
     .case-editor :global(.wp-block-gallery) { grid-template-columns: minmax(0,1fr); }
     .case-navigation { grid-template-columns: minmax(0,1fr); gap: 16px; }
     .case-navigation a:last-child { text-align: left; border-top: 1px solid var(--line); padding-top: 24px; }

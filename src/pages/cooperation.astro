@@ -1,768 +1,166 @@
 ---
 import Layout from "@/components/Layout.astro";
-import LogoMarquee from "@/components/LogoMarquee.astro";
+import CooperationModes from "@/components/CooperationModes.astro";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
 
-const hybridSupportItems = [
-  { id: "monthly", title: "持續需求", description: "維持日常營運，延續更新與維護。" },
-  { id: "occasional-support", title: "不定期綜合支援", description: "因應活動或其他面向的設計與製作需求。" },
-  { id: "hybrid-meetings", title: "定期定點會議", description: "依約定時間與地點討論需求，確認下一階段工作。" },
-  { id: "hybrid-progress", title: "KPI／進度時程", description: "共同設定工作指標、預計交付節點與進度回報方式。" }
+const applications = [
+  { label: "線上應用", title: "數位內容與視覺應用", items: ["品牌與活動內容企劃", "網站視覺與活動頁面", "社群內容及廣告素材", "AI 商品情境圖與影片", "電商視覺與數位宣傳"] },
+  { label: "線下應用", title: "實體視覺與印刷製作", items: ["品牌識別及產品包裝", "商業印刷及客製周邊", "活動布條、展牌及展示物", "展覽空間視覺與場佈", "印刷輸出與製作協調"] }
 ] as const;
-
-const cooperationQuestions = [
-  { question: "知道目前有問題，卻還說不清楚要改什麼？", answer: "先一起釐清問題與優先事項，整理第一階段要完成的工作。透過半遠端合作，現場討論需求與方向，再遠端製作提案或初稿，依階段回饋逐步確認後續安排。" },
-  { question: "專案已經完成，卻還會隨產品與營運持續微調？", answer: "先整理後續調整項目，區分急迫程度，再確認工作量與排程。半遠端可安排持續或不定期支援，平時遠端處理更新，遇到方向變動或較複雜的需求，再安排現場討論。" },
-  { question: "要做網站、活動素材或印刷，公司卻缺少相關執行經驗？", answer: "先協助梳理製作流程、所需資料與確認節點，讓團隊知道各階段要準備什麼。半遠端合作可搭配現場對焦、遠端製作與定期會議，以交付項目、里程碑等 KPI／工作指標掌握進度。" },
-  { question: "暫時沒有增聘專職人力的預算，工作卻仍需要推進？", answer: "先依預算排出優先事項，確認可投入的工作範圍、時間與報酬。可從短期半遠端合作開始，將現場討論與遠端製作排入階段時程，再依實際需求評估持續或不定期支援。" }
-] as const;
-
-const cooperationWorkflow = [
-  { title: "討論需求與合約", description: "確認工作範圍、預算與合作條件，提供必要合約。" },
-  { title: "執行／進度回報", description: "依確認的方向製作，整理已完成、進行中與待確認事項。" },
-  { title: "二次修改", description: "依討論回饋調整製作內容，確認修改結果。" },
-  { title: "確認交付與結案", description: "整理約定的交付內容，完成確認與結案。" }
-] as const;
-
-const cooperationStories = [
-  {
-    id: "website-support",
-    industry: "資訊業",
-    title: "從購物平台調整，延伸到活動與印刷。",
-    initial: "先從購物平台的前端頁面調整開始，由我評估工作進度並協助網頁製作。",
-    followUp: "合作中陸續加入活動平面、名片印刷與周邊商品製作，支援內容從網站延伸到其他設計與製作需求。"
-  },
-  {
-    id: "campaign-support",
-    industry: "教育業",
-    title: "從 DM 與研習海報，延伸到社群經營與廣告發布。",
-    initial: "原先委託我製作 DM 或研習海報。",
-    followUp: "後續合作再延伸到社群經營與廣告發布，讓平面宣傳與線上內容能由同一個窗口接續支援。"
-  },
-  {
-    id: "bakery-print-support",
-    industry: "烘焙業",
-    title: "從 DM 印製，延伸到貼紙與烘焙小卡。",
-    initial: "原先需求是印製 DM。",
-    followUp: "後續再延伸製作貼紙與烘焙小卡。"
-  }
+const cases = [
+  { id: "jimei-faceschool", number: "01", title: "集美生技 × FaceSchool", core: "品牌形象與產品應用", note: "從品牌理念理解開始，整理視覺企劃，再延伸到設計應用與廠商協作。", online: ["企業網站形象與視覺架構", "FaceSchool 電商視覺", "數位宣傳素材"], offline: ["產品包裝及紙盒", "展覽周邊印刷", "展場配置與佈置"] },
+  { id: "diamond-rhyme", number: "02", title: "鑽之韻", core: "珠寶品牌的數位展示與實體應用", note: "以 AI 商品影像、數位內容與實體品牌視覺，建立一致的展示體驗。", online: ["Cyberbiz 網站頁面美化", "社群內容企劃", "AI 鑽戒產品渲染", "AI 商品展示影片"], offline: ["品牌名片", "門市展牌", "保固卡", "品牌冊子"] },
+  { id: "nkust-ai-training", number: "03", title: "高科大 AI 智慧製造產業人才培訓據點", core: "課程推廣與活動視覺", note: "將課程資訊轉換成線上宣傳內容，以及活動現場所需的視覺應用。", online: ["課程與活動宣傳內容企劃", "社群圖文製作", "AI 輔助視覺素材"], offline: ["演講海報", "活動布條", "手拿牌", "桌牌及相關印刷物"] }
 ] as const;
 ---
 
-<Layout title={`合作方式 | ${site.siteName}`} description={`從明確專案開始，以半遠端設計協作延伸持續需求與不定期支援。由 ${site.ownerDisplayName} 提供固定窗口、清楚排程與 KPI／工作指標討論，串接網站、平面及印刷製作。`} mainClass="cooperation-shell">
+<Layout title={`線上 × 線下整合 | ${site.siteName}`} description="從品牌需求、創意發想與內容企劃出發，整合 AI 數位工具、網站視覺、社群內容及實體印刷製作。" mainClass="cooperation-shell">
   <div class="cooperation-page">
-    <header class="cooperation-hero" aria-labelledby="cooperation-title">
-      <div class="cooperation-hero__handwriting" aria-hidden="true">let's goooo!</div>
-      <h1 id="cooperation-title" class="reveal-line">合作模式</h1>
-      <p class="home-label reveal-line">COOPERATION</p>
-    </header>
-
-    <section id="cooperation-approach" class="cooperation-section cooperation-approach" aria-labelledby="cooperation-approach-title">
-      <h2 id="cooperation-approach-title" class="cooperation-approach__subtitle">從明確專案開始，依需求延續為半遠端合作。</h2>
-      <p id="cooperation-shared-note" class="cooperation-note cooperation-shared-note">單次專案與半遠端合作，皆適用同一套合作流程。</p>
-      <div class="cooperation-notebook" role="group" aria-label="專案與半遠端模式" aria-describedby="cooperation-shared-note">
-        <section class="cooperation-notebook__project cooperation-flip-card" aria-labelledby="cooperation-project-title" tabindex="0">
-          <div class="cooperation-flip-card__inner">
-            <div class="cooperation-flip-card__face cooperation-flip-card__face--front">
-              <p class="cooperation-flip-card__number">01</p>
-              <h3 id="cooperation-project-title" class="cooperation-notebook__title">一般專案</h3>
-              <p class="cooperation-flip-card__hint">明確需求，完成眼前目標</p>
-            </div>
-            <div class="cooperation-flip-card__face cooperation-flip-card__face--back">
-              <h3 class="cooperation-flip-card__back-title">單次專案</h3>
-              <p>以需求範圍、交付成果與排程為基礎，協助在確認的期間內完成一項專案。</p>
-              <strong>適合：有明確專案目標</strong>
-            </div>
-          </div>
-          <div class="cooperation-flip-card__details">
-          <div id="project" class="cooperation-path__source">
-            <h4>明確需求</h4>
-            <p>完成眼前目標</p>
-          </div>
-          <section class="cooperation-shared-workflow" aria-labelledby="cooperation-shared-workflow-title">
-            <h4 id="cooperation-shared-workflow-title">共用合作流程</h4>
-            <ol>
-              {cooperationWorkflow.map((step, index) => (
-                <li>
-                  <strong>{step.title}</strong><p>{step.description}</p>
-                  {index < cooperationWorkflow.length - 1 && <span class="cooperation-shared-workflow__arrow" aria-hidden="true">↓</span>}
-                </li>
-              ))}
-            </ol>
-          </section>
-          </div>
-        </section>
-        <section class="cooperation-notebook__hybrid cooperation-flip-card" aria-labelledby="cooperation-hybrid-title" tabindex="0">
-          <div class="cooperation-flip-card__inner">
-            <div class="cooperation-flip-card__face cooperation-flip-card__face--front">
-              <p class="cooperation-flip-card__number">02</p>
-              <h3 id="cooperation-hybrid-title" class="cooperation-notebook__title">半遠端模式</h3>
-              <p class="cooperation-flip-card__hint">持續需求，保留合作產能</p>
-            </div>
-            <div class="cooperation-flip-card__face cooperation-flip-card__face--back">
-              <h3 class="cooperation-flip-card__back-title">月度／半遠端合作</h3>
-              <p>為持續性的設計與網站需求預留合作產能，可搭配固定遠端執行與部分現場協作。</p>
-              <strong>適合：每個月都有持續的設計或網站需求</strong>
-            </div>
-          </div>
-          <div class="cooperation-flip-card__details">
-          <ul class="cooperation-path__extensions" aria-label="半遠端合作需求與安排">
-            {hybridSupportItems.map((extension, index) => (
-              <li id={extension.id}>
-                <span class="cooperation-path__branch" aria-hidden="true"></span>
-                <h4><span class="cooperation-path__marker" aria-hidden="true">{String.fromCharCode(97 + index)}.</span><span class="cooperation-path__label">{extension.title}</span></h4>
-                <p>{extension.description}</p>
-              </li>
-            ))}
-          </ul>
-          <p class="cooperation-notebook__note">持續或不定期的工作，也依共用流程討論、追蹤、修改與階段結案。</p>
-          </div>
-        </section>
-      </div>
+    <section class="cooperation-section cooperation-applications" aria-labelledby="applications-title">
+      <svg class="cooperation-applications__shape" viewBox="0 0 550 540" aria-hidden="true" focusable="false"><path d="M190 90C180 48 144 27 113 69c-23 34-11 67-13 73-30-30-72-17-74 16-4 27 32 50 69 72-48-12-93 10-89 38 7 45 61 63 107 62-44 20-45 60-16 78 23 15 55 13 88 2-37 35-34 75-14 94 27 32 74-3 119-47 23 54 50 74 82 64 39-12 30-67 22-97 52 29 99 29 110-6 10-25-20-53-39-70 60-5 85-25 80-56-5-34-52-52-105-55 56-16 89-38 82-70-10-41-60-41-113-25 44-34 59-64 32-90-26-23-70-5-113 22 24-44 20-69-9-72-34-6-66 43-92 89-10-16-22-23-37-1Z" /></svg>
+      <button class="intro-flip-card" type="button" aria-label="翻轉線上與線下整合卡片" aria-pressed="false">
+        <span class="intro-flip-card__inner">
+          <span class="intro-flip-card__face intro-flip-card__face--front"><strong>線上</strong><small>數位內容<br />與視覺應用</small><i aria-hidden="true">↗</i></span>
+          <span class="intro-flip-card__face intro-flip-card__face--back"><strong>線下</strong><small>印刷、空間<br />與現場體驗</small><i aria-hidden="true">↘</i></span>
+        </span>
+      </button>
+      <header class="cooperation-heading"><h2 id="applications-title">讓創意從線上延伸至線下。</h2></header>
+      <div class="application-grid">{applications.map((application, index) => <article class:list={["application-card", index === 1 && "application-card--offline"]}><div class="application-card__top"><span>{application.label}</span><span class="application-card__mark" aria-hidden="true"></span></div><h3>{application.title}</h3><ul>{application.items.map((item) => <li>{item}</li>)}</ul>{index === 0 ? <div class="application-card__browser" aria-hidden="true"><div class="browser-bar"><i></i><i></i><i></i></div><div class="browser-screen"><em></em></div></div> : <div class="application-card__prints" aria-hidden="true"><span></span><span></span><span></span></div>}</article>)}</div>
+      <p class="cooperation-bridge"><span aria-hidden="true">線上</span><i></i><span aria-hidden="true">線下</span></p>
     </section>
-
-    <LogoMarquee class="cooperation-logo-marquee" />
-
-    <section id="hybrid-benefits" class="cooperation-section cooperation-scenarios" aria-labelledby="hybrid-benefits-title">
-      <header id="comparison" class="cooperation-heading">
-        <h2 id="hybrid-benefits-title">常見的合作情境需求</h2>
-        <p>需求還沒定案、專案需要持續調整，或暫時缺少執行人力時，都可以依工作範圍與預算，討論適合的半遠端合作安排。</p>
-      </header>
-      <dl class="cooperation-qa">
-        {cooperationQuestions.map((item) => (
-          <div>
-            <dt>
-              <span class="cooperation-qa__marker">Q.</span><span>{item.question}</span>
-            </dt>
-            <dd><span class="cooperation-qa__marker">A.</span><span>{item.answer}</span></dd>
-          </div>
-        ))}
-      </dl>
-      <p class="cooperation-note">合作契約、勞健保及相關費用，依實際合作關係與法令確認。</p>
+    <section class="cooperation-section cooperation-modes-section" aria-label="合作模式">
+      <CooperationModes />
     </section>
-
-    <section id="cooperation-stories" class="cooperation-section cooperation-stories" aria-labelledby="cooperation-stories-title">
-      <header class="cooperation-heading">
-        <h2 id="cooperation-stories-title">實際合作案例</h2>
-      </header>
-      <div class="cooperation-stories__grid">
-        {cooperationStories.map((story) => (
-          <article class="cooperation-story" aria-labelledby={`${story.id}-title`}>
-            <svg class="cooperation-story__folder cooperation-story__folder--top" viewBox="0 0 600 96" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-              <path d="M 1 96 V 25 Q 1 1 25 1 H 239 Q 259 1 259 21 V 49 Q 259 69 279 69 H 575 Q 599 69 599 93 V 96" />
-            </svg>
-            <svg class="cooperation-story__folder cooperation-story__folder--body" viewBox="0 0 600 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-              <path d="M 1 0 V 375 Q 1 399 25 399 H 575 Q 599 399 599 375 V 0" />
-            </svg>
-            <p class="cooperation-story__industry">產業類別：{story.industry}</p>
-            <h3 id={`${story.id}-title`}>{story.title}</h3>
-            <dl>
-              <div><dt>原先的需求</dt><dd>{story.initial}</dd></div>
-              <div><dt>後續的延伸</dt><dd>{story.followUp}</dd></div>
-            </dl>
-          </article>
-        ))}
-      </div>
-      <p class="cooperation-note">以上為匿名合作經驗；實際合作範圍、週期與製作費用另行確認。</p>
+    <section class="cooperation-section cooperation-cases" aria-labelledby="cases-title">
+      <svg class="cooperation-cases__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 16C100 36 210 28 292 10c46-10 58 2 58 46 0 10 14 12 50 12h1040v32H0Z" /></svg>
+      <header class="cooperation-heading"><h2 id="cases-title">實際整合案例</h2><p>不同產業、不同接觸點，從同一個核心概念延伸出合適的線上與線下應用。</p></header>
+      <div class="case-list">{cases.map((item) => <article class="integration-case" id={item.id} aria-labelledby={`${item.id}-title`}><div class="integration-case__visual" aria-label={`${item.title} 作品圖片待補`}><span class="integration-case__number">{item.number}</span><span class="integration-case__pending">圖片待補</span></div><div class="integration-case__content"><p class="integration-case__tag">案例 {item.number}</p><h3 id={`${item.id}-title`}>{item.id === "jimei-faceschool" ? <a href={withBase("/works/集美生技-電商視覺-跨媒介應用/")}>{item.title}</a> : item.id === "diamond-rhyme" ? <a href={withBase("/works/鑽之韻-品牌電商視覺與多媒體內容製作/")}>{item.title}</a> : <a href={withBase("/works/高科大-ai-智慧製造-活動視覺與印刷製作/")}>{item.title}</a>}</h3><p class="integration-case__core">{item.core}</p><p class="integration-case__note">{item.note}</p><div class="integration-case__channels"><div><h4>線上</h4><ul>{item.online.map((entry) => <li>{entry}</li>)}</ul></div><div><h4>線下</h4><ul>{item.offline.map((entry) => <li>{entry}</li>)}</ul></div></div></div></article>)}</div>
+      <p class="cooperation-note">案例圖片目前待補；補入正式作品後，將沿用此版面比例，不影響文字與案例結構。</p>
     </section>
-
-    <section class="cooperation-contact" aria-labelledby="cooperation-contact-title">
-      <p class="home-label">CONTACT</p>
-      <h2 id="cooperation-contact-title">你的需求，也正在持續延伸嗎？</h2>
-      <p>無論是眼前的一項專案，或陸續出現的網站、平面與印刷需求，都可以先聊聊目前的目標、預算與時程，一起整理適合的合作節奏。</p>
-      <a class="home-works-cta" href={withBase("/contact/")}><span>聊聊你的合作需求</span><span aria-hidden="true">→</span></a>
-    </section>
+    <section class="cooperation-contact" aria-labelledby="cooperation-contact-title"><h2 id="cooperation-contact-title">有想法，從需求開始討論。</h2><p>無論是品牌宣傳、數位內容、網站視覺，或實體印刷與活動製作，都可以依據實際需求討論合適的規劃與執行方式。</p><a class="home-works-cta" href={withBase("/contact/")}><span>討論合作需求</span><span aria-hidden="true">→</span></a></section>
   </div>
 </Layout>
+
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap");
-
-  :global(.cooperation-shell) { background: #f8f4ec; }
-
-  .cooperation-page {
-    --cooperation-rounded: "Zen Maru Gothic", "M PLUS Rounded 1c", "Noto Sans TC", sans-serif;
-    --cooperation-body: "Noto Sans TC", sans-serif;
-    --cooperation-ink: #26211a;
-    --cooperation-muted: #6f6657;
-    --cooperation-yellow: var(--home-yellow);
-    --cooperation-yellow-deep: #a87908;
-    --cooperation-card: #fffdf6;
-    --cooperation-line: rgba(38, 33, 26, 0.15);
-    width: min(calc(100% - var(--home-safe) * 2), 1240px);
-    margin-inline: auto;
-    padding-block: clamp(64px, 8vw, 112px) clamp(64px, 7vw, 96px);
-    color: var(--cooperation-ink);
-    font-family: var(--cooperation-body);
-  }
-
-  .cooperation-hero {
-    display: grid;
-    align-content: center;
-    justify-items: center;
-    min-height: clamp(220px, 28vh, 320px);
-    padding-block: clamp(30px, 4.2vw, 56px);
-    text-align: center;
-  }
-
-  .cooperation-hero__handwriting {
-    position: relative;
-    margin: 0 0 clamp(4px, 0.9vw, 10px);
-    color: rgba(0, 119, 217, 0.76);
-    font-family: var(--handwriting-font);
-    font-size: clamp(1.85rem, 2.6vw, 3rem);
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1;
-    white-space: nowrap;
-    transform: rotate(-13deg);
-    clip-path: inset(0 100% 0 0);
-    opacity: 0;
-    animation: cooperation-handwriting-in 880ms cubic-bezier(0.16, 1, 0.3, 1) 160ms forwards;
-  }
-
-  .cooperation-hero .home-label,
-  .cooperation-contact .home-label {
-    font-family: var(--cooperation-rounded);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-  }
-
-  .cooperation-hero .home-label {
-    margin: 10px 0 0;
-    color: var(--cooperation-ink);
-    font-size: clamp(0.82rem, 1vw, 0.98rem);
-    font-weight: 700;
-    line-height: 1.5;
-    letter-spacing: 0.24em;
-    text-indent: 0.24em;
-  }
-
-  .cooperation-hero h1 {
-    margin: 0;
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(3rem, 7vw, 6.7rem);
-    font-weight: 900;
-    line-height: 1.08;
-    letter-spacing: 0.12em;
-    text-indent: 0.12em;
-  }
-
-  @keyframes cooperation-handwriting-in {
-    0% {
-      opacity: 0;
-      clip-path: inset(0 100% 0 0);
-      transform: translate3d(-12px, 8px, 0) rotate(-13deg);
-    }
-
-    48% {
-      opacity: 0.68;
-    }
-
-    100% {
-      opacity: 0.68;
-      clip-path: inset(0 0 0 0);
-      transform: translate3d(0, 0, 0) rotate(-13deg);
-    }
-  }
-
-  .cooperation-section {
-    padding-block: clamp(48px, 6.5vw, 80px);
-    border-top: 1px solid var(--cooperation-line);
-  }
-
-  .cooperation-approach,
-  .cooperation-stories { border-top: 0; }
-
-  .cooperation-page [id] { scroll-margin-top: 112px; }
-  .cooperation-heading { max-width: 920px; }
-
-  .cooperation-heading h2 {
-    margin: 0;
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(2rem, 3.5vw, 3.2rem);
-    font-weight: 900;
-    line-height: 1.35;
-    letter-spacing: 0.03em;
-    text-wrap: balance;
-  }
-
-  .cooperation-heading > p:last-child:not(.cooperation-eyebrow) {
-    max-width: 44em;
-    margin: 24px 0 0;
-    color: var(--cooperation-muted);
-    font-size: clamp(1rem, 1.16vw, 1.08rem);
-    line-height: 1.9;
-  }
-
-  .cooperation-approach__subtitle {
-    max-width: 1040px;
-    margin: 0;
-    color: var(--cooperation-ink);
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(1.25rem, 2.1vw, 1.875rem);
-    font-weight: 700;
-    line-height: 1.55;
-    text-wrap: balance;
-  }
-
-  .cooperation-shared-note { font-size: 1rem; }
-
-  .cooperation-notebook {
-    --cooperation-branch-gap: 36px;
-    --cooperation-stack-gap: clamp(24px, 3vw, 40px);
-    --cooperation-column-padding: clamp(20px, 2.5vw, 32px);
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
-    gap: var(--cooperation-stack-gap);
-    margin: 32px 0 0;
-  }
-
-  .cooperation-notebook > section {
-    min-width: 0;
-    padding: var(--cooperation-column-padding);
-    border-radius: clamp(16px, 2vw, 24px);
-  }
-
-  .cooperation-notebook__project {
-    background: var(--cooperation-card);
-    outline: 4px solid var(--cooperation-yellow);
-    outline-offset: -4px;
-  }
-
-  .cooperation-notebook__hybrid {
-    --cooperation-muted: #50432a;
-    background: var(--cooperation-yellow);
-  }
-
-  .cooperation-flip-card {
-    position: relative;
-    aspect-ratio: 1;
-    min-height: 0;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    outline: 0 !important;
-    background: transparent !important;
-    perspective: 1100px;
-    cursor: pointer;
-  }
-
-  .cooperation-flip-card__inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 720ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .cooperation-flip-card:hover .cooperation-flip-card__inner,
-  .cooperation-flip-card:focus-visible .cooperation-flip-card__inner { transform: rotateY(180deg); }
-  .cooperation-flip-card__face { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 14px; padding: clamp(28px, 5vw, 68px); border: 3px solid var(--cooperation-yellow); border-radius: 50%; backface-visibility: hidden; text-align: center; }
-  .cooperation-flip-card__face--front { background: var(--cooperation-card); }
-  .cooperation-flip-card__face--back { transform: rotateY(180deg); background: var(--cooperation-yellow); }
-  .cooperation-flip-card__number { margin: 0; color: var(--cooperation-yellow-deep); font-family: var(--cooperation-rounded); font-size: clamp(2.8rem, 5vw, 5rem); font-weight: 900; line-height: 1; }
-  .cooperation-flip-card__face .cooperation-notebook__title { padding: 0; border: 0; font-size: clamp(1.35rem, 2.4vw, 2rem); line-height: 1.35; }
-  .cooperation-flip-card__hint, .cooperation-flip-card__face--back p { max-width: 20em; margin: 0; color: var(--cooperation-muted); font-size: clamp(0.85rem, 1.2vw, 1rem); line-height: 1.8; }
-  .cooperation-flip-card__back-title { margin: 0; font-family: var(--cooperation-rounded); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.4; }
-  .cooperation-flip-card__face--back strong { max-width: 20em; font-size: clamp(0.85rem, 1.2vw, 1rem); line-height: 1.7; }
-  .cooperation-flip-card__details { display: none; }
-  .cooperation-flip-card:focus-visible { outline: 3px solid var(--cooperation-ink) !important; outline-offset: 8px; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cooperation-flip-card__inner { transition: none; }
-  }
-
-  .cooperation-notebook__hybrid .cooperation-path__label {
-    text-decoration-color: color-mix(in srgb, var(--cooperation-ink) 28%, transparent);
-  }
-
-  .cooperation-notebook__title {
-    margin: 0;
-    padding-bottom: 24px;
-    border-bottom: 1px solid color-mix(in srgb, var(--cooperation-ink) 36%, transparent);
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(1.75rem, 2.4vw, 2rem);
-    font-weight: 900;
-    line-height: 1.5;
-  }
-
-  .cooperation-path__source { margin-top: 28px; }
-
-  .cooperation-path__source,
-  .cooperation-path__extensions { min-width: 0; }
-
-  .cooperation-path__extensions {
-    display: grid;
-    gap: var(--cooperation-branch-gap);
-    margin: 28px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .cooperation-path__extensions li { position: relative; min-width: 0; padding-left: 36px; }
-
-  .cooperation-path__branch {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 24px;
-    color: var(--cooperation-ink);
-    opacity: 0.62;
-  }
-
-  .cooperation-path__branch::before,
-  .cooperation-path__branch::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    border-radius: 2px;
-    background: currentColor;
-  }
-
-  .cooperation-path__branch::before {
-    top: calc(var(--cooperation-branch-gap) / -2);
-    bottom: calc(var(--cooperation-branch-gap) / -2);
-    width: 2px;
-  }
-  .cooperation-path__branch::after { top: 50%; width: 23px; height: 2px; }
-
-  .cooperation-path__extensions li:first-child .cooperation-path__branch::before {
-    top: 50%;
-    bottom: calc(var(--cooperation-branch-gap) / -2);
-  }
-
-  .cooperation-path__extensions li:last-child .cooperation-path__branch::before {
-    top: calc(var(--cooperation-branch-gap) / -2);
-    bottom: 50%;
-  }
-
-  .cooperation-path__source h4,
-  .cooperation-path__extensions h4 {
-    width: fit-content;
-    margin: 0;
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(1.375rem, 2vw, 1.625rem);
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  .cooperation-path__source h4 {
-    background: linear-gradient(transparent 56%, color-mix(in srgb, var(--cooperation-yellow) 58%, transparent) 56%, color-mix(in srgb, var(--cooperation-yellow) 58%, transparent) 94%, transparent 94%);
-  }
-
-  .cooperation-path__extensions h4 {
-    display: flex;
-    align-items: baseline;
-    gap: 0.35em;
-    color: var(--cooperation-ink);
-  }
-
-  .cooperation-path__marker {
-    flex: 0 0 auto;
-    font-size: 0.85em;
-    white-space: nowrap;
-  }
-
-  .cooperation-path__label {
-    min-width: 0;
-    text-wrap: balance;
-    text-decoration: underline;
-    text-decoration-color: var(--cooperation-yellow);
-    text-decoration-thickness: 0.14em;
-    text-underline-offset: 0.1em;
-    text-decoration-skip-ink: none;
-  }
-
-  .cooperation-path__source > p,
-  .cooperation-path__extensions p {
-    margin: 8px 0 0;
-    color: var(--cooperation-muted);
-    font-size: 1rem;
-    line-height: 1.8;
-  }
-
-  .cooperation-notebook__note {
-    margin: 28px 0 0 36px;
-    max-width: 30em;
-    color: var(--cooperation-muted);
-    font-size: 1rem;
-    line-height: 1.85;
-  }
-
-  .cooperation-shared-workflow { margin-top: 30px; }
-
-  .cooperation-shared-workflow > h4 {
-    margin: 0;
-    color: var(--cooperation-yellow-deep);
-    font-family: var(--cooperation-rounded);
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.7;
-  }
-
-  .cooperation-shared-workflow ol {
-    margin: 22px 0 0;
-    padding-left: 2em;
-    list-style-type: decimal-leading-zero;
-  }
-
-  .cooperation-shared-workflow li { position: relative; padding-left: 8px; }
-  .cooperation-shared-workflow li:not(:last-child) { padding-bottom: 44px; }
-
-  .cooperation-shared-workflow li::marker {
-    color: var(--cooperation-yellow-deep);
-    font-family: var(--cooperation-rounded);
-    font-weight: 700;
-  }
-
-  .cooperation-shared-workflow strong {
-    display: block;
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  .cooperation-shared-workflow li > p {
-    margin: 8px 0 0;
-    color: var(--cooperation-muted);
-    font-size: clamp(0.94rem, 1.1vw, 1rem);
-    line-height: 1.85;
-  }
-
-  .cooperation-shared-workflow__arrow {
-    position: absolute;
-    bottom: 10px;
-    left: 8px;
-    color: var(--cooperation-yellow-deep);
-    font-size: 1.25rem;
-    line-height: 1;
-  }
-
-  .cooperation-scenarios {
-    border-top: 0;
-  }
-
-  .cooperation-qa {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 30px clamp(36px, 5vw, 64px);
-    margin: 38px 0 0;
-    padding: 0;
-  }
-
-  .cooperation-qa > div {
-    position: relative;
-    min-width: 0;
-    padding-top: 26px;
-  }
-
-  .cooperation-qa dt,
-  .cooperation-qa dd {
-    display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr);
-    column-gap: 0.8rem;
-  }
-
-  .cooperation-qa__marker {
-    justify-self: center;
-    color: var(--cooperation-ink);
-    font-family: var(--cooperation-rounded);
-    font-weight: 900;
-  }
-
-  .cooperation-qa dt {
-    align-items: center;
-    margin: 0;
-    color: var(--cooperation-ink);
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(1.12rem, 1.5vw, 1.32rem);
-    font-weight: 700;
-    line-height: 1.6;
-  }
-
-  .cooperation-qa dt .cooperation-qa__marker {
-    display: grid;
-    width: 2.5rem;
-    height: 2.5rem;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--cooperation-yellow);
-    font-size: 1.125rem;
-    line-height: 1;
-  }
-
-  .cooperation-qa dd {
-    margin: 12px 0 0;
-    color: var(--cooperation-muted);
-    font-size: 1rem;
-    line-height: 1.85;
-  }
-
-  .cooperation-note {
-    margin: 28px 0 0;
-    color: var(--cooperation-muted);
-    font-size: 0.9rem;
-    line-height: 1.9;
-  }
-
-  .cooperation-stories__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(24px, 3vw, 40px);
-    margin-top: 38px;
-  }
-
-  .cooperation-story {
-    --story-inset: clamp(24px, 3vw, 40px);
-    position: relative;
-    isolation: isolate;
-    min-width: 0;
-    padding: 100px var(--story-inset) var(--story-inset);
-  }
-
-  .cooperation-story__folder {
-    position: absolute;
-    z-index: -1;
-    left: 0;
-    display: block;
-    width: 100%;
-    pointer-events: none;
-  }
-
-  .cooperation-story__folder--top { top: 0; height: 96px; }
-  .cooperation-story__folder--body { top: 95px; height: calc(100% - 95px); }
-
-  .cooperation-story__folder path {
-    fill: var(--cooperation-card);
-    stroke: var(--cooperation-line);
-    stroke-width: 1;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .cooperation-story h3 {
-    margin: 0 0 28px;
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(1.5rem, 2.1vw, 1.875rem);
-    font-weight: 900;
-    line-height: 1.5;
-    text-wrap: balance;
-  }
-
-  .cooperation-story__industry {
-    position: absolute;
-    top: 14px;
-    left: var(--story-inset);
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    max-width: calc(43% - var(--story-inset) - 8px);
-    min-height: 2rem;
-    margin: 0;
-    padding: 0.34rem 0.86rem;
-    border-radius: 999px;
-    background: var(--cooperation-yellow);
-    color: var(--cooperation-ink);
-    font-size: 0.84rem;
-    font-weight: 700;
-    line-height: 1.35;
-    letter-spacing: 0.04em;
-  }
-
-  .cooperation-story dl { display: grid; gap: 24px; margin: 0; }
-  .cooperation-story dt { color: var(--cooperation-ink); font-size: 0.94rem; font-weight: 700; line-height: 1.8; }
-
-  .cooperation-story dd {
-    margin: 8px 0 0;
-    color: var(--cooperation-muted);
-    font-size: 1rem;
-    line-height: 1.85;
-  }
-
-  .cooperation-page a:focus-visible {
-    outline: 2px solid var(--cooperation-ink);
-    outline-offset: 5px;
-  }
-
-  .cooperation-contact {
-    margin-top: 24px;
-    padding: clamp(34px, 6vw, 72px);
-    border-radius: clamp(24px, 3vw, 34px);
-    background: var(--home-yellow);
-  }
-
-  .cooperation-contact h2 {
-    margin: 20px 0 24px;
-    max-width: 760px;
-    font-family: var(--cooperation-rounded);
-    font-size: clamp(2.1rem, 4vw, 3.5rem);
-    font-weight: 900;
-    line-height: 1.25;
-    text-wrap: balance;
-  }
-
-  .cooperation-contact > p:not(.home-label) {
-    max-width: 650px;
-    margin: 0;
-    line-height: 1.9;
-  }
-
-  .cooperation-contact .home-works-cta { margin-left: 0; }
-
-  @media (max-width: 900px) {
-    .cooperation-page [id] { scroll-margin-top: 96px; }
-    .cooperation-hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-    .cooperation-stories__grid { grid-template-columns: minmax(0, 1fr); }
-  }
-
-  @media (max-width: 1099px) {
-    .cooperation-notebook { grid-template-columns: minmax(0, 1fr); }
-    .cooperation-flip-card { width: min(100%, 330px); margin-inline: auto; }
-  }
-
-  @media (max-width: 899px) {
-    .cooperation-path__extensions li { padding-left: 20px; }
-    .cooperation-path__branch { width: 14px; }
-    .cooperation-path__branch::after { width: 13px; }
-    .cooperation-notebook__note { margin-left: 20px; }
-  }
-
-  @media (max-width: 640px) {
-    .cooperation-page { padding-block: 58px 76px; }
-    .cooperation-hero { min-height: clamp(180px, 28vh, 250px); padding-block: 24px 30px; }
-    .cooperation-hero__handwriting { font-size: clamp(1.65rem, 8vw, 2.55rem); margin-bottom: 6px; }
-    .cooperation-hero .home-label { font-size: clamp(0.74rem, 3.4vw, 0.92rem); letter-spacing: 0.18em; text-indent: 0.18em; }
-    .cooperation-hero h1 { font-size: clamp(2.55rem, 12vw, 4.3rem); letter-spacing: 0.08em; text-indent: 0.08em; }
-    .cooperation-notebook { --cooperation-column-padding: 8px; --cooperation-branch-gap: 28px; }
-    .cooperation-notebook > section { padding-block: 18px; border-radius: 12px; }
-    .cooperation-notebook__title { padding-bottom: 16px; font-size: clamp(1.375rem, 4.5vw, 1.5rem); }
-    .cooperation-path__source,
-    .cooperation-path__extensions { margin-top: 20px; }
-    .cooperation-path__source h4,
-    .cooperation-path__extensions h4 { font-size: 1.125rem; text-wrap: balance; }
-    .cooperation-path__source > p,
-    .cooperation-path__extensions p,
-    .cooperation-notebook__note { font-size: 0.875rem; line-height: 1.75; }
-    .cooperation-path__extensions li { padding-left: 12px; }
-    .cooperation-path__branch { width: 8px; }
-    .cooperation-path__branch::after { width: 7px; }
-    .cooperation-notebook__note { margin: 22px 0 0 12px; }
-    .cooperation-shared-workflow { margin-top: 24px; }
-    .cooperation-shared-workflow > h4 { font-size: 0.875rem; }
-    .cooperation-shared-workflow ol { margin-top: 16px; padding-left: 0; list-style-position: inside; }
-    .cooperation-shared-workflow li { padding-left: 0; }
-    .cooperation-shared-workflow li:not(:last-child) { padding-bottom: 34px; }
-    .cooperation-shared-workflow li::marker { font-size: 0.75rem; }
-    .cooperation-shared-workflow strong { display: inline; font-size: 1rem; }
-    .cooperation-shared-workflow li > p { font-size: 0.875rem; line-height: 1.75; }
-    .cooperation-shared-workflow__arrow { bottom: 8px; left: 0; font-size: 1.125rem; }
-    .cooperation-qa { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-    .cooperation-contact { padding: 30px 24px; }
-    .cooperation-contact .home-works-cta { width: 100%; letter-spacing: 0.06em; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cooperation-hero__handwriting {
-      opacity: 0.68;
-      clip-path: inset(0 0 0 0);
-      animation: none;
-      transform: rotate(-13deg);
-    }
-
-    .cooperation-page :global(.reveal) { opacity: 1; transform: none; transition: none; animation: none; }
-  }
+  :global(body:has(.cooperation-shell)) { background: #fff; }
+  :global(.cooperation-shell) { background: #fff; }
+  .cooperation-page { --ink:#26211a; --muted:#6f6657; --yellow:var(--home-yellow); --card:#fff; --line:rgba(38,33,26,.15); width:min(calc(100% - var(--home-safe) * 2),1240px); margin-inline:auto; padding-block:clamp(64px,8vw,112px) clamp(64px,7vw,96px); color:var(--ink); font-family:"Noto Sans TC",sans-serif; }
+  .cooperation-section { padding-block:clamp(54px,7vw,92px); border-top:1px solid var(--line); }
+  .cooperation-applications,.cooperation-modes-section,.cooperation-cases { border-top:0; }
+  .cooperation-intro { display:grid; grid-template-columns:minmax(220px,.58fr) minmax(0,1fr); gap:clamp(28px,7vw,110px); align-items:start; border-top:0; padding-top:clamp(24px,4vw,54px); }
+  .cooperation-intro>div:first-child { grid-column:2; grid-row:1; transform:translateX(clamp(-56px,-4vw,-24px)); }
+  .cooperation-applications { position:relative; isolation:isolate; }
+  .cooperation-applications > .intro-flip-card { position:absolute; z-index:2; top:clamp(-12px,1vw,18px); right:0; width:min(24vw,250px); }
+  .cooperation-applications > .cooperation-heading { padding-right:clamp(220px,24vw,280px); }
+  .cooperation-applications__shape { position:absolute; z-index:-1; top:clamp(80px,9vw,130px); right:-11vw; width:clamp(320px,43vw,540px); height:auto; transform:rotate(11deg); fill:#0077d9; stroke:var(--yellow); stroke-width:3; pointer-events:none; }
+  .cooperation-cases { position:relative; isolation:isolate; padding-top:clamp(130px,13vw,200px); }
+  .cooperation-cases::before { content:""; position:absolute; z-index:-1; top:68px; bottom:0; left:50%; width:100vw; transform:translateX(-50%); background:var(--yellow); }
+  .cooperation-cases__wave { position:absolute; z-index:-1; top:0; left:50%; width:100vw; height:100px; transform:translateX(-50%); fill:var(--yellow); pointer-events:none; }
+  .cooperation-intro h1,.cooperation-heading h2 { max-width:850px; margin:0; font:900 clamp(2rem,4vw,3.45rem)/1.35 "Zen Maru Gothic",sans-serif; letter-spacing:.03em; text-wrap:balance; }
+  :global(.cooperation-page .cooperation-title-reveal) { opacity:0; transform:translateY(22px); transition:opacity 680ms ease var(--cooperation-title-delay,0ms),transform 680ms cubic-bezier(.16,1,.3,1) var(--cooperation-title-delay,0ms); }
+  :global(.cooperation-page .cooperation-title-reveal.is-visible) { opacity:1; transform:translateY(0); }
+  .cooperation-intro>div:first-child>p:last-child,.cooperation-heading>p:last-child { max-width:680px; margin:24px 0 0; color:var(--muted); font-size:clamp(1rem,1.25vw,1.1rem); line-height:1.95; }
+  .intro-flip-card { position:relative; grid-column:1; grid-row:1; justify-self:start; width:min(100%,300px); aspect-ratio:1; padding:10px; border:0; border-radius:50%; background:transparent; cursor:pointer; perspective:1100px; }
+  .intro-flip-card:focus-visible { outline:3px solid var(--ink); outline-offset:8px; }
+  .intro-flip-card__inner { position:relative; display:block; width:100%; height:100%; transition:transform 760ms cubic-bezier(.2,.75,.2,1),filter 760ms ease; }
+  .intro-flip-card:hover .intro-flip-card__inner,.intro-flip-card:focus-visible .intro-flip-card__inner,.intro-flip-card.is-flipped .intro-flip-card__inner { transform:rotateZ(2deg); filter:drop-shadow(0 18px 20px rgba(38,33,26,.14)); }
+  .intro-flip-card__face { position:absolute; inset:0; display:grid; place-content:center; justify-items:center; gap:15px; color:var(--ink); text-align:center; transition:opacity 380ms ease,transform 380ms cubic-bezier(.2,.75,.2,1); }
+  .intro-flip-card__face::before,.intro-flip-card__face::after { content:""; position:absolute; border-radius:50%; transform:rotate(-16deg); pointer-events:none; }
+  .intro-flip-card__face::before { inset:3% 7%; border:3px solid var(--yellow); background:var(--yellow); }
+  .intro-flip-card__face::after { inset:8% 12%; border:1px solid rgba(38,33,26,.2); }
+  .intro-flip-card__face--back { opacity:0; transform:rotateY(90deg) scale(.92); color:#fff; }
+  .intro-flip-card__face--back::before { border-color:#0077d9; background:#0077d9; }
+  .intro-flip-card:hover .intro-flip-card__face--front,.intro-flip-card:focus-visible .intro-flip-card__face--front,.intro-flip-card.is-flipped .intro-flip-card__face--front { opacity:0; transform:rotateY(-90deg) scale(.92); }
+  .intro-flip-card:hover .intro-flip-card__face--back,.intro-flip-card:focus-visible .intro-flip-card__face--back,.intro-flip-card.is-flipped .intro-flip-card__face--back { opacity:1; transform:rotateY(0) scale(1); }
+  .intro-flip-card__face strong { position:relative; z-index:1; font:900 clamp(1.7rem,3vw,2.6rem)/1 "Zen Maru Gothic",sans-serif; letter-spacing:.08em; }
+  .intro-flip-card__face small { position:relative; z-index:1; color:var(--muted); font:700 clamp(.92rem,1.5vw,1.12rem)/1.7 "Zen Maru Gothic",sans-serif; letter-spacing:.12em; }
+  .intro-flip-card__face--back small { color:rgba(255,255,255,.82); }
+  .intro-flip-card__face i { position:absolute; z-index:1; right:24%; bottom:24%; color:#a87908; font-size:1.5rem; font-style:normal; }
+  .intro-flip-card__face--back i { color:#fff; }
+  .intro-flip-card__face strong,
+  .intro-flip-card__face small,
+  .intro-flip-card__face i { transform:rotate(-8deg); }
+  .application-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:clamp(18px,4vw,56px); margin-top:46px; }
+  .application-card { position:relative; min-height:390px; padding:clamp(26px,4vw,52px); overflow:hidden; border:3px solid #111; background:var(--card); transition:transform 420ms cubic-bezier(.2,.75,.2,1),box-shadow 420ms ease; }
+  .application-card:hover,.application-card:focus-within { transform:translateY(-10px); box-shadow:0 20px 34px rgba(38,33,26,.12); }
+  .application-card--offline { margin-top:clamp(72px,9vw,128px); background:var(--yellow); }
+  .application-card__top { display:flex; justify-content:space-between; color:#a87908; font:700 .82rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.16em; }
+  .application-card--offline .application-card__top { color:var(--ink); }
+  .application-card__mark { display:block; flex:none; width:14px; height:14px; margin:2px; background:currentColor; transform:rotate(45deg); }
+  .application-card--offline .application-card__mark { width:18px; height:16px; margin:0; clip-path:polygon(50% 0,100% 100%,0 100%); transform:none; }
+  .application-card h3 { position:relative; z-index:1; max-width:10em; margin:52px 0 32px; font:900 clamp(1.65rem,3vw,2.5rem)/1.35 "Zen Maru Gothic",sans-serif; }
+  .application-card ul,.integration-case ul { position:relative; z-index:1; display:grid; gap:12px; margin:0; padding:0; list-style:none; }
+  .application-card li,.integration-case li { padding-left:1.2em; color:var(--muted); line-height:1.65; }
+  .application-card li::before,.integration-case li::before { content:"↗"; display:inline-block; width:1.2em; margin-left:-1.2em; color:#a87908; }
+  .application-card--offline li { color:var(--ink); }
+  .application-card__browser { position:absolute; right:clamp(18px,4vw,56px); bottom:clamp(22px,4vw,48px); width:min(42%,260px); aspect-ratio:1.28; overflow:hidden; border:1px solid #438ec5; background:#e8f4ff; box-shadow:10px 12px 0 rgba(0,119,217,.14); transform:rotate(4deg); transition:transform 420ms cubic-bezier(.2,.75,.2,1); }
+  .application-card:hover .application-card__browser { transform:rotate(0deg) translateY(-8px) scale(1.04); }
+  .browser-bar { display:flex; align-items:center; gap:5px; height:25px; padding:0 9px; border-bottom:1px solid rgba(0,91,169,.2); background:#d8eeff; }
+  .browser-bar i { width:5px; height:5px; border-radius:50%; background:#0077d9; }
+  .browser-screen { position:relative; height:calc(100% - 25px); background:radial-gradient(circle at 27% 70%,rgba(0,119,217,.22) 0 18%,transparent 18.5%),linear-gradient(135deg,#f5fbff 0 47%,#7ac4f2 47%); }
+  .browser-screen em { position:absolute; right:14px; bottom:14px; width:28px; height:28px; border:2px solid #075da7; border-radius:50%; }
+  .application-card__prints { position:absolute; right:clamp(22px,4vw,58px); bottom:clamp(22px,4vw,48px); width:min(40%,230px); height:145px; transform:rotate(-7deg); transition:transform 420ms cubic-bezier(.2,.75,.2,1); }
+  .application-card:hover .application-card__prints { transform:rotate(0deg) translateY(-8px); }
+  .application-card__prints span { position:absolute; inset:0; border:1px solid rgba(38,33,26,.35); background:#fffdf6; box-shadow:8px 8px 0 rgba(38,33,26,.08); }
+  .application-card__prints span:nth-child(1) { transform:translate(22px,18px) rotate(7deg); background:#e8d6b0; }
+  .application-card__prints span:nth-child(2) { transform:translate(10px,9px) rotate(3deg); }
+  .application-card__prints span:nth-child(3)::after { content:"印刷／空間"; position:absolute; left:15px; bottom:15px; color:var(--muted); font:700 8px/1 "Zen Maru Gothic",sans-serif; letter-spacing:.12em; }
+  .cooperation-bridge { display:flex; align-items:center; justify-content:center; gap:16px; margin:28px auto 0; color:var(--muted); font:700 .72rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.13em; }
+  .cooperation-bridge i { width:86px; height:1px; background:var(--ink); }
+  .cooperation-note { margin:28px 0 0; color:var(--muted); font-size:.92rem; line-height:1.9; }
+  .case-list { display:grid; gap:52px; margin-top:52px; }
+  .integration-case { display:grid; grid-template-columns:minmax(230px,.82fr) minmax(0,1.18fr); gap:clamp(28px,5vw,76px); padding:clamp(22px,3vw,40px) 0; border-top:1px solid var(--line); }
+  .integration-case__visual { display:grid; place-items:center; align-content:center; min-height:330px; border:1px solid var(--line); background:#fff; color:var(--muted); text-align:center; }
+  .integration-case__number { align-self:start; justify-self:start; margin:20px; color:var(--ink); font:900 2.4rem/1 "Zen Maru Gothic",sans-serif; }
+  .integration-case__pending { font:700 .72rem/1.8 "Zen Maru Gothic",sans-serif; letter-spacing:.16em; }
+  .integration-case__tag { margin:4px 0 14px; color:#a87908; font:700 .8rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.15em; }
+  .integration-case h3 { margin:0; font:900 clamp(1.55rem,2.7vw,2.35rem)/1.35 "Zen Maru Gothic",sans-serif; }
+  .integration-case h3 a { color:inherit; text-decoration-color:#a87908; text-decoration-thickness:2px; text-underline-offset:7px; }
+  .integration-case__core { margin:12px 0 0; font-weight:700; }
+  .integration-case__note { max-width:40em; margin:20px 0 0; color:var(--muted); line-height:1.85; }
+  .integration-case__channels { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; margin-top:36px; }
+  .integration-case__channels h4 { margin:0 0 16px; font:700 .8rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.15em; }
+  .integration-case__channels ul { gap:8px; }
+  .integration-case__channels li { font-size:.94rem; }
+  .cooperation-contact { margin-top:24px; padding:clamp(34px,6vw,72px); }
+  .cooperation-contact h2 { max-width:760px; margin:0 0 24px; font:900 clamp(2rem,4vw,3.5rem)/1.3 "Zen Maru Gothic",sans-serif; }
+  .cooperation-contact>p { max-width:650px; margin:0; line-height:1.9; }
+  .cooperation-contact .home-works-cta { margin-left:0; }
+  @media (max-width:800px) { .cooperation-applications > .intro-flip-card { position:relative; top:auto; right:auto; width:min(100%,220px); margin:0 auto 28px; } .cooperation-applications > .cooperation-heading { padding-right:0; } .application-grid,.integration-case { grid-template-columns:1fr; } .application-card--offline { margin-top:0; } }
+  @media (max-width:800px) { .cooperation-applications__shape { top:130px; right:-105px; width:320px; opacity:.65; } }
+  @media (max-width:560px) { .cooperation-applications__shape { top:100px; right:-82px; width:220px; opacity:.5; } }
+  @media (max-width:560px) { .intro-flip-card { padding:4px; } .intro-flip-card__face { gap:5px; } .intro-flip-card__face::before { border-width:2px; } .intro-flip-card__face strong { font-size:1.25rem; } .intro-flip-card__face small { font-size:.68rem; line-height:1.4; letter-spacing:0; } .intro-flip-card__face i { right:20%; bottom:17%; font-size:1rem; } }
+  @media (max-width:560px) { .cooperation-page { padding-block:54px 72px; } .application-card { min-height:350px; } .application-card h3 { margin-top:42px; } .integration-case__visual { min-height:230px; } .integration-case__channels { grid-template-columns:1fr; gap:22px; margin-top:28px; } .cooperation-contact { padding:30px 24px; } .cooperation-contact .home-works-cta { width:100%; } }
+  @media (max-width:560px) { .application-card__browser,.application-card__prints { width:42%; } }
+  @media (prefers-reduced-motion:reduce) { .cooperation-page * { scroll-behavior:auto !important; animation-duration:.001ms !important; transition-duration:.001ms !important; } :global(.cooperation-page .cooperation-title-reveal) { opacity:1 !important; transform:none !important; } }
 </style>
+
+<script>
+  const headingTargets = document.querySelectorAll<HTMLElement>(
+    ".cooperation-intro h1, .cooperation-heading h2, .application-card h3, .cooperation-mode h3, .integration-case h3, .cooperation-contact h2"
+  );
+  if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const headingObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          headingObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
+    headingTargets.forEach((heading, index) => {
+      heading.style.setProperty("--cooperation-title-delay", `${index % 2 * 90}ms`);
+      heading.classList.add("cooperation-title-reveal");
+      headingObserver.observe(heading);
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".intro-flip-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const flipped = card.classList.toggle("is-flipped");
+      card.setAttribute("aria-pressed", String(flipped));
+    });
+  });
+</script>

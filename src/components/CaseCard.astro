@@ -6,10 +6,7 @@ import { serviceGroups } from "@/data/service-groups";
 
 interface Props { caseStudy: CaseViewModel; compact?: boolean; }
 const { caseStudy, compact = false } = Astro.props;
-const serviceLabel = serviceGroups
-  .filter((group) => caseStudy.serviceGroups.includes(group.key))
-  .map((group) => group.label)
-  .join(" / ");
+const activeServiceGroups = serviceGroups.filter((group) => caseStudy.serviceGroups.includes(group.key));
 ---
 
 <article class="work-card case-card" data-case-service-groups={caseStudy.serviceGroups.join(" ")}>
@@ -19,10 +16,11 @@ const serviceLabel = serviceGroups
       <figcaption><span>VIEW CASE</span></figcaption>
     </figure>
     <div class="work-card__body case-card__body">
-      {serviceLabel && <p class="case-card__service">{serviceLabel}</p>}
+      {activeServiceGroups.length > 0 && <div class="case-card__services" aria-label="作品分類">
+        {activeServiceGroups.map((group) => <span class="case-card__service" data-service={group.key}>{group.label}</span>)}
+      </div>}
       <h3>{caseStudy.title}</h3>
       {!compact && <p class="case-card__meta">{caseStudy.clientName ?? caseStudy.clientType ?? "客戶資料待補"} · {caseStudy.year ?? "年份待補"}</p>}
-      <p class="case-card__summary">{caseStudy.summary}</p>
     </div>
   </a>
 </article>
@@ -33,7 +31,12 @@ const serviceLabel = serviceGroups
   .case-card .case-card__body h3 { grid-column: auto; margin: 0; font-size: clamp(1.15rem,1.7vw,1.6rem); line-height: 1.45; overflow-wrap: anywhere; }
   .case-card .case-card__body p { display: block; margin: 0; color: #686868; font-size: 0.9rem; font-weight: 400; letter-spacing: 0; line-height: 1.9; }
   .case-card .case-card__body p::before, .case-card .case-card__body span::before { content: none; }
-  .case-card .case-card__body .case-card__service { font-size: 0.78rem; font-weight: 700; color: var(--home-ink); }
+  .case-card .case-card__body .case-card__services { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .case-card .case-card__body .case-card__service { width: fit-content; padding: 0; border-radius: 0; background: none; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.4; }
+  .case-card .case-card__body .case-card__service[data-service="web"] { color: #176b88; }
+  .case-card .case-card__body .case-card__service[data-service="event"] { color: #246b9a; }
+  .case-card .case-card__body .case-card__service[data-service="social"] { color: #2b768c; }
+  .case-card .case-card__body .case-card__service[data-service="print"] { color: #48669a; }
   .case-card .case-card__body .case-card__meta { font-size: 0.78rem; }
   .case-card .case-card__body .case-card__cta { display: flex; align-items: center; gap: 24px; min-height: 44px; color: var(--home-ink); font-weight: 700; }
   .case-card a:focus-visible { display: block; outline: 2px solid var(--home-ink); outline-offset: 5px; }
