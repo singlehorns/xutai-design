@@ -41,8 +41,8 @@ const featuredCases = await getFeaturedCases();
 ---
 
 <Layout
-  title={`${site.siteName} | 品牌視覺 × 網站 × 長期遠端支援`}
-  description={`${site.siteName} / ${site.ownerDisplayName} 提供品牌視覺、印刷製作、WordPress 網站、社群與影音內容，以單次專案或月度／半遠端合作，協助企業的設計與製作需求。`}
+  title={site.title}
+  description={site.description}
   headerVariant="home"
   mainClass="home-page v2-home"
 >
@@ -52,7 +52,7 @@ const featuredCases = await getFeaturedCases();
     </div>
     <div class="home-hero__shade" aria-hidden="true"></div>
     <div class="home-hero__content">
-      <p class="home-hero__kicker reveal-line">{site.siteName} / DESIGN & REMOTE SUPPORT</p>
+      <p class="home-hero__kicker reveal-line">{site.siteName} / PRINT · WEB · SOCIAL</p>
       <h1 id="home-hero-title" class="home-hero__title" aria-label="印刷平面↗網站架設↗社群經營">
         <span class="reveal-line">印刷平面</span>
         <span class="reveal-line"><mark>↗網站架設</mark></span>

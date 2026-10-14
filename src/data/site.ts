@@ -3,8 +3,8 @@ export const site = {
   brandFullName: "Tseting Chen",
   ownerDisplayName: "Tseting Chen",
   name: "T2",
-  title: "T2 | 品牌視覺 × 網站 × 長期遠端支援",
-  description: "T2 / Tseting Chen 提供品牌視覺、印刷、網站與數位內容相關服務，支援單次專案與長期遠端合作。",
+  title: "T2 | 印刷平面 × 網站架設 × 社群經營",
+  description: "T2 / Tseting Chen 提供印刷平面、網站架設與社群經營服務，從視覺設計到線上線下應用，依需求討論合作方式。",
   location: "Tainan, Taiwan",
   contactEmail: "待使用者確認"
 };
