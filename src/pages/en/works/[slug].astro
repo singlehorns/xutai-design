@@ -1,0 +1,6 @@
+---
+import ProjectPage, { getStaticPaths as getProjectPaths } from "../../works/[slug].astro";
+export async function getStaticPaths() { return getProjectPaths(); }
+const props = Astro.props;
+---
+<ProjectPage {...props} />

@@ -6,6 +6,8 @@ import { getFeaturedCases } from "@/data/cases";
 import { site } from "@/data/site";
 import { contactContent } from "@/data/contact";
 import { withBase } from "@/utils/paths";
+import { localeFromPath, localizedPath } from "@/data/i18n";
+const locale = localeFromPath(Astro.url.pathname);
 
 const serviceCards = [
   {
@@ -88,7 +90,7 @@ const featuredCases = await getFeaturedCases();
         <p class="home-label">03 / SERVICES</p>
         <h2 id="home-services-title">從視覺到製作，<br />讓需求有完整的交付。</h2>
         <p>依照實際使用情境，整理服務所需的內容、形式與製作範圍。</p>
-        <a class="v2-text-link" href={withBase("/services/")}>查看完整服務項目 <span aria-hidden="true">→</span></a>
+        <a class="v2-text-link" href={withBase(localizedPath("/services/", locale))}>查看完整服務項目 <span aria-hidden="true">→</span></a>
       </header>
       <div class="home-skills__orbit" aria-hidden="true" data-skills-orbit>
         <span>Design</span><span>Web</span><span>Print</span>
@@ -139,7 +141,7 @@ const featuredCases = await getFeaturedCases();
         </div>
       ))}
     </div>
-    <a class="home-works-cta" href={withBase("/works/")}><span>查看所有作品案例</span><span aria-hidden="true">→</span></a>
+    <a class="home-works-cta" href={withBase(localizedPath("/works/", locale))}><span>查看所有作品案例</span><span aria-hidden="true">→</span></a>
   </section>
 
   <section id="home-contact" class="home-contact v2-contact" aria-labelledby="home-contact-title" data-home-section="contact">
@@ -151,7 +153,7 @@ const featuredCases = await getFeaturedCases();
       <p class="home-contact__eyebrow">Online × Offline</p>
       <h2 id="home-contact-title">線上 × 線下整合見證</h2>
       <p class="home-contact__lead">我們已開始與多家夥伴合作，整合線上社群與實體印刷服務，讓品牌內容從曝光、互動到現場應用，都能有一致且完整的執行。歡迎來找 T2 合作。</p>
-      <a class="home-contact__button" href={withBase("/cooperation/")}><span>查看線上 × 線下整合</span><span aria-hidden="true">→</span></a>
+      <a class="home-contact__button" href={withBase(localizedPath("/cooperation/", locale))}><span>查看線上 × 線下整合</span><span aria-hidden="true">→</span></a>
     </div>
   </section>
 </Layout>

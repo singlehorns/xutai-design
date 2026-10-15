@@ -4,6 +4,8 @@ import { getCases } from "@/data/cases";
 import type { CaseViewModel } from "@/data/case-model";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
+import { localeFromPath, localizedPath } from "@/data/i18n";
+const locale = localeFromPath(Astro.url.pathname);
 
 const serviceItems = [
   {
@@ -124,7 +126,7 @@ const getCaseStatus = (caseStudy: CaseViewModel) => caseStudy.contentStatus === 
                   <ul>
                     {service.recentCases.map((caseStudy) => (
                       <li>
-                        <a href={withBase(caseStudy.url)}>
+                        <a href={withBase(localizedPath(caseStudy.url, locale))}>
                           <span class="service-cases__title">{caseStudy.shortTitle}</span>
                           <small class="service-cases__status-row">
                             <b>目前狀態</b>

@@ -5,6 +5,9 @@ import { getCases } from "@/data/cases";
 import type { CaseImage, CaseViewModel } from "@/data/case-model";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
+import { localeFromPath, localizedPath, caseDescription, ui, label, caseTitle } from "@/data/i18n";
+import { caseSummaries } from "@/data/case-summaries";
+import builtSnapshot from "@/data/built-works-snapshot.json";
 
 export async function getStaticPaths() {
   const cases = await getCases();
@@ -20,6 +23,13 @@ export async function getStaticPaths() {
 
 interface Props { caseStudy: CaseViewModel; prev: CaseViewModel; next: CaseViewModel; }
 const { caseStudy, prev, next } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
+const title = caseTitle(caseStudy.slug, caseStudy.title, locale);
+const labels = ui[locale];
+const sourceSummary = builtSnapshot.find((item) => item.slug === caseStudy.slug)?.summary;
+const translatedSummary = locale === "zh-Hant" || caseStudy.summary.trim() !== sourceSummary?.trim() ? undefined : caseSummaries[caseStudy.slug]?.[locale === "en" ? 0 : 1];
+const editorialDescription = translatedSummary ?? caseDescription(caseStudy.slug, locale, title);
+const path = (url: string) => withBase(localizedPath(url, locale));
 // Show each existing image once. The first image also serves as the project cover.
 
 const relatedLink = caseStudy.relatedLink !== undefined
@@ -44,59 +54,61 @@ const gallery = [
 const summaryWithBreaks = caseStudy.summary.replace(/<br\s*\/?\s*>/gi, "\n");
 ---
 
-<Layout title={`${caseStudy.title} | ${site.siteName}`} description={caseStudy.summary}>
+<Layout title={`${title} | ${site.siteName}`} description={editorialDescription ?? caseStudy.summary}>
   <article class="project case-study" data-content-status={caseStudy.contentStatus}>
-    <a class="project-arrow project-arrow--prev" href={withBase(prev.url)} aria-label={`上一個案例：${prev.title}`}><span aria-hidden="true">‹</span></a>
-    <a class="project-arrow project-arrow--next" href={withBase(next.url)} aria-label={`下一個案例：${next.title}`}><span aria-hidden="true">›</span></a>
+    <a class="project-arrow project-arrow--prev" href={path(prev.url)} aria-label={`${labels.previous}：${prev.title}`}><span aria-hidden="true">‹</span></a>
+    <a class="project-arrow project-arrow--next" href={path(next.url)} aria-label={`${labels.next}：${next.title}`}><span aria-hidden="true">›</span></a>
 
     <header class="project__header case-hero">
-      <a class="case-back" href={withBase("/works/")}>← 所有作品案例</a>
-      <h1>{caseStudy.title}</h1>
-      {caseStudy.categoryTerms.length > 0 && <div class="case-categories" aria-label="作品標籤">
-        {caseStudy.categoryTerms.map((tag) => <span class="case-category-badge">{tag.label}</span>)}
+      <a class="case-back" href={path("/works/")}>← {labels.back}</a>
+      <h1>{title}</h1>
+      {caseStudy.categoryTerms.length > 0 && <div class="case-categories" aria-label={label("作品標籤", locale)}>
+        {caseStudy.categoryTerms.map((tag) => <span class="case-category-badge">{label(tag.label, locale)}</span>)}
       </div>}
     </header>
 
     <div class="project-viewer case-viewer">
 
       <div class="project-main case-main">
-        <section class="case-summary" aria-label="作品簡短描述">
-          <p>{summaryWithBreaks}</p>
+        <section class="case-summary" aria-label={label("作品簡短描述", locale)}>
+          <p>{editorialDescription ?? summaryWithBreaks}</p>
+          {editorialDescription && !translatedSummary && <small class="case-editorial-note">{labels.newCopy}</small>}
         </section>
-        {caseStudy.background && <section class="case-section" aria-labelledby="case-background-title"><h2 id="case-background-title">專案背景</h2><p>{caseStudy.background}</p></section>}
-        {caseStudy.challenge && <section class="case-section" aria-labelledby="case-challenge-title"><h2 id="case-challenge-title">面對的課題</h2><p>{caseStudy.challenge}</p></section>}
-        {caseStudy.approach && <section class="case-section" aria-labelledby="case-approach-title"><h2 id="case-approach-title">執行方式</h2><p>{caseStudy.approach}</p></section>}
-        {caseStudy.deliverables.length > 0 && <section class="case-section" aria-labelledby="case-deliverables-title"><h2 id="case-deliverables-title">實際交付內容</h2><ul>{caseStudy.deliverables.map((item) => <li>{item}</li>)}</ul></section>}
+        {caseStudy.background && locale === "zh-Hant" && <section class="case-section" aria-labelledby="case-background-title"><h2 id="case-background-title">{labels.background}</h2><p>{caseStudy.background}</p></section>}
+        {caseStudy.challenge && locale === "zh-Hant" && <section class="case-section" aria-labelledby="case-challenge-title"><h2 id="case-challenge-title">{labels.challenge}</h2><p>{caseStudy.challenge}</p></section>}
+        {caseStudy.approach && locale === "zh-Hant" && <section class="case-section" aria-labelledby="case-approach-title"><h2 id="case-approach-title">{labels.approach}</h2><p>{caseStudy.approach}</p></section>}
+        {caseStudy.deliverables.length > 0 && locale === "zh-Hant" && <section class="case-section" aria-labelledby="case-deliverables-title"><h2 id="case-deliverables-title">{labels.deliverables}</h2><ul>{caseStudy.deliverables.map((item) => <li>{item}</li>)}</ul></section>}
 
         <section class="case-section case-gallery" aria-labelledby="case-gallery-title">
           <div class="project__media">
             {gallery.length > 0 ? gallery.map((item, index) => (
               <figure>
-                <img src={withBase(item.src)} alt={item.alt} loading={index === 0 ? "eager" : "lazy"} />
+                <img src={withBase(item.src)} alt={locale === "zh-Hant" ? item.alt : locale === "en" ? `Visual from ${title}` : `${title}の作品画像`} loading={index === 0 ? "eager" : "lazy"} />
                 {item.caption && <figcaption>{item.caption}</figcaption>}
               </figure>
             )) : <PendingImage />}
           </div>
         </section>
         {relatedLink && (
-          <section class="case-section case-link-section" aria-label="作品相關連結">
+          <section class="case-section case-link-section" aria-label={label("作品相關連結", locale)}>
             <a class="case-related-link" href={relatedLink.href} target={relatedLink.external ? "_blank" : undefined} rel={relatedLink.external ? "noopener noreferrer" : undefined}>
-              {relatedLink.label}<span aria-hidden="true">→</span>
+              {label(relatedLink.label, locale)}<span aria-hidden="true">→</span>
             </a>
           </section>
         )}
-        {caseStudy.outcomes.length > 0 && <section class="case-section" aria-labelledby="case-outcomes-title"><h2 id="case-outcomes-title">專案成果</h2><ul>{caseStudy.outcomes.map((item) => <li>{item}</li>)}</ul></section>}
+        {caseStudy.outcomes.length > 0 && locale === "zh-Hant" && <section class="case-section" aria-labelledby="case-outcomes-title"><h2 id="case-outcomes-title">{labels.outcomes}</h2><ul>{caseStudy.outcomes.map((item) => <li>{item}</li>)}</ul></section>}
       </div>
     </div>
 
-    <nav class="case-navigation" aria-label="前後案例">
-      <a href={withBase(prev.url)}><span>← 上一個案例</span><strong>{prev.title}</strong></a>
-      <a href={withBase(next.url)}><span>下一個案例 →</span><strong>{next.title}</strong></a>
+    <nav class="case-navigation" aria-label={label("前後案例", locale)}>
+      <a href={path(prev.url)}><span>← {labels.previous}</span><strong>{caseTitle(prev.slug, prev.title, locale)}</strong></a>
+      <a href={path(next.url)}><span>{labels.next} →</span><strong>{caseTitle(next.slug, next.title, locale)}</strong></a>
     </nav>
   </article>
 </Layout>
 
 <style>
+  .case-editorial-note { display:block; margin-top:12px; color:var(--muted); font-size:.75rem; }
   .case-study {
     width: min(calc(100% - 64px), 1280px);
     color: var(--home-ink);

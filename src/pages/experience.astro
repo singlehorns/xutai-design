@@ -2,6 +2,8 @@
 import Layout from "@/components/Layout.astro";
 import { publicProfile } from "@/data/profile";
 import { withBase } from "@/utils/paths";
+import { localeFromPath, localizedPath } from "@/data/i18n";
+const locale = localeFromPath(Astro.url.pathname);
 ---
 
 <Layout
@@ -14,10 +16,10 @@ import { withBase } from "@/utils/paths";
     <p class="reveal">
       網站目前以個人工作室品牌與企業服務為主，公開經歷已濃縮為能支撐服務定位的內容。
     </p>
-    <a class="v2-button reveal" href={withBase("/about/#experience")}>前往 About 精簡經歷 <span aria-hidden="true">→</span></a>
+    <a class="v2-button reveal" href={withBase(localizedPath("/about/#experience", locale))}>前往 About 精簡經歷 <span aria-hidden="true">→</span></a>
   </section>
   <script is:inline>
-    window.location.replace(`${import.meta.env.BASE_URL}about/#experience`);
+    window.location.replace(window.location.pathname.replace(/experience\/?$/, "about/#experience"));
   </script>
 </Layout>
 

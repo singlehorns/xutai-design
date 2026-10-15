@@ -4,29 +4,32 @@ import CaseCard from "@/components/CaseCard.astro";
 import { getCaseCatalog } from "@/data/cases";
 import { site } from "@/data/site";
 import { serviceGroups } from "@/data/service-groups";
+import { localeFromPath, ui, label } from "@/data/i18n";
 
 const { cases } = await getCaseCatalog();
 const filters = [{ key: "all", label: "全部" }, ...serviceGroups];
+const locale = localeFromPath(Astro.url.pathname);
+const labels = ui[locale];
 ---
 
-<Layout title={`作品案例 | ${site.siteName}`} description={`查看 ${site.ownerDisplayName} 的網站視覺、平面印刷與影像作品，了解已確認的負責項目與相關服務。`} mainClass="works-archive-shell">
+<Layout title={`${labels.works} | ${site.siteName}`} description={locale === "zh-Hant" ? `查看 ${site.ownerDisplayName} 的網站視覺、平面印刷與影像作品，了解已確認的負責項目與相關服務。` : locale === "en" ? "Explore website visuals, print design and image work." : "ウェブ、印刷、画像制作の事例をご覧ください。"} mainClass="works-archive-shell">
   <section class="works-archive case-archive" aria-labelledby="works-title" data-case-archive>
     <header class="works-archive__hero">
       <div class="works-archive__title-row">
         <h1 id="works-title">WORKS</h1>
       </div>
-      <p>作品案例</p>
+      <p>{labels.works}</p>
     </header>
 
     <div class="works-archive__opening" aria-hidden="true">
       <div class="works-archive__handwriting"></div>
     </div>
 
-    <div class="works-archive__filters" data-filter-bar aria-label="服務大項">
+    <div class="works-archive__filters" data-filter-bar aria-label={label("服務大項", locale)}>
         <div class="works-archive__filter-row">
           {filters.map((category) => (
             <button type="button" data-filter={category.key} aria-pressed={category.key === "all"} aria-controls="case-grid" class={category.key === "all" ? "is-active" : ""}>
-              {category.label}
+              {category.key === "all" ? labels.all : label(category.label, locale)}
             </button>
           ))}
         </div>
@@ -39,7 +42,7 @@ const filters = [{ key: "all", label: "全部" }, ...serviceGroups];
         <path d="M15 8h66c6.627 0 12 5.373 12 12v29c0 6.627-5.373 12-12 12H48L31 70V61H15c-6.627 0-12-5.373-12-12V20C3 13.373 8.373 8 15 8Z" />
         <path d="M25 32h46M25 45h30" />
       </svg>
-      <p>此服務大項目前尚無作品。</p>
+      <p>{label("此服務大項目前尚無作品。", locale)}</p>
     </div>
   </section>
 

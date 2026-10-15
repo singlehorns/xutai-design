@@ -2,6 +2,7 @@
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
 import handwritingFontUrl from "@/assets/fonts/caveat-latin-400-normal.woff2?url";
+import { localizedPath } from "@/data/i18n";
 
 interface Props {
   title?: string;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 const { title = site.title, description = site.description } = Astro.props;
+const pathname = Astro.url.pathname.replace(/^\/xutai-design/, "").replace(/^\/(en|ja)(?=\/)/, "") || "/";
+const canonicalPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
 ---
 
 <meta charset="utf-8" />
@@ -19,6 +22,8 @@ const { title = site.title, description = site.description } = Astro.props;
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta name="generator" content={Astro.generator} />
+{(["zh-Hant", "en", "ja"] as const).map((locale) => <link rel="alternate" hreflang={locale} href={new URL(`/xutai-design${localizedPath(canonicalPath, locale)}`, Astro.site).href} />)}
+<link rel="alternate" hreflang="x-default" href={new URL(`/xutai-design${canonicalPath}`, Astro.site).href} />
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
 <link rel="preload" href={handwritingFontUrl} as="font" type="font/woff2" crossorigin />

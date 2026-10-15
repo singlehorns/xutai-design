@@ -3,24 +3,27 @@ import type { CaseViewModel } from "@/data/case-model";
 import { withBase } from "@/utils/paths";
 import PendingImage from "./PendingImage.astro";
 import { serviceGroups } from "@/data/service-groups";
+import { localeFromPath, localizedPath, label, caseTitle } from "@/data/i18n";
 
 interface Props { caseStudy: CaseViewModel; compact?: boolean; }
 const { caseStudy, compact = false } = Astro.props;
 const activeServiceGroups = serviceGroups.filter((group) => caseStudy.serviceGroups.includes(group.key));
+const locale = localeFromPath(Astro.url.pathname);
+const title = caseTitle(caseStudy.slug, caseStudy.title, locale);
 ---
 
 <article class="work-card case-card" data-case-service-groups={caseStudy.serviceGroups.join(" ")}>
-  <a href={withBase(caseStudy.url)} aria-label={`查看 ${caseStudy.title} 案例`}>
+  <a href={withBase(localizedPath(caseStudy.url, locale))} aria-label={`${label("查看", locale)} ${title} ${label("案例", locale)}`}>
     <figure>
-      {caseStudy.coverImage ? <img src={withBase(caseStudy.coverImage.src)} alt={caseStudy.coverImage.alt} loading="lazy" /> : <PendingImage />}
+      {caseStudy.coverImage ? <img src={withBase(caseStudy.coverImage.src)} alt={locale === "zh-Hant" ? caseStudy.coverImage.alt : locale === "en" ? `Visual from ${title}` : `${title}の作品画像`} loading="lazy" /> : <PendingImage />}
       <figcaption><span>VIEW CASE</span></figcaption>
     </figure>
     <div class="work-card__body case-card__body">
-      {activeServiceGroups.length > 0 && <div class="case-card__services" aria-label="作品分類">
-        {activeServiceGroups.map((group) => <span class="case-card__service" data-service={group.key}>{group.label}</span>)}
+      {activeServiceGroups.length > 0 && <div class="case-card__services" aria-label={label("作品分類", locale)}>
+        {activeServiceGroups.map((group) => <span class="case-card__service" data-service={group.key}>{label(group.label, locale)}</span>)}
       </div>}
-      <h3>{caseStudy.title}</h3>
-      {!compact && <p class="case-card__meta">{caseStudy.clientName ?? caseStudy.clientType ?? "客戶資料待補"} · {caseStudy.year ?? "年份待補"}</p>}
+      <h3>{title}</h3>
+      {!compact && <p class="case-card__meta">{caseStudy.clientName ?? caseStudy.clientType ?? label("客戶資料待補", locale)} · {caseStudy.year ?? label("年份待補", locale)}</p>}
     </div>
   </a>
 </article>

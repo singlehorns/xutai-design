@@ -95,6 +95,20 @@ const serviceOptions = getContactServiceOptions();
   const lineForm = document.querySelector<HTMLFormElement>("[data-line-form]");
   const lineStatus = document.querySelector<HTMLElement>("[data-line-status]");
   const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-line-message]");
+  const lang = document.documentElement.lang;
+  const labels = lang === "en" ? {
+    greeting: "Hello, I would like to discuss a project with T2:", missing: "Not provided", unselected: "Not selected",
+    name: "Name", company: "Company / brand", contact: "LINE / contact", collaboration: "Collaboration", service: "Service", schedule: "Timeline", budget: "Budget / scope", message: "Project details",
+    copied: "Request copied. You can paste it into LINE or another message.", copyFailed: "Your browser could not copy the request. Use the send button to open LINE.", opening: "Your request is ready. LINE is opening; you can review and edit it before sending."
+  } : lang === "ja" ? {
+    greeting: "T2へ制作の相談をしたいです：", missing: "未記入", unselected: "未選択",
+    name: "お名前", company: "会社・ブランド", contact: "LINE・連絡先", collaboration: "ご依頼の形式", service: "ご相談内容", schedule: "予定時期", budget: "予算・規模", message: "ご要望の概要",
+    copied: "相談内容をコピーしました。LINEなどに貼り付けてください。", copyFailed: "自動コピーできませんでした。送信ボタンからLINEを開いてください。", opening: "相談内容をまとめました。LINEで確認・編集してから送信できます。"
+  } : {
+    greeting: "您好，我想討論 T2 的合作需求：", missing: "未填寫", unselected: "未選擇",
+    name: "姓名 / 稱呼", company: "公司 / 品牌", contact: "LINE / 聯絡方式", collaboration: "合作類型", service: "需求類型", schedule: "預計時程", budget: "預算 / 合作規模", message: "需求簡述",
+    copied: "已複製需求文字，可以貼到 LINE 或其他訊息中。", copyFailed: "目前瀏覽器無法自動複製，請改用送出按鈕開啟 LINE。", opening: "已整理需求內容，正在開啟 LINE。送出前仍可在 LINE 裡確認與修改文字。"
+  };
 
   const getValue = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 
@@ -102,19 +116,19 @@ const serviceOptions = getContactServiceOptions();
     if (!lineForm) return "";
     const formData = new FormData(lineForm);
     const lines = [
-      "您好，我想討論 T2 的合作需求：",
+      labels.greeting,
       "",
-      `姓名 / 稱呼：${getValue(formData, "name") || "未填寫"}`,
-      `公司 / 品牌：${getValue(formData, "company") || "未填寫"}`,
-      `Email：${getValue(formData, "email") || "未填寫"}`,
-      `LINE / 聯絡方式：${getValue(formData, "lineContact") || "未填寫"}`,
-      `合作類型：${getValue(formData, "cooperationType") || "未選擇"}`,
-      `需求類型：${getValue(formData, "serviceType") || "未選擇"}`,
-      `預計時程：${getValue(formData, "schedule") || "未選擇"}`,
-      `預算 / 合作規模：${getValue(formData, "budget") || "未填寫"}`,
+      `${labels.name}：${getValue(formData, "name") || labels.missing}`,
+      `${labels.company}：${getValue(formData, "company") || labels.missing}`,
+      `Email：${getValue(formData, "email") || labels.missing}`,
+      `${labels.contact}：${getValue(formData, "lineContact") || labels.missing}`,
+      `${labels.collaboration}：${getValue(formData, "cooperationType") || labels.unselected}`,
+      `${labels.service}：${getValue(formData, "serviceType") || labels.unselected}`,
+      `${labels.schedule}：${getValue(formData, "schedule") || labels.unselected}`,
+      `${labels.budget}：${getValue(formData, "budget") || labels.missing}`,
       "",
-      "需求簡述：",
-      getValue(formData, "message") || "未填寫"
+      `${labels.message}：`,
+      getValue(formData, "message") || labels.missing
     ];
 
     return lines.join("\n");
@@ -135,7 +149,7 @@ const serviceOptions = getContactServiceOptions();
   copyButton?.addEventListener("click", async () => {
     const didCopy = await copyLineMessage();
     if (lineStatus) {
-      lineStatus.textContent = didCopy ? "已複製需求文字，可以貼到 LINE 或其他訊息中。" : "目前瀏覽器無法自動複製，請改用送出按鈕開啟 LINE。";
+      lineStatus.textContent = didCopy ? labels.copied : labels.copyFailed;
     }
   });
 
@@ -151,7 +165,7 @@ const serviceOptions = getContactServiceOptions();
     await copyLineMessage();
 
     if (lineStatus) {
-      lineStatus.textContent = "已整理需求內容，正在開啟 LINE。送出前仍可在 LINE 裡確認與修改文字。";
+      lineStatus.textContent = labels.opening;
     }
 
     const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;

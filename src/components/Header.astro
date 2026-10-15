@@ -2,6 +2,7 @@
 import { navigation } from "@/data/navigation";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
+import { localeFromPath, localizedPath, label } from "@/data/i18n";
 
 interface Props {
   variant?: "default" | "home";
@@ -9,25 +10,36 @@ interface Props {
 
 const { variant: _variant = "default" } = Astro.props;
 const currentPath = `${Astro.url.pathname.replace(/\/$/, "")}/`;
+const locale = localeFromPath(Astro.url.pathname);
+const translationPath = Astro.url.pathname.replace(/^\/xutai-design/, "").replace(/^\/(en|ja)(?=\/)/, "") || "/";
 ---
 
 <header class="site-header site-header--home site-header--v2">
   <div class="site-header__main">
-    <a class="brand brand-lockup" href={withBase("/")} aria-label={`${site.siteName} / ${site.ownerDisplayName} 首頁`}>
+    <a class="brand brand-lockup" href={withBase(localizedPath("/", locale))} aria-label={`${site.siteName} / ${site.ownerDisplayName} ${label("首頁", locale)}`}>
       <span class="brand-lockup__mark">{site.siteName}</span>
       <span class="brand-lockup__divider" aria-hidden="true"></span>
       <span class="brand-lockup__name">{site.ownerDisplayName}</span>
     </a>
-    <button class="nav-toggle" type="button" aria-label="開啟導覽" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
+    <button class="nav-toggle" type="button" aria-label={label("開啟導覽", locale)} aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
       <span></span>
       <span></span>
     </button>
-    <nav id="site-navigation" class="site-nav" aria-label="主要導覽" data-nav>
+    <nav id="site-navigation" class="site-nav" aria-label={label("主要導覽", locale)} data-nav>
       {navigation.map((item) => (
-        <a href={withBase(item.href)} class={item.href === "/contact/" ? "is-contact" : ""} aria-current={currentPath.startsWith(item.href) ? "page" : undefined}>
-          <span>{item.label}</span>
+        <a href={withBase(localizedPath(item.href, locale))} class={item.href === "/contact/" ? "is-contact" : ""} aria-current={currentPath.startsWith(item.href) ? "page" : undefined}>
+          <span>{label(item.label, locale)}</span>
         </a>
       ))}
+      <div class="language-switch">
+        <select aria-label={locale === "en" ? "Choose language" : locale === "ja" ? "言語を選択" : "選擇語言"} data-language-switch>
+          {(["zh-Hant", "en", "ja"] as const).map((target) => (
+            <option value={withBase(localizedPath(translationPath, target))} lang={target} selected={target === locale}>
+              {target === "zh-Hant" ? "繁體中文" : target === "en" ? "English" : "日本語"}
+            </option>
+          ))}
+        </select>
+      </div>
     </nav>
   </div>
 </header>
@@ -36,6 +48,11 @@ const currentPath = `${Astro.url.pathname.replace(/\/$/, "")}/`;
   const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
   const nav = document.querySelector<HTMLElement>("[data-nav]");
   const mobile = window.matchMedia("(max-width: 980px)");
+  const menuLabels = document.documentElement.lang === "en" ? ["Open menu", "Close menu"] : document.documentElement.lang === "ja" ? ["メニューを開く", "メニューを閉じる"] : ["開啟導覽", "關閉導覽"];
+  document.querySelector<HTMLSelectElement>("[data-language-switch]")?.addEventListener("change", (event) => {
+    const destination = (event.currentTarget as HTMLSelectElement).value;
+    if (destination) window.location.assign(destination);
+  });
 
   if (toggle && nav) {
     const setNavigation = (open: boolean, returnFocus = false) => {
@@ -43,7 +60,7 @@ const currentPath = `${Astro.url.pathname.replace(/\/$/, "")}/`;
       nav.classList.toggle("is-open", expanded);
       nav.inert = mobile.matches && !expanded;
       toggle.setAttribute("aria-expanded", String(expanded));
-      toggle.setAttribute("aria-label", expanded ? "關閉導覽" : "開啟導覽");
+      toggle.setAttribute("aria-label", expanded ? menuLabels[1] : menuLabels[0]);
       if (returnFocus) toggle.focus();
     };
 
@@ -72,6 +89,10 @@ const currentPath = `${Astro.url.pathname.replace(/\/$/, "")}/`;
 </script>
 
 <style>
+  .language-switch { position: relative; flex: 0 0 auto; width: 116px; }
+  .language-switch::after { content: ""; position: absolute; right: 10px; top: 50%; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+  .language-switch select { display: block; width: 100%; min-height: 42px; padding: 8px 24px 8px 10px; border: 1px solid currentColor; border-radius: 0; background: transparent; color: inherit; font: 700 .78rem/1.3 "Manrope", "Noto Sans TC", sans-serif; cursor: pointer; appearance: none; }
+  .language-switch select:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
   .site-header.site-header--v2 { width: 100%; min-width: 0; }
   .site-header--v2 .site-header__main { min-width: 0; gap: 24px; }
   .site-header--v2 .brand { flex-shrink: 0; }
@@ -112,6 +133,9 @@ const currentPath = `${Astro.url.pathname.replace(/\/$/, "")}/`;
   .site-header--v2 .site-nav a:focus-visible,
   .site-header--v2 .brand:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
   @media (max-width: 980px) {
+    .language-switch { width: 100%; margin-top: 10px; }
+    .language-switch select { min-height: 48px; font-size: 1rem; padding-inline: 14px 32px; }
+    .language-switch::after { right: 18px; }
     .site-header--v2 .site-nav {
       visibility: hidden;
       gap: 0;

@@ -4,15 +4,17 @@ import CooperationModes from "@/components/CooperationModes.astro";
 import { getCases } from "@/data/cases";
 import { site } from "@/data/site";
 import { withBase } from "@/utils/paths";
+import { localeFromPath, localizedPath } from "@/data/i18n";
+const locale = localeFromPath(Astro.url.pathname);
 
 const applications = [
   { label: "線上應用", title: "數位內容與視覺應用", items: ["品牌與活動內容企劃", "網站視覺與活動頁面", "社群內容及廣告素材", "AI 商品情境圖與影片", "電商視覺與數位宣傳"] },
   { label: "線下應用", title: "實體視覺與印刷製作", items: ["品牌識別及產品包裝", "商業印刷及客製周邊", "活動布條、展牌及展示物", "展覽空間視覺與場佈", "印刷輸出與製作協調"] }
 ] as const;
 const cases = [
-  { id: "jimei-faceschool", slug: "集美生技-電商視覺-跨媒介應用", number: "01", title: "集美生技 × FaceSchool", core: "品牌形象與產品應用", note: "從品牌理念理解開始，整理視覺企劃，再延伸到設計應用與廠商協作。", online: ["企業網站形象與視覺架構", "FaceSchool 電商視覺", "數位宣傳素材"], offline: ["產品包裝及紙盒", "展覽周邊印刷", "展場配置與佈置"] },
-  { id: "diamond-rhyme", slug: "鑽之韻-品牌電商視覺與多媒體內容製作", number: "02", title: "鑽之韻", core: "珠寶品牌的數位展示與實體應用", note: "以 AI 商品影像、數位內容與實體品牌視覺，建立一致的展示體驗。", online: ["Cyberbiz 網站頁面美化", "社群內容企劃", "AI 鑽戒產品渲染", "AI 商品展示影片"], offline: ["品牌名片", "門市展牌", "保固卡", "品牌冊子"] },
-  { id: "nkust-ai-training", slug: "高科大-ai-智慧製造-活動視覺與印刷製作", number: "03", title: "高科大 AI 智慧製造產業人才培訓據點", core: "課程推廣與活動視覺", note: "將課程資訊轉換成線上宣傳內容，以及活動現場所需的視覺應用。", online: ["課程與活動宣傳內容企劃", "社群圖文製作", "AI 輔助視覺素材"], offline: ["演講海報", "活動布條", "手拿牌", "桌牌及相關印刷物"] }
+  { id: "jiu-health-brand", slug: "保健食品品牌設計", title: "久發網工作室", core: "保健品牌視覺與多元印刷應用", note: "依產品定位規劃品牌識別，延伸到系列包裝與相關印刷品，呈現一致的品牌視覺。", onlineLabel: "視覺規劃", offlineLabel: "印刷應用", online: ["品牌 LOGO 與識別設計", "系列產品視覺延伸", "包裝成品與應用展示"], offline: ["保健食品外盒與版面", "產品標籤與貼紙", "品牌周邊印刷品"] },
+  { id: "diamond-rhyme", slug: "鑽之韻-品牌電商視覺與多媒體內容製作", title: "鑽之韻", core: "珠寶品牌的數位展示與實體應用", note: "以 AI 商品影像、數位內容與實體品牌視覺，建立一致的展示體驗。", online: ["Cyberbiz 網站頁面美化", "社群內容企劃", "AI 鑽戒產品渲染", "AI 商品展示影片"], offline: ["品牌名片", "門市展牌", "保固卡", "品牌冊子"] },
+  { id: "nkust-ai-training", slug: "高科大-ai-智慧製造-活動視覺與印刷製作", title: "高科大 AI 智慧製造產業人才培訓據點", core: "課程推廣與活動視覺", note: "將課程資訊轉換成線上宣傳內容，以及活動現場所需的視覺應用。", online: ["課程與活動宣傳內容企劃", "社群圖文製作", "AI 輔助視覺素材"], offline: ["演講海報", "活動布條", "手拿牌", "桌牌及相關印刷物"] }
 ] as const;
 const caseBySlug = new Map((await getCases()).map((caseStudy) => [caseStudy.slug, caseStudy]));
 const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(item.slug) }));
@@ -21,7 +23,6 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
 <Layout title={`線上 × 線下整合 | ${site.siteName}`} description="從品牌需求、創意發想與內容企劃出發，整合 AI 數位工具、網站視覺、社群內容及實體印刷製作。" mainClass="cooperation-shell">
   <div class="cooperation-page">
     <section class="cooperation-section cooperation-applications" aria-labelledby="applications-title">
-      <svg class="cooperation-applications__shape" viewBox="0 0 550 540" aria-hidden="true" focusable="false"><path d="M190 90C180 48 144 27 113 69c-23 34-11 67-13 73-30-30-72-17-74 16-4 27 32 50 69 72-48-12-93 10-89 38 7 45 61 63 107 62-44 20-45 60-16 78 23 15 55 13 88 2-37 35-34 75-14 94 27 32 74-3 119-47 23 54 50 74 82 64 39-12 30-67 22-97 52 29 99 29 110-6 10-25-20-53-39-70 60-5 85-25 80-56-5-34-52-52-105-55 56-16 89-38 82-70-10-41-60-41-113-25 44-34 59-64 32-90-26-23-70-5-113 22 24-44 20-69-9-72-34-6-66 43-92 89-10-16-22-23-37-1Z" /></svg>
       <button class="intro-flip-card" type="button" aria-label="翻轉線上與線下整合卡片" aria-pressed="false">
         <span class="intro-flip-card__inner">
           <span class="intro-flip-card__face intro-flip-card__face--front"><strong>線上</strong><small>數位內容<br />與視覺應用</small><i aria-hidden="true">↗</i></span>
@@ -29,18 +30,28 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
         </span>
       </button>
       <header class="cooperation-heading"><h2 id="applications-title">讓創意從線上延伸至線下。</h2></header>
-      <div class="application-grid">{applications.map((application, index) => <article class:list={["application-card", index === 1 && "application-card--offline"]}><div class="application-card__top"><span>{application.label}</span><span class="application-card__mark" aria-hidden="true"></span></div><h3>{application.title}</h3><ul>{application.items.map((item) => <li>{item}</li>)}</ul>{index === 0 ? <div class="application-card__browser" aria-hidden="true"><div class="browser-bar"><i></i><i></i><i></i></div><div class="browser-screen"><em></em></div></div> : <div class="application-card__prints" aria-hidden="true"><span></span><span></span><span></span></div>}</article>)}</div>
-      <p class="cooperation-bridge"><span aria-hidden="true">線上</span><i></i><span aria-hidden="true">線下</span></p>
+      <div class="application-grid">
+        <svg class="cooperation-applications__shape" viewBox="0 0 500 500" aria-hidden="true" focusable="false"><path d="M250 30C269 30 282 99 308 110C334 120 392 81 406 94C419 108 380 166 390 192C401 218 470 231 470 250C470 269 401 282 390 308C380 334 419 392 406 406C392 419 334 380 308 390C282 401 269 470 250 470C231 470 218 401 192 390C166 380 108 419 94 406C81 392 120 334 110 308C99 282 30 269 30 250C30 231 99 218 110 192C120 166 81 108 94 94C108 81 166 120 192 110C218 99 231 30 250 30Z" /></svg>
+        {applications.map((application, index) => <article class:list={["application-card", index === 1 && "application-card--offline"]}><div class="application-card__top"><span>{application.label}</span><span class="application-card__mark" aria-hidden="true"></span></div><h3>{application.title}</h3><ul>{application.items.map((item) => <li>{item}</li>)}</ul>{index === 0 ? <div class="application-card__browser" aria-hidden="true"><div class="browser-bar"><i></i><i></i><i></i></div><div class="browser-screen"><em></em></div></div> : <div class="application-card__prints" aria-hidden="true"><span></span><span></span><span></span></div>}</article>)}
+      </div>
     </section>
-    <section class="cooperation-section cooperation-modes-section" aria-label="合作模式">
+    <section class="cooperation-section cooperation-modes-section" aria-label="合作模式" data-active-mode="">
+      <div class="cooperation-modes__backdrop" aria-hidden="true">
+        <span class="cooperation-modes__tone cooperation-modes__tone--warm"></span>
+        <span class="cooperation-modes__tone cooperation-modes__tone--cool"></span>
+        <span class="cooperation-modes__shape cooperation-modes__shape--near"></span>
+        <span class="cooperation-modes__shape cooperation-modes__shape--far"></span>
+      </div>
+      <svg class="cooperation-modes__top-wave" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1440V92H1010C976 92 963 82 963 54V43C963 17 940 11 900 19C650 70 335 75 0 50Z" /></svg>
       <CooperationModes />
     </section>
     <section class="cooperation-section cooperation-cases" aria-labelledby="cases-title">
+      <div class="cooperation-cases__transition" aria-hidden="true"><span class="cooperation-cases__transition-warm"></span></div>
       <svg class="cooperation-cases__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 16C100 36 210 28 292 10c46-10 58 2 58 46 0 10 14 12 50 12h1040v32H0Z" /></svg>
       <header class="cooperation-heading"><h2 id="cases-title">實際整合案例</h2><p>不同產業、不同接觸點，從同一個核心概念延伸出合適的線上與線下應用。</p></header>
-      <div class="case-list">{integrationCases.map((item) => <article class="integration-case" id={item.id} aria-labelledby={`${item.id}-title`}><a class="integration-case__visual" href={withBase(`/works/${item.slug}/`)} aria-label={`查看 ${item.title} 作品案例`}>{item.work?.coverImage ? <img src={withBase(item.work.coverImage.src)} alt={item.work.coverImage.alt || `${item.title} 作品封面`} loading="lazy" /> : <span class="integration-case__pending">圖片待補</span>}<span class="integration-case__number">{item.number}</span></a><div class="integration-case__content"><p class="integration-case__tag">案例 {item.number}</p><h3 id={`${item.id}-title`}><a href={withBase(`/works/${item.slug}/`)}>{item.title}</a></h3><p class="integration-case__core">{item.core}</p><p class="integration-case__note">{item.note}</p><div class="integration-case__channels"><div><h4>線上</h4><ul>{item.online.map((entry) => <li>{entry}</li>)}</ul></div><div><h4>線下</h4><ul>{item.offline.map((entry) => <li>{entry}</li>)}</ul></div></div></div></article>)}</div>
+      <div class="case-list">{integrationCases.map((item) => <article class="integration-case" id={item.id} aria-labelledby={`${item.id}-title`}><a class="integration-case__visual" href={withBase(localizedPath(`/works/${item.slug}/`, locale))} aria-label={`查看 ${item.title} 作品案例`}>{item.work?.coverImage ? <img src={withBase(item.work.coverImage.src)} alt="" loading="lazy" /> : <span class="integration-case__pending">圖片待補</span>}<span class="integration-case__visual-title" aria-hidden="true">{item.title}</span></a><div class="integration-case__content"><p class="integration-case__tag">整合案例</p><h3 id={`${item.id}-title`}><a href={withBase(localizedPath(`/works/${item.slug}/`, locale))}>{item.title}</a></h3><p class="integration-case__core">{item.core}</p><p class="integration-case__note">{item.note}</p><div class="integration-case__channels"><div><h4>{"onlineLabel" in item ? item.onlineLabel : "線上"}</h4><ul>{item.online.map((entry) => <li>{entry}</li>)}</ul></div><div><h4>{"offlineLabel" in item ? item.offlineLabel : "線下"}</h4><ul>{item.offline.map((entry) => <li>{entry}</li>)}</ul></div></div></div></article>)}</div>
     </section>
-    <section class="cooperation-contact" aria-labelledby="cooperation-contact-title"><h2 id="cooperation-contact-title">有想法，從需求開始討論。</h2><p>無論是品牌宣傳、數位內容、網站視覺，或實體印刷與活動製作，都可以依據實際需求討論合適的規劃與執行方式。</p><a class="home-works-cta" href={withBase("/contact/")}><span>討論合作需求</span><span aria-hidden="true">→</span></a></section>
+    <section class="cooperation-contact" aria-labelledby="cooperation-contact-title"><h2 id="cooperation-contact-title">有想法，從需求開始討論！</h2><p>無論是品牌宣傳、數位內容、網站視覺，或實體印刷與活動製作，都可以依據實際需求討論合適的規劃與執行方式。</p><a class="home-works-cta" href={withBase(localizedPath("/contact/", locale))}><span>討論合作需求</span><span aria-hidden="true">→</span></a></section>
   </div>
 </Layout>
 
@@ -51,13 +62,34 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
   .cooperation-page { --ink:#26211a; --muted:#6f6657; --yellow:var(--home-yellow); --card:#fff; --line:rgba(38,33,26,.15); width:min(calc(100% - var(--home-safe) * 2),1240px); margin-inline:auto; padding-block:clamp(64px,8vw,112px) clamp(64px,7vw,96px); color:var(--ink); font-family:"Noto Sans TC",sans-serif; }
   .cooperation-section { padding-block:clamp(54px,7vw,92px); border-top:1px solid var(--line); }
   .cooperation-applications,.cooperation-modes-section,.cooperation-cases { border-top:0; }
+  .cooperation-modes-section { position:relative; isolation:isolate; padding-top:clamp(118px,10vw,152px); }
+  .cooperation-modes-section :global(.cooperation-mode) { transition:transform 280ms ease,box-shadow 280ms ease,filter 300ms ease; }
+  .cooperation-modes-section[data-active-mode="project"] :global(.cooperation-mode--ongoing),
+  .cooperation-modes-section[data-active-mode="ongoing"] :global(.cooperation-mode--project) { filter:brightness(.72) saturate(.82); }
+  .cooperation-modes__backdrop { position:absolute; z-index:-2; inset:0 auto 0 50%; width:100vw; transform:translateX(-50%); overflow:hidden; background:#fff; pointer-events:none; }
+  .cooperation-modes__top-wave { position:absolute; z-index:-1; top:0; left:50%; width:100vw; height:clamp(78px,7vw,110px); transform:translateX(-50%); fill:#fff; pointer-events:none; }
+  .cooperation-modes__tone { position:absolute; inset:0; opacity:0; transition:opacity 400ms ease; }
+  .cooperation-modes__tone--warm { background:radial-gradient(ellipse 60% 70% at 8% 92%,rgba(228,177,126,.62),transparent 72%),linear-gradient(125deg,#684537 0%,#926448 54%,#b4865e 100%); }
+  .cooperation-modes__tone--cool { background:radial-gradient(ellipse 58% 76% at 94% 12%,rgba(126,210,241,.5),transparent 72%),linear-gradient(125deg,#07548f 0%,#1679c4 58%,#3da2d5 100%); }
+  .cooperation-modes-section[data-active-mode="project"] .cooperation-modes__tone--warm,
+  .cooperation-modes-section[data-active-mode="ongoing"] .cooperation-modes__tone--cool { opacity:1; }
+  .cooperation-modes__shape { position:absolute; opacity:0; border:1px solid rgba(255,255,255,.35); transition:opacity 400ms ease,transform 800ms ease; will-change:transform; }
+  .cooperation-modes-section[data-active-mode] .cooperation-modes__shape { opacity:1; }
+  .cooperation-modes-section[data-active-mode=""] .cooperation-modes__shape { opacity:0; }
+  .cooperation-modes__shape--near { top:-42%; left:-14%; width:min(70vw,960px); aspect-ratio:1.4; border-radius:42% 58% 62% 38% / 44% 36% 64% 56%; background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(255,255,255,.02)); transform:translate3d(var(--mode-near-x,0px),var(--mode-parallax-near,0px),0) rotate(-16deg); }
+  .cooperation-modes__shape--far { right:-12%; bottom:-52%; width:min(64vw,900px); aspect-ratio:1.12; border-radius:60% 40% 36% 64% / 46% 58% 42% 54%; background:linear-gradient(25deg,rgba(255,255,255,.18),rgba(255,255,255,.02)); transform:translate3d(var(--mode-far-x,0px),var(--mode-parallax-far,0px),0) rotate(18deg); }
+  .cooperation-modes-section[data-active-mode="project"] { --mode-near-x:-36px; --mode-far-x:28px; }
+  .cooperation-modes-section[data-active-mode="ongoing"] { --mode-near-x:34px; --mode-far-x:-30px; }
   .cooperation-intro { display:grid; grid-template-columns:minmax(220px,.58fr) minmax(0,1fr); gap:clamp(28px,7vw,110px); align-items:start; border-top:0; padding-top:clamp(24px,4vw,54px); }
   .cooperation-intro>div:first-child { grid-column:2; grid-row:1; transform:translateX(clamp(-56px,-4vw,-24px)); }
   .cooperation-applications { position:relative; isolation:isolate; }
   .cooperation-applications > .intro-flip-card { position:absolute; z-index:2; top:clamp(-12px,1vw,18px); right:0; width:min(24vw,250px); }
   .cooperation-applications > .cooperation-heading { padding-right:clamp(220px,24vw,280px); }
-  .cooperation-applications__shape { position:absolute; z-index:-1; top:clamp(80px,9vw,130px); right:-11vw; width:clamp(320px,43vw,540px); height:auto; transform:rotate(11deg); fill:#0077d9; stroke:var(--yellow); stroke-width:3; pointer-events:none; }
+  .cooperation-applications__shape { position:absolute; z-index:-1; top:calc(clamp(56px,7vw,108px) - 210px); right:-9vw; width:clamp(360px,36vw,500px); height:auto; transform:rotate(11deg); fill:#0077d9; stroke:var(--yellow); stroke-width:5; pointer-events:none; }
   .cooperation-cases { position:relative; isolation:isolate; padding-top:clamp(130px,13vw,200px); }
+  .cooperation-cases__transition { position:absolute; z-index:-2; top:0; left:50%; width:100vw; height:100px; transform:translateX(-50%); background:linear-gradient(90deg,#1267a8,#3da2d5); pointer-events:none; }
+  .cooperation-cases__transition-warm { position:absolute; inset:0; opacity:0; background:linear-gradient(90deg,#b4865e,#926448); transition:opacity 400ms ease; }
+  .cooperation-modes-section[data-active-mode="project"] + .cooperation-cases .cooperation-cases__transition-warm { opacity:1; }
   .cooperation-cases::before { content:""; position:absolute; z-index:-1; top:68px; bottom:0; left:50%; width:100vw; transform:translateX(-50%); background:var(--yellow); }
   .cooperation-cases__wave { position:absolute; z-index:-1; top:0; left:50%; width:100vw; height:100px; transform:translateX(-50%); fill:var(--yellow); pointer-events:none; }
   .cooperation-intro h1,.cooperation-heading h2 { max-width:850px; margin:0; font:900 clamp(2rem,4vw,3.45rem)/1.35 "Zen Maru Gothic",sans-serif; letter-spacing:.03em; text-wrap:balance; }
@@ -84,8 +116,11 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
   .intro-flip-card__face strong,
   .intro-flip-card__face small,
   .intro-flip-card__face i { transform:rotate(-8deg); }
-  .application-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:clamp(18px,4vw,56px); margin-top:46px; }
+  .application-grid { position:relative; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:clamp(18px,4vw,56px); margin-top:46px; isolation:isolate; }
+  .application-grid::before { content:""; position:absolute; z-index:-1; top:-42px; left:-42px; width:min(52%,640px); height:calc(390px + 84px); background:radial-gradient(circle at 25% 28%,rgba(80,171,228,.5),transparent 56%),radial-gradient(circle at 78% 82%,rgba(255,231,91,.34),transparent 54%); filter:blur(30px); pointer-events:none; }
   .application-card { position:relative; min-height:390px; padding:clamp(26px,4vw,52px); overflow:hidden; border:3px solid #111; background:var(--card); transition:transform 420ms cubic-bezier(.2,.75,.2,1),box-shadow 420ms ease; }
+  .application-card:not(.application-card--offline) { border:1px solid rgba(113,163,190,.55); background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(225,241,250,.48)); box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 32px rgba(255,255,255,.28),0 18px 48px rgba(45,105,145,.13); -webkit-backdrop-filter:blur(20px) saturate(1.25); backdrop-filter:blur(20px) saturate(1.25); }
+  .application-card:not(.application-card--offline):hover { box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 26px 56px rgba(45,105,145,.2); }
   .application-card:hover,.application-card:focus-within { transform:translateY(-10px); box-shadow:0 20px 34px rgba(38,33,26,.12); }
   .application-card--offline { margin-top:clamp(72px,9vw,128px); background:var(--yellow); }
   .application-card__top { display:flex; justify-content:space-between; color:#a87908; font:700 .82rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.16em; }
@@ -109,15 +144,15 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
   .application-card__prints span:nth-child(1) { transform:translate(22px,18px) rotate(7deg); background:#e8d6b0; }
   .application-card__prints span:nth-child(2) { transform:translate(10px,9px) rotate(3deg); }
   .application-card__prints span:nth-child(3)::after { content:"印刷／空間"; position:absolute; left:15px; bottom:15px; color:var(--muted); font:700 8px/1 "Zen Maru Gothic",sans-serif; letter-spacing:.12em; }
-  .cooperation-bridge { display:flex; align-items:center; justify-content:center; gap:16px; margin:28px auto 0; color:var(--muted); font:700 .72rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.13em; }
-  .cooperation-bridge i { width:86px; height:1px; background:var(--ink); }
   .cooperation-note { margin:28px 0 0; color:var(--muted); font-size:.92rem; line-height:1.9; }
   .case-list { display:grid; gap:52px; margin-top:52px; }
   .integration-case { display:grid; grid-template-columns:minmax(230px,.82fr) minmax(0,1.18fr); gap:clamp(28px,5vw,76px); padding:clamp(22px,3vw,40px) 0; border-top:1px solid var(--line); }
-  .integration-case__visual { position:relative; display:grid; place-items:center; min-height:330px; overflow:hidden; border:1px solid var(--line); background:#fff; color:var(--muted); text-align:center; }
-  .integration-case__visual img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .integration-case__number { position:absolute; top:20px; left:20px; display:grid; place-items:center; min-width:64px; min-height:64px; padding:8px; background:var(--yellow); color:var(--ink); font:900 2rem/1 "Zen Maru Gothic",sans-serif; }
-  .integration-case__pending { font:700 .72rem/1.8 "Zen Maru Gothic",sans-serif; letter-spacing:.16em; }
+  .integration-case__visual { position:relative; display:grid; place-items:center; min-height:330px; overflow:hidden; border:1px solid var(--line); background:#26211a; color:#fff; text-align:center; isolation:isolate; }
+  .integration-case__visual img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .65s ease; }
+  .integration-case__visual::after { position:absolute; z-index:1; inset:0; background:rgba(0,0,0,.56); content:""; pointer-events:none; }
+  .integration-case__visual:hover img, .integration-case__visual:focus-visible img { transform:scale(1.09); }
+  .integration-case__visual-title { position:relative; z-index:2; max-width:calc(100% - 48px); padding:24px 12px; color:#fff; font:900 clamp(1.5rem,2.6vw,2.4rem)/1.35 "Zen Maru Gothic",sans-serif; text-shadow:0 2px 12px rgba(0,0,0,.35); }
+  .integration-case__pending { position:absolute; z-index:2; bottom:18px; font:700 .72rem/1.8 "Zen Maru Gothic",sans-serif; letter-spacing:.16em; }
   .integration-case__tag { margin:4px 0 14px; color:#a87908; font:700 .8rem/1 "Zen Maru Gothic",sans-serif; letter-spacing:.15em; }
   .integration-case h3 { margin:0; font:900 clamp(1.55rem,2.7vw,2.35rem)/1.35 "Zen Maru Gothic",sans-serif; }
   .integration-case h3 a { color:inherit; text-decoration-color:#a87908; text-decoration-thickness:2px; text-underline-offset:7px; }
@@ -132,12 +167,12 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
   .cooperation-contact>p { max-width:650px; margin:0; line-height:1.9; }
   .cooperation-contact .home-works-cta { margin-left:0; }
   @media (max-width:800px) { .cooperation-applications > .intro-flip-card { position:relative; top:auto; right:auto; width:min(100%,220px); margin:0 auto 28px; } .cooperation-applications > .cooperation-heading { padding-right:0; } .application-grid,.integration-case { grid-template-columns:1fr; } .application-card--offline { margin-top:0; } }
-  @media (max-width:800px) { .cooperation-applications__shape { top:130px; right:-105px; width:320px; opacity:.65; } }
-  @media (max-width:560px) { .cooperation-applications__shape { top:100px; right:-82px; width:220px; opacity:.5; } }
+  @media (max-width:800px) { .cooperation-applications__shape { top:300px; right:-30px; width:min(70vw,360px); } }
+  @media (max-width:560px) { .cooperation-applications__shape { top:270px; right:-16px; width:250px; } }
   @media (max-width:560px) { .intro-flip-card { padding:4px; } .intro-flip-card__face { gap:5px; } .intro-flip-card__face::before { border-width:2px; } .intro-flip-card__face strong { font-size:1.25rem; } .intro-flip-card__face small { font-size:.68rem; line-height:1.4; letter-spacing:0; } .intro-flip-card__face i { right:20%; bottom:17%; font-size:1rem; } }
   @media (max-width:560px) { .cooperation-page { padding-block:54px 72px; } .application-card { min-height:350px; } .application-card h3 { margin-top:42px; } .integration-case__visual { min-height:230px; } .integration-case__channels { grid-template-columns:1fr; gap:22px; margin-top:28px; } .cooperation-contact { padding:30px 24px; } .cooperation-contact .home-works-cta { width:100%; } }
   @media (max-width:560px) { .application-card__browser,.application-card__prints { width:42%; } }
-  @media (prefers-reduced-motion:reduce) { .cooperation-page * { scroll-behavior:auto !important; animation-duration:.001ms !important; transition-duration:.001ms !important; } :global(.cooperation-page .cooperation-title-reveal) { opacity:1 !important; transform:none !important; } }
+  @media (prefers-reduced-motion:reduce) { .cooperation-page * { scroll-behavior:auto !important; animation-duration:.001ms !important; transition-duration:.001ms !important; } .cooperation-modes__tone,.cooperation-modes__shape,.cooperation-cases__transition-warm,.cooperation-modes-section :global(.cooperation-mode) { transition:none; } .cooperation-modes__shape { transform:none; } .integration-case__visual:hover img, .integration-case__visual:focus-visible img { transform:none; } :global(.cooperation-page .cooperation-title-reveal) { opacity:1 !important; transform:none !important; } }
 </style>
 
 <script>
@@ -166,4 +201,46 @@ const integrationCases = cases.map((item) => ({ ...item, work: caseBySlug.get(it
       card.setAttribute("aria-pressed", String(flipped));
     });
   });
+
+  const modesSection = document.querySelector<HTMLElement>(".cooperation-modes-section");
+  if (modesSection) {
+    const modeCards = Array.from(modesSection.querySelectorAll<HTMLElement>(".cooperation-mode"));
+    let scrollFrame = 0;
+    let hoveredMode: "project" | "ongoing" | null = null;
+    let focusedMode: "project" | "ongoing" | null = null;
+    const updateModeBackground = () => {
+      scrollFrame = 0;
+      const sectionRect = modesSection.getBoundingClientRect();
+      if (sectionRect.bottom <= 0 || sectionRect.top >= window.innerHeight) {
+        modesSection.dataset.activeMode = "";
+        return;
+      }
+      const focusY = window.innerHeight * 0.52;
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const progress = Math.max(-1, Math.min(1, (focusY - sectionRect.top - sectionRect.height / 2) / window.innerHeight));
+        modesSection.style.setProperty("--mode-parallax-near", `${Math.round(progress * 42)}px`);
+        modesSection.style.setProperty("--mode-parallax-far", `${Math.round(progress * -26)}px`);
+      }
+      const nearestCard = modeCards.reduce<HTMLElement | undefined>((nearest, card) => {
+        if (!nearest) return card;
+        const cardCenter = card.getBoundingClientRect().top + card.offsetHeight / 2;
+        const nearestCenter = nearest.getBoundingClientRect().top + nearest.offsetHeight / 2;
+        return Math.abs(cardCenter - focusY) < Math.abs(nearestCenter - focusY) ? card : nearest;
+      }, undefined);
+      modesSection.dataset.activeMode = hoveredMode ?? focusedMode ?? (nearestCard?.classList.contains("cooperation-mode--ongoing") ? "ongoing" : "project");
+    };
+    const scheduleModeUpdate = () => {
+      if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateModeBackground);
+    };
+    window.addEventListener("scroll", scheduleModeUpdate, { passive:true });
+    window.addEventListener("resize", scheduleModeUpdate);
+    modeCards.forEach((card) => {
+      const mode = card.classList.contains("cooperation-mode--ongoing") ? "ongoing" : "project";
+      card.addEventListener("pointerenter", () => { hoveredMode = mode; modesSection.dataset.activeMode = mode; });
+      card.addEventListener("focus", () => { focusedMode = mode; modesSection.dataset.activeMode = hoveredMode ?? mode; });
+      card.addEventListener("pointerleave", () => { if (hoveredMode === mode) hoveredMode = null; updateModeBackground(); });
+      card.addEventListener("blur", () => { if (focusedMode === mode) focusedMode = null; updateModeBackground(); });
+    });
+    scheduleModeUpdate();
+  }
 </script>
